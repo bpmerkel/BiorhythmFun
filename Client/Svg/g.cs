@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-namespace BiorthymFun.Client.Svg;
+﻿namespace BiorthymFun.Client.Svg;
 
 public class g : strokeBase, IEventBase
 {

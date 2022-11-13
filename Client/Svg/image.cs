@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-namespace BiorthymFun.Client.Svg;
+﻿namespace BiorthymFun.Client.Svg;
 
 public class image : IBaseElement, IEventBase
 {
     public string? id { get; set; } = null;
-    public bool CaptureRef { get; set; } = false;
     public double x { get; set; } = double.NaN;
     public double y { get; set; } = double.NaN;
     public double width { get; set; } = double.NaN;

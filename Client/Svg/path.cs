@@ -3,7 +3,6 @@
 public class path : strokeBase, IBaseElement, IEventBase
 {
     public string? id { get; set; } = null;
-    public bool CaptureRef { get; set; } = false;
     public string? d { get; set; } = null;
     public string? fill { get; set; } = null;
     public string? filter { get; set; } = null;

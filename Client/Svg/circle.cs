@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace BiorthymFun.Client.Svg;
+﻿namespace BiorthymFun.Client.Svg;
 
 public class circle : strokeBase, IBaseElement, IEventBase
 {
     public string? id { get; set; } = null;
-    public bool CaptureRef { get; set; } = false;
     public double cx { get; set; } = double.NaN;
     public double cy { get; set; } = double.NaN;
     public double r { get; set; } = double.NaN;

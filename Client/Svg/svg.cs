@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-namespace BiorthymFun.Client.Svg;
+﻿namespace BiorthymFun.Client.Svg;
 
 public class svg : IBaseElement
 {
     public string? id { get; set; } = null;
-    public bool CaptureRef { get; set; } = false;
     public double width { get; set; } = double.NaN;
     public double height { get; set; } = double.NaN;
     public string? xmlns { get; set; } = null;

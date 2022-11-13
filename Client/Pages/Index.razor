@@ -101,7 +101,7 @@
     private string AddName = string.Empty;
     private DateTime AddBirthdate = DateTime.Today;
     private Person? EditPerson { get; set; }
-    private string EditName = string.Empty;
+    private string? EditName = string.Empty;
     private DateTime EditBirthdate = DateTime.Today;
     private Person? DeletePerson { get; set; }
     private List<Person> People = new List<Person>();
@@ -176,18 +176,24 @@
 
     private void DoEditPerson(Person p)
     {
-        EditPerson = p;
-        EditName = p.Name;
-        EditBirthdate = p.Birthdate;
-        EditPersonDialogIsOpen = true;
+        if (p is not null)
+        {
+            EditPerson = p;
+            EditName = p.Name;
+            EditBirthdate = p.Birthdate;
+            EditPersonDialogIsOpen = true;
+        }
     }
 
     private void DoEdit()
     {
-        EditPersonDialogIsOpen = false;
-        if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
-        EditPerson.Birthdate = EditBirthdate;
-        SortAndSave();
+        if (EditPerson is not null)
+        {
+            EditPersonDialogIsOpen = false;
+            if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
+            EditPerson.Birthdate = EditBirthdate;
+            SortAndSave();
+        }
     }
 
     private void DoDeletePerson(Person p)
@@ -224,7 +230,7 @@
 
     public class Person
     {
-        public string? Name { get; set; }
+        public string? Name { get; set; } = string.Empty;
         private DateTime _birthdate;
         public DateTime Birthdate
         {

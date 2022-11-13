@@ -3,7 +3,6 @@
 public class rect : strokeBase, IBaseElement, IEventBase
 {
     public string? id { get; set; } = null;
-    public bool CaptureRef { get; set; } = false;
     public double x { get; set; } = double.NaN;
     public double y { get; set; } = double.NaN;
     public double rx { get; set; } = double.NaN;

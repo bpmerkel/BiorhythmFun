@@ -209,13 +209,11 @@
     protected override async Task OnInitializedAsync()
     {
         People = await localStorage.GetItemAsync<List<Person>>("people");
-        if (People == null)
+        if (People == null || !People.Any())
         {
             People = new List<Person>
             {
-                new Person { Name = "Brady", Birthdate = DateTime.Parse("8/23/1961", null, System.Globalization.DateTimeStyles.AssumeLocal) },
-                new Person { Name = "Deena", Birthdate = DateTime.Parse("1/5/1963", null, System.Globalization.DateTimeStyles.AssumeLocal) },
-                new Person { Name = "Emily", Birthdate = DateTime.Parse("2/12/2004", null, System.Globalization.DateTimeStyles.AssumeLocal) }
+                new Person { Name = "Micky Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) }
             };
             SortAndSave();
         }

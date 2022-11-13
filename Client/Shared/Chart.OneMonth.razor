@@ -1,0 +1,44 @@
+﻿<div>@Name</div>
+<div style="display: inline-block; white-space: nowrap; overflow-x: scroll; overflow-y: hidden; width: 100%;">
+    <MatButton OnClick="DoPrevious" Label="Previous" Style="transform: rotate(-90deg) translate(90px,0);"></MatButton>
+    @foreach (var date in Dates)
+    {<ChartBuilder Birthdate="@Birthdate" Chartdate="@date" Height="200"></ChartBuilder>}
+    <MatButton OnClick="DoNext" Label="Next" Style="transform: rotate(90deg) translate(-90px,0);"></MatButton>
+</div>
+@code
+{
+    protected List<DateTime> Dates = new List<DateTime>();
+
+    [Parameter]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public DateTime Birthdate { get; set; }
+
+    private DateTime _chartdate;
+
+    [Parameter]
+    public DateTime Chartdate
+    {
+        get { return _chartdate; }
+        set { _chartdate = value; Dates.Add(value); }
+    }
+
+    public void DoPrevious(MouseEventArgs e)
+    {
+        if (Dates.Any())
+        {
+            var toadd = Dates.First().AddMonths(-1);
+            Dates.Insert(0, toadd);
+        }
+        else
+        {
+            Dates.Add(Chartdate);
+        }
+    }
+
+    public void DoNext(MouseEventArgs e)
+    {
+        Dates.Add(Dates.Any() ? Dates.Last().AddMonths(1) : Chartdate);
+    }
+}

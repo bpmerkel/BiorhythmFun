@@ -160,7 +160,7 @@ public partial class Index
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
         Enddate = Startdate.AddMonths(1);
         await ChartSet.Load(localStorage);
-        ShowChart(ChartSet.Groups.First());
+        if (ChartSet.Groups.Any()) ShowChart(ChartSet.Groups.First());
     }
 }
 
@@ -185,7 +185,7 @@ public record Prediction(string MotherID, DateTime ConceptionDate) : ChartableBa
 
 public class Set
 {
-    public ILocalStorageService? localStorage { get; set; }
+    private ILocalStorageService LocalStorage { get; set; }
 
     public List<Person> People { get; set; } = new List<Person>();
     public List<Compatibility> CompatibilityCharts { get; set; } = new List<Compatibility>();
@@ -217,7 +217,7 @@ public class Set
 
     public async Task Load(ILocalStorageService localStorage)
     {
-        this.localStorage = localStorage;
+        LocalStorage = localStorage;
         try
         {
             var chartset = await localStorage.GetItemAsync<Set>("set") ?? new Set();
@@ -274,9 +274,9 @@ public class Set
         catch (Exception ex)
         {
             Console.WriteLine($"Exception occurred: {ex}");
-            await localStorage.ClearAsync();
+            await LocalStorage.ClearAsync();
         }
     }
 
-    public async void Save() => await localStorage.SetItemAsync("set", this);
+    public async void Save() => await LocalStorage.SetItemAsync("set", this);
 }

@@ -248,8 +248,11 @@ public class Set
         if (!chartset.CompatibilityCharts.Any())
         {
             var top2 = chartset.People.Take(2).Select(p => p.ID).ToList();
-            AddCompatibilityChart(top2.First(), top2.Last());
-            Save();
+            if (top2.Count == 2)
+            {
+                AddCompatibilityChart(top2.First(), top2.Last());
+                Save();
+            }
         }
         else
         {

@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using BiorhythmFun.Client.Shared
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
 <MatAppBarContainer>
     <MatAppBar Fixed="true">
         <MatAppBarRow>
@@ -8,12 +8,12 @@
                 <MatAppBarTitle>Biorhythm Fun</MatAppBarTitle>
             </MatAppBarSection>
             <MatAppBarSection Align="@MatAppBarSectionAlign.End">
-                <MatIconButton title="Prepend Month" Icon="exit_to_app" OnClick="DoPrevious" Style="transform: rotate(180deg)"></MatIconButton>
-                <MatIconButton title="Append Month" Icon="exit_to_app" OnClick="DoNext"></MatIconButton>
-                <MatIconButton title="Sort by Age" Icon="forward" Style="@($"transform: rotate({(OldestFirst ? "90" : "270")}deg)")" OnClick="DoSortByAge"></MatIconButton>
-                <MatIconButton title="Change Plot Date" Icon="insert_invitation" OnClick="DoChangeChartDate"></MatIconButton>
-                <MatIconButton title="Add Person" Icon="library_add" OnClick="DoAddPerson"></MatIconButton>
-                <MatIconButton title="Read FAQ" Icon="import_contacts" OnClick="DoShowFAQ"></MatIconButton>
+                <MatIconButton title="Prepend Month" Icon="exit_to_app" OnClick="DoPrevious" Style="transform: rotate(180deg)" />
+                <MatIconButton title="Change Plot Date" Icon="insert_invitation" OnClick="DoChangeChartDate" />
+                <MatIconButton title="Append Month" Icon="exit_to_app" OnClick="DoNext" />
+                <MatIconButton title="Sort by Age" Icon="forward" Style="@($"transform: rotate({(OldestFirst ? "90" : "270")}deg)")" OnClick="DoSortByAge" />
+                <MatIconButton title="Add Person" Icon="library_add" OnClick="DoAddPerson" />
+                <MatIconButton title="Read FAQ" Icon="import_contacts" OnClick="DoShowFAQ" />
             </MatAppBarSection>
         </MatAppBarRow>
     </MatAppBar>
@@ -26,7 +26,7 @@
                 <MatDatePicker @bind-Value="@AddBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
             </MatDialogContent>
             <MatDialogActions>
-                <MatButton OnClick="DoAdd">OK</MatButton>
+                <MatButton OnClick="@(e => DoAdd(e))">OK</MatButton>
                 <MatButton OnClick="@(e => { AddPersonDialogIsOpen = false; })">Cancel</MatButton>
             </MatDialogActions>
         </MatDialog>
@@ -71,171 +71,96 @@
                 <FAQStatic />
             </div>
         }
+
+        <MatListGroup>
+            <MatListGroupSubHeader Class="TabGroupHeader">People</MatListGroupSubHeader>
+            <MatList SingleSelection="true">
+                @foreach (var person in ChartSet.People)
+                {
+                    <MatListItem Class="Person" OnClick="@(e => ShowChart(person))">
+                        <MatIcon Icon="@MatIconNames.Person" /> @person.Name
+                    </MatListItem>
+                }
+            </MatList>
+            <MatListGroupSubHeader Class="TabGroupHeader">Groups</MatListGroupSubHeader>
+            <MatList SingleSelection="true">
+                @foreach (var group in ChartSet.Groups)
+                {
+                    <MatListItem Class="Group" OnClick="@(e => ShowChart(group))">
+                        <MatIcon Icon="@MatIconNames.Group" /> @group.Name
+                    </MatListItem>
+                }
+            </MatList>
+            <MatListGroupSubHeader Class="TabGroupHeader">Compatibility</MatListGroupSubHeader>
+            <MatList SingleSelection="true">
+                @foreach (var compat in ChartSet.CompatibilityCharts)
+                {
+                    <MatListItem Class="Compatibility" OnClick="@(e => ShowChart(compat))">
+                        <MatIcon Icon="@MatIconNames.Compare" /> @compat.Name
+                    </MatListItem>
+                }
+            </MatList>
+            <MatListGroupSubHeader Class="TabGroupHeader">Prediction</MatListGroupSubHeader>
+            <MatList SingleSelection="true">
+                @foreach (var predict in ChartSet.PredictionCharts)
+                {
+                    <MatListItem Class="Prediction" OnClick="@(e => ShowChart(predict))">
+                        <MatIcon Icon="@MatIconNames.Pregnant_woman" /> @predict.Name
+                    </MatListItem>
+                }
+            </MatList>
+        </MatListGroup>
+
         <div class="ChartContainer @(FAQIsOpen ? "ChartHalf" : "ChartFull")">
-            @foreach (var person in People)
+            @foreach (var chart in Current)
             {
-                <div>
-                    <span style="display: inline-block; width: 200px">
-                        @person.Name
-                    </span>
-                    <span style="display: inline-block; width: 300px">
-                        @($"Born {person.Birthdate:dddd MMMM dd, yyyy}")
-                    </span>
-                    <span style="display: inline-block; transform: scale(.5)">
-                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))"></MatIconButton>
-                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))"></MatIconButton>
-                    </span>
-                </div>
-                <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200"></ChartBuilder>
+                if (chart is Person person)
+                {
+                    <div>
+                        <span style="display: inline-block; width: 200px">
+                            @person.Name
+                        </span>
+                        <span style="display: inline-block; width: 300px">
+                            @($"Born {person.Birthdate:dddd MMMM dd, yyyy}")
+                        </span>
+                        <span style="display: inline-block; transform: scale(.5)">
+                            <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))" />
+                            <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))" />
+                        </span>
+                    </div>
+                    <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                }
+                else if (chart is Prediction prediction)
+                {
+                    var mother = ChartSet.GetPerson(prediction.MotherID);
+                    var enddate1 = prediction.ConceptionDate.AddMonths(1);
+                    var gestation = prediction.ConceptionDate.AddDays(280);
+                    var enddate2 = gestation.AddMonths(1);
+                    <div>
+                        Baby's gender prediction for @mother.Name.
+                        Mother's Birthdate @($"{mother.Birthdate:dddd MMMM dd, yyyy}").
+                        Concieved @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}")
+                    </div>
+                    <div>
+                        <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@prediction.ConceptionDate" Enddate="@enddate1" Height="200" />
+                    </div>
+                    <div>
+                        Baby's birth date prediction for @mother.Name.
+                        Baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}")
+                    </div>
+                    <div>
+                        <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@gestation" Enddate="@enddate2" Height="200" />
+                    </div>
+                }
+                else if (chart is Compatibility compat)
+                {
+                    var p1 = ChartSet.GetPerson(compat.ID1);
+                    var p2 = ChartSet.GetPerson(compat.ID2);
+                    <div>
+                        @compat.Name for @p1.Name and @p2.Name
+                    </div>
+                }
             }
         </div>
     </MatAppBarContent>
 </MatAppBarContainer>
-
-@code
-{
-    private bool AddPersonDialogIsOpen = false;
-    private bool ChangeChartdateDialogIsOpen = false;
-    private bool EditPersonDialogIsOpen = false;
-    private bool DeletePersonDialogIsOpen = false;
-    private string AddName = string.Empty;
-    private DateTime AddBirthdate = DateTime.Today;
-    private Person? EditPerson { get; set; }
-    private string? EditName = string.Empty;
-    private DateTime EditBirthdate = DateTime.Today;
-    private Person? DeletePerson { get; set; }
-    private List<Person> People = new List<Person>();
-    private DateTime Startdate { get; set; }
-    private DateTime Enddate { get; set; }
-    private DateTime Chartdate { get; set; }
-    private bool OldestFirst { get; set; }
-    private bool FAQIsOpen { get; set; }
-
-    private void DoShowFAQ(MouseEventArgs e)
-    {
-        FAQIsOpen = !FAQIsOpen;
-    }
-
-    private void DoSortByAge(MouseEventArgs e)
-    {
-        // do an in-place ordering
-        OldestFirst = !OldestFirst;
-        SortAndSave();
-    }
-
-    private async void SortAndSave()
-    {
-        People.Sort((x, y) =>
-        {
-            var diff = x.Birthdate.CompareTo(y.Birthdate);
-            return OldestFirst ? -diff : diff;
-        });
-        await localStorage.SetItemAsync("people", People);
-    }
-
-    private void DoAddPerson(MouseEventArgs e)
-    {
-        AddName = string.Empty;
-        AddBirthdate = DateTime.Today;
-        AddPersonDialogIsOpen = true;
-    }
-
-    private void DoAdd(MouseEventArgs e)
-    {
-        AddPersonDialogIsOpen = false;
-        // save Name and Birthdate to localStorage
-        if (!string.IsNullOrWhiteSpace(AddName))
-        {
-            People.Add(new Person { Name = AddName, Birthdate = AddBirthdate });
-            SortAndSave();
-        }
-    }
-
-    private void DoPrevious(MouseEventArgs e)
-    {
-        Startdate = Startdate.AddMonths(-1);
-    }
-
-    private void DoNext(MouseEventArgs e)
-    {
-        Enddate = Enddate.AddMonths(1);
-    }
-
-    private void DoChangeChartDate(MouseEventArgs e)
-    {
-        Chartdate = Startdate;
-        ChangeChartdateDialogIsOpen = true;
-    }
-
-    private void DoChange(MouseEventArgs e)
-    {
-        ChangeChartdateDialogIsOpen = false;
-        Startdate = new DateTime(Chartdate.Year, Chartdate.Month, 1);
-        Enddate = Startdate.AddMonths(1);
-    }
-
-    private void DoEditPerson(Person p)
-    {
-        if (p is not null)
-        {
-            EditPerson = p;
-            EditName = p.Name;
-            EditBirthdate = p.Birthdate;
-            EditPersonDialogIsOpen = true;
-        }
-    }
-
-    private void DoEdit()
-    {
-        if (EditPerson is not null)
-        {
-            EditPersonDialogIsOpen = false;
-            if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
-            EditPerson.Birthdate = EditBirthdate;
-            SortAndSave();
-        }
-    }
-
-    private void DoDeletePerson(Person p)
-    {
-        DeletePerson = p;
-        DeletePersonDialogIsOpen = true;
-    }
-
-    private void DoDelete()
-    {
-        if (DeletePerson != null)
-        {
-            DeletePersonDialogIsOpen = false;
-            People.Remove(DeletePerson);
-            SortAndSave();
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        People = await localStorage.GetItemAsync<List<Person>>("people");
-        if (People == null || !People.Any())
-        {
-            People = new List<Person>
-            {
-                new Person { Name = "Micky Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) }
-            };
-            SortAndSave();
-        }
-
-        Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
-        Enddate = Startdate.AddMonths(1);
-    }
-
-    public class Person
-    {
-        public string? Name { get; set; } = string.Empty;
-        private DateTime _birthdate;
-        public DateTime Birthdate
-        {
-            get { return _birthdate.ToLocalTime(); }
-            set { _birthdate = DateTime.SpecifyKind(value, DateTimeKind.Local); }
-        }
-    }
-}

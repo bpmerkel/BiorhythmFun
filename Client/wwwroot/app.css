@@ -1,5 +1,3 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -41,10 +39,10 @@ app {
             margin-left: 1.5rem;
         }
 
-.main .top-row a:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+        .main .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
 .content {
     padding-top: 1.1rem;
@@ -71,6 +69,15 @@ div.ChartHalf {
 
 div.ChartFull {
     width: 100vw;
+}
+
+.TabGroupHeader {
+    font-weight: bold;
+}
+
+.Person, .Group, .Compatibility, .Prediction {
+    font-style: italic;
+    height: auto;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -111,7 +118,7 @@ div.ChartFull {
 
     .main .top-row.auth {
         justify-content: space-between;
-}
+    }
 
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
@@ -132,4 +139,4 @@ div.ChartFull {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
-    }
+}

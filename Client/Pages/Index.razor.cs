@@ -218,55 +218,63 @@ public class Set
     public async Task Load(ILocalStorageService localStorage)
     {
         this.localStorage = localStorage;
-        var chartset = await localStorage.GetItemAsync<Set>("set") ?? new Set();
-
-        if (!chartset.People.Any())
+        try
         {
-            People.AddRange(new[]
+            var chartset = await localStorage.GetItemAsync<Set>("set") ?? new Set();
+
+            if (!chartset.People.Any())
             {
+                People.AddRange(new[]
+                {
                 new Person { Name = "Micky Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) },
                 new Person { Name = "Donald Duck", Birthdate = DateTime.Parse("6/9/1934", null, System.Globalization.DateTimeStyles.AssumeLocal) },
                 new Person { Name = "Minnie Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) },
             });
-            Save();
-        }
-        else
-        {
-            People.AddRange(chartset.People);
-        }
-
-        if (!chartset.Groups.Any())
-        {
-            Groups.Add(new Group(People.Select(p => p.ID).ToList()) { Name = "Family" });
-            Save();
-        }
-        else
-        {
-            Groups.AddRange(chartset.Groups);
-        }
-
-        if (!chartset.CompatibilityCharts.Any())
-        {
-            var top2 = chartset.People.Take(2).Select(p => p.ID).ToList();
-            if (top2.Count == 2)
-            {
-                AddCompatibilityChart(top2.First(), top2.Last());
                 Save();
             }
-        }
-        else
-        {
-            CompatibilityCharts.AddRange(chartset.CompatibilityCharts);
-        }
+            else
+            {
+                People.AddRange(chartset.People);
+            }
 
-        if (!chartset.PredictionCharts.Any())
-        {
-            AddPredictionChart(People.Select(p => p.ID).Last(), DateTime.Today);
-            Save();
+            if (!chartset.Groups.Any())
+            {
+                Groups.Add(new Group(People.Select(p => p.ID).ToList()) { Name = "Family" });
+                Save();
+            }
+            else
+            {
+                Groups.AddRange(chartset.Groups);
+            }
+
+            if (!chartset.CompatibilityCharts.Any())
+            {
+                var top2 = chartset.People.Take(2).Select(p => p.ID).ToList();
+                if (top2.Count == 2)
+                {
+                    AddCompatibilityChart(top2.First(), top2.Last());
+                    Save();
+                }
+            }
+            else
+            {
+                CompatibilityCharts.AddRange(chartset.CompatibilityCharts);
+            }
+
+            if (!chartset.PredictionCharts.Any())
+            {
+                AddPredictionChart(People.Select(p => p.ID).Last(), DateTime.Today);
+                Save();
+            }
+            else
+            {
+                PredictionCharts.AddRange(chartset.PredictionCharts);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            PredictionCharts.AddRange(chartset.PredictionCharts);
+            Console.WriteLine($"Exception occurred: {ex}");
+            await localStorage.ClearAsync();
         }
     }
 

@@ -319,8 +319,10 @@
             else if (Current is Prediction prediction)
             {
                 var mother = ChartSet.GetPerson(prediction.MotherID);
-                var enddate1 = prediction.ConceptionDate.AddMonths(1);
+                var startdate1 = prediction.ConceptionDate.AddDays(-prediction.ConceptionDate.Day + 1);
+                var enddate1 = prediction.ConceptionDate.AddMonths(1).AddDays(-1);
                 var gestation = prediction.ConceptionDate.AddDays(280);
+                var startdate2 = gestation.AddDays(-gestation.Day + 1);
                 var enddate2 = gestation.AddMonths(1);
                 <div>
                     <span style="display: inline-block; width: 200px">
@@ -339,14 +341,14 @@
                     When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
                 </div>
                 <div>
-                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@prediction.ConceptionDate" Enddate="@enddate1" Height="200" />
+                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Height="200" />
                 </div>
                 <div>
                     Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
                     Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation duration after conception.
                 </div>
                 <div>
-                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@gestation" Enddate="@enddate2" Height="200" />
+                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Height="200" />
                 </div>
             }
             else if (Current is Compatibility compat)

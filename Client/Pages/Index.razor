@@ -71,6 +71,25 @@
             </MatDialogActions>
         </MatDialog>
 
+        <MatDialog IsOpen="@EditGroupDialogIsOpen">
+            <MatDialogTitle>Edit Group</MatDialogTitle>
+            <MatDialogContent>
+                <MatTextField @bind-Value="@EditName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatList SingleSelection="false">
+                    @foreach (var p in ChartSet.People)
+                    {
+                        <MatListItem>
+                            <MatCheckbox @bind-Value="@ChartSet.GroupPeople[p.ID]" Label="@p.Name"></MatCheckbox>
+                        </MatListItem>
+                    }
+                </MatList>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="EditGroupObject">OK</MatButton>
+                <MatButton OnClick="@(e => { EditGroupDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
         <MatDialog IsOpen="@DeleteGroupDialogIsOpen">
             <MatDialogTitle>Delete Group</MatDialogTitle>
             <MatDialogContent>
@@ -102,6 +121,26 @@
             </MatDialogActions>
         </MatDialog>
 
+        <MatDialog IsOpen="@EditCompatibilityDialogIsOpen">
+            <MatDialogTitle>Edit Compatibility Chart</MatDialogTitle>
+            <MatDialogContent>
+                <MatSelectItem @bind-Value="@EditPerson1" Items="@ChartSet.People" Label="Person 1" HelperText="Choose Person 1" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+                <MatSelectItem @bind-Value="@EditPerson2" Items="@ChartSet.People" Label="Person 2" HelperText="Choose Person 2" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="EditCompatibilityObject">OK</MatButton>
+                <MatButton OnClick="@(e => { EditCompatibilityDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
         <MatDialog IsOpen="@DeleteCompatibilityDialogIsOpen">
             <MatDialogTitle>Delete Compatibility Chart</MatDialogTitle>
             <MatDialogContent>
@@ -126,6 +165,22 @@
             <MatDialogActions>
                 <MatButton OnClick="AddPredictionObject">OK</MatButton>
                 <MatButton OnClick="@(e => { AddPredictionChartDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@EditPredictionDialogIsOpen">
+            <MatDialogTitle>Edit Prediction Chart</MatDialogTitle>
+            <MatDialogContent>
+                <MatSelectItem @bind-Value="@EditMother" Items="@ChartSet.People" Label="Mother" HelperText="Choose the Mother" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+                <MatDatePicker @bind-Value="@EditConceptionDate" Required="true" Label="Date of Conception"></MatDatePicker>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="EditPredictionObject">OK</MatButton>
+                <MatButton OnClick="@(e => { EditPredictionDialogIsOpen = false; })">Cancel</MatButton>
             </MatDialogActions>
         </MatDialog>
 

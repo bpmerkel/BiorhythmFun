@@ -28,7 +28,7 @@ public partial class Index
     private Group? DeleteGroup;
     private Group? EditGroup;
     // use AddName and EditName from above
-    
+
     private bool AddCompatibilityChartDialogIsOpen = false;
     private bool EditCompatibilityDialogIsOpen = false;
     private bool DeleteCompatibilityDialogIsOpen = false;
@@ -70,13 +70,15 @@ public partial class Index
         // save Name and Birthdate to localStorage
         if (!string.IsNullOrWhiteSpace(AddName))
         {
-            ChartSet.AddPerson(new Person { Name = AddName, Birthdate = AddBirthdate });
+            var p = new Person(AddName, AddBirthdate);
+            ChartSet.AddPerson(p);
+            Current = p;
         }
     }
 
     private void DoEditPerson(Person p)
     {
-        if (p is not null)
+        if (p != null)
         {
             EditPerson = p;
             EditName = p.Name;
@@ -87,7 +89,7 @@ public partial class Index
 
     private void DoEditPersonObject()
     {
-        if (EditPerson is not null)
+        if (EditPerson != null)
         {
             EditPersonDialogIsOpen = false;
             if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
@@ -104,10 +106,11 @@ public partial class Index
 
     private void DoDeletePersonObject()
     {
-        if (DeletePerson is not null)
+        if (DeletePerson != null)
         {
             DeletePersonDialogIsOpen = false;
             ChartSet.RemovePerson(DeletePerson);
+            Current = ChartSet.People.First();
         }
     }
 
@@ -119,25 +122,42 @@ public partial class Index
 
     private void DoAddGroupObject(MouseEventArgs e)
     {
-        AddGroupDialogIsOpen = false;
+        if (!string.IsNullOrWhiteSpace(AddName))
+        {
+            AddGroupDialogIsOpen = false;
+            ChartSet.AddGroup(AddName, ChartSet.GroupPeople.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToList());
+        }
     }
 
     private void DoEditGroup(Group group)
     {
-        if (group is not null)
+        if (group != null)
         {
             EditGroup = group;
             EditName = group.Name;
+            foreach (var g in ChartSet.GroupPeople)
+            {
+                ChartSet.GroupPeople[g.Key] = false;
+            }
+            foreach (var g in group.IDs)
+            {
+                ChartSet.GroupPeople[g] = true;
+            }
             EditGroupDialogIsOpen = true;
         }
     }
 
     private void EditGroupObject()
     {
-        if (EditGroup is not null)
+        if (EditGroup != null)
         {
             EditGroupDialogIsOpen = false;
             if (!string.IsNullOrWhiteSpace(EditName)) EditGroup.Name = EditName;
+            EditGroup.IDs.Clear();
+            foreach (var kvp in ChartSet.GroupPeople)
+            {
+                if (kvp.Value) EditGroup.IDs.Add(kvp.Key);
+            }
             ChartSet.Save();
         }
     }
@@ -150,10 +170,11 @@ public partial class Index
 
     private void DeleteGroupObject()
     {
-        if (DeleteGroup is not null)
+        if (DeleteGroup != null)
         {
             DeleteGroupDialogIsOpen = false;
             ChartSet.RemoveGroup(DeleteGroup);
+            Current = ChartSet.People.First();
         }
     }
 
@@ -167,7 +188,7 @@ public partial class Index
     private void AddCompatibilityObject(MouseEventArgs e)
     {
         AddCompatibilityChartDialogIsOpen = false;
-        if (AddPerson1 is not null && AddPerson2 is not null)
+        if (AddPerson1 != null && AddPerson2 != null)
         {
             ChartSet.AddCompatibilityChart(AddPerson1.ID, AddPerson2.ID);
         }
@@ -175,19 +196,22 @@ public partial class Index
 
     private void DoEditCompatibility(Compatibility compat)
     {
-        EditCompatibility = compat;
-        EditPerson1 = ChartSet.GetPerson(compat.ID1);
-        EditPerson2 = ChartSet.GetPerson(compat.ID2);
-        EditCompatibilityDialogIsOpen = true;
+        if (compat != null)
+        {
+            EditCompatibility = compat;
+            EditPerson1 = ChartSet.GetPerson(compat.ID1);
+            EditPerson2 = ChartSet.GetPerson(compat.ID2);
+            EditCompatibilityDialogIsOpen = true;
+        }
     }
 
     private void EditCompatibilityObject()
     {
-        if (EditCompatibility is not null && EditPerson1 is not null && EditPerson2 is not null)
+        if (EditCompatibility != null && EditPerson1 != null && EditPerson2 != null)
         {
-            //EditCompatibility.ID1 = EditPerson1.ID;
-            //EditCompatibility.ID2 = EditPerson2.ID;
-            //EditCompatibility.Name = $"{EditPerson1.Name} - {EditPerson2.Name}";
+            EditCompatibility.ID1 = EditPerson1.ID;
+            EditCompatibility.ID2 = EditPerson2.ID;
+            EditCompatibility.Name = $"{EditPerson1.Name} - {EditPerson2.Name}";
             EditCompatibilityDialogIsOpen = false;
             ChartSet.Save();
         }
@@ -205,6 +229,7 @@ public partial class Index
         {
             DeleteCompatibilityDialogIsOpen = false;
             ChartSet.RemoveCompatibility(DeleteCompatibility);
+            Current = ChartSet.People.First();
         }
     }
 
@@ -226,19 +251,22 @@ public partial class Index
 
     private void DoEditPrediction(Prediction prediction)
     {
-        EditPrediction = prediction;
-        EditConceptionDate = prediction.ConceptionDate;
-        EditMother = ChartSet.GetPerson(prediction.MotherID);
-        EditPredictionDialogIsOpen = true;
+        if (prediction != null)
+        {
+            EditPrediction = prediction;
+            EditConceptionDate = prediction.ConceptionDate;
+            EditMother = ChartSet.GetPerson(prediction.MotherID);
+            EditPredictionDialogIsOpen = true;
+        }
     }
 
     private void EditPredictionObject(MouseEventArgs e)
     {
-        if (EditPrediction is not null && EditMother is not null)
+        if (EditPrediction != null && EditMother != null)
         {
-            //EditPrediction.MotherID = EditMother.ID;
-            //EditPrediction.ConceptionDate = EditConceptionDate;
-            //EditPrediction.Name = $"{EditMother.Name} Prediction";
+            EditPrediction.MotherID = EditMother.ID;
+            EditPrediction.ConceptionDate = EditConceptionDate;
+            EditPrediction.Name = $"{EditMother.Name} Prediction";
             EditPredictionDialogIsOpen = false;
             ChartSet.Save();
         }
@@ -256,6 +284,7 @@ public partial class Index
         {
             DeletePredictionDialogIsOpen = false;
             ChartSet.RemovePrediction(DeletePrediction);
+            Current = ChartSet.People.First();
         }
     }
 
@@ -284,25 +313,6 @@ public partial class Index
         if (ChartSet.Groups.Any()) Current = ChartSet.Groups.First();
     }
 }
-
-public record ChartableBase
-{
-    public string ID { get; init; } = Guid.NewGuid().ToString();
-    public string? Name { get; set; } = string.Empty;
-}
-
-public record Person : ChartableBase
-{
-    private DateTime _birthdate;
-    public DateTime Birthdate
-    {
-        get { return _birthdate.ToLocalTime(); }
-        set { _birthdate = DateTime.SpecifyKind(value, DateTimeKind.Local); }
-    }
-}
-public record Group(List<string> IDs) : ChartableBase;
-public record Compatibility(string ID1, string ID2) : ChartableBase;
-public record Prediction(string MotherID, DateTime ConceptionDate) : ChartableBase;
 
 public class Set
 {
@@ -352,9 +362,10 @@ public class Set
 
     public void AddGroup(string Name, List<string> IDs)
     {
-        Groups.Add(new Group(IDs) { Name = Name });
+        Groups.Add(new Group(Name, IDs));
         Save();
     }
+
     public void RemoveGroup(Group g)
     {
         Groups.Remove(g);
@@ -367,7 +378,7 @@ public class Set
         var p2 = GetPerson(ID2);
         if (p1 is not null && p2 is not null)
         {
-            CompatibilityCharts.Add(new Compatibility(ID1, ID2) { Name = $"{p1.Name} - {p2.Name}" });
+            CompatibilityCharts.Add(new Compatibility($"{p1.Name} - {p2.Name}", ID1, ID2));
             Save();
         }
     }
@@ -383,7 +394,7 @@ public class Set
         var p = GetPerson(MotherID);
         if (p is not null)
         {
-            PredictionCharts.Add(new Prediction(MotherID, ConceptionDate) { Name = $"{p.Name} Prediction" });
+            PredictionCharts.Add(new Prediction($"{p.Name} Prediction", MotherID, ConceptionDate));
             Save();
         }
     }
@@ -407,10 +418,10 @@ public class Set
             {
                 People.AddRange(new[]
                 {
-                new Person { Name = "Micky Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) },
-                new Person { Name = "Donald Duck", Birthdate = DateTime.Parse("6/9/1934", null, System.Globalization.DateTimeStyles.AssumeLocal) },
-                new Person { Name = "Minnie Mouse", Birthdate = DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) },
-            });
+                    new Person("Micky Mouse", DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) ),
+                    new Person("Donald Duck", DateTime.Parse("6/9/1934", null, System.Globalization.DateTimeStyles.AssumeLocal) ),
+                    new Person("Minnie Mouse", DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) )
+                });
                 Save();
             }
             else
@@ -424,7 +435,7 @@ public class Set
 
             if (!chartset.Groups.Any())
             {
-                Groups.Add(new Group(People.Select(p => p.ID).ToList()) { Name = "Family" });
+                Groups.Add(new Group("Family", People.Select(p => p.ID).ToList()));
                 Save();
             }
             else
@@ -466,5 +477,64 @@ public class Set
     public class BoolDictionary : Dictionary<string, bool>
     {
         public bool Contains(string key) => ContainsKey(key);
+    }
+}
+
+public class ChartableBase
+{
+    public string ID { get; init; } = Guid.NewGuid().ToString();
+    public string? Name { get; set; } = string.Empty;
+}
+
+public class Person : ChartableBase
+{
+    private DateTime _birthdate;
+    public DateTime Birthdate
+    {
+        get { return _birthdate.ToLocalTime(); }
+        set { _birthdate = DateTime.SpecifyKind(value, DateTimeKind.Local); }
+    }
+
+    public Person(string name, DateTime birthdate)
+    {
+        Name = name;
+        Birthdate = birthdate;
+    }
+}
+
+public class Group : ChartableBase
+{
+    public List<string> IDs { get; set; }
+
+    public Group(string name, List<string> ids)
+    {
+        Name = name;
+        IDs = ids;
+    }
+}
+
+public class Compatibility : ChartableBase
+{
+    public string ID1 { get; set; }
+    public string ID2 { get; set; }
+
+    public Compatibility(string name, string id1, string id2)
+    {
+        Name = name;
+        ID1 = id1;
+        ID2 = id2;
+    }
+}
+
+public class Prediction : ChartableBase
+{
+    public string MotherID { get; set; }
+    public DateTime ConceptionDate { get; set; }
+
+    public Prediction(string name, string motherID, DateTime conceptionDate)
+    {
+        Name = name;
+        MotherID = motherID;
+        ConceptionDate = conceptionDate;
     }
 }

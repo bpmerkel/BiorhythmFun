@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{5DD3A095-7BD2-4100-A3BD-6EA78215A219}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\azure-static-web-apps-ambitious-stone-067dc570f.yml = .github\workflows\azure-static-web-apps-ambitious-stone-067dc570f.yml
 		package.json = package.json
 		README.md = README.md
 	EndProjectSection

@@ -11,8 +11,6 @@
                 <MatIconButton title="Prepend Month" Icon="exit_to_app" OnClick="DoPrevious" Style="transform: rotate(180deg)" />
                 <MatIconButton title="Change Plot Date" Icon="insert_invitation" OnClick="DoChangeChartDate" />
                 <MatIconButton title="Append Month" Icon="exit_to_app" OnClick="DoNext" />
-                <MatIconButton title="Sort by Age" Icon="forward" Style="@($"transform: rotate({(OldestFirst ? "90" : "270")}deg)")" OnClick="DoSortByAge" />
-                <MatIconButton title="Add Person" Icon="library_add" OnClick="DoAddPerson" />
                 <MatIconButton title="Read FAQ" Icon="import_contacts" OnClick="DoShowFAQ" />
             </MatAppBarSection>
         </MatAppBarRow>
@@ -20,13 +18,13 @@
 
     <MatAppBarContent Class="Content">
         <MatDialog IsOpen="@AddPersonDialogIsOpen">
-            <MatDialogTitle>Add Chart</MatDialogTitle>
+            <MatDialogTitle>Add Person</MatDialogTitle>
             <MatDialogContent>
                 <MatTextField @bind-Value="@AddName" Required="true" Label="Name" Style="display: block"></MatTextField>
                 <MatDatePicker @bind-Value="@AddBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
             </MatDialogContent>
             <MatDialogActions>
-                <MatButton OnClick="@(e => DoAdd(e))">OK</MatButton>
+                <MatButton OnClick="DoAddPersonObject">OK</MatButton>
                 <MatButton OnClick="@(e => { AddPersonDialogIsOpen = false; })">Cancel</MatButton>
             </MatDialogActions>
         </MatDialog>
@@ -38,7 +36,7 @@
                 <MatDatePicker @bind-Value="@EditBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
             </MatDialogContent>
             <MatDialogActions>
-                <MatButton OnClick="DoEdit">OK</MatButton>
+                <MatButton OnClick="DoEditPersonObject">OK</MatButton>
                 <MatButton OnClick="@(e => { EditPersonDialogIsOpen = false; })">Cancel</MatButton>
             </MatDialogActions>
         </MatDialog>
@@ -49,8 +47,96 @@
                 Are you sure you want to delete chart for '@DeletePerson?.Name'?
             </MatDialogContent>
             <MatDialogActions>
-                <MatButton OnClick="DoDelete">OK</MatButton>
+                <MatButton OnClick="DoDeletePersonObject">OK</MatButton>
                 <MatButton OnClick="@(e => { DeletePersonDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@AddGroupDialogIsOpen">
+            <MatDialogTitle>Add Group</MatDialogTitle>
+            <MatDialogContent>
+                <MatTextField @bind-Value="@AddName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatList SingleSelection="false">
+                    @foreach (var p in ChartSet.People)
+                    {
+                        <MatListItem>
+                            <MatCheckbox @bind-Value="@ChartSet.GroupPeople[p.ID]" Label="@p.Name"></MatCheckbox>
+                        </MatListItem>
+                    }
+                </MatList>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="DoAddGroupObject">OK</MatButton>
+                <MatButton OnClick="@(e => { AddGroupDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@DeleteGroupDialogIsOpen">
+            <MatDialogTitle>Delete Group</MatDialogTitle>
+            <MatDialogContent>
+                Are you sure you want to delete group for '@DeleteGroup?.Name'?
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="DeleteGroupObject">OK</MatButton>
+                <MatButton OnClick="@(e => { DeleteGroupDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@AddCompatibilityChartDialogIsOpen">
+            <MatDialogTitle>Add Compatibility Chart</MatDialogTitle>
+            <MatDialogContent>
+                <MatSelectItem @bind-Value="@AddPerson1" Items="@ChartSet.People" Label="Person 1" HelperText="Choose Person 1" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+                <MatSelectItem @bind-Value="@AddPerson2" Items="@ChartSet.People" Label="Person 2" HelperText="Choose Person 2" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="AddCompatibilityObject">OK</MatButton>
+                <MatButton OnClick="@(e => { AddCompatibilityChartDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@DeleteCompatibilityDialogIsOpen">
+            <MatDialogTitle>Delete Compatibility Chart</MatDialogTitle>
+            <MatDialogContent>
+                Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="DeleteCompatibilityObject">OK</MatButton>
+                <MatButton OnClick="@(e => { DeleteCompatibilityDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@AddPredictionChartDialogIsOpen">
+            <MatDialogTitle>Add Prediction Chart</MatDialogTitle>
+            <MatDialogContent>
+                <MatSelectItem @bind-Value="@AddMother" Items="@ChartSet.People" Label="Mother" HelperText="Choose the Mother" FullWidth="true">
+                    <ItemTemplate>
+                        @context?.Name
+                    </ItemTemplate>
+                </MatSelectItem>
+                <MatDatePicker @bind-Value="@AddConceptionDate" Required="true" Label="Date of Conception"></MatDatePicker>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="AddPredictionObject">OK</MatButton>
+                <MatButton OnClick="@(e => { AddPredictionChartDialogIsOpen = false; })">Cancel</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        <MatDialog IsOpen="@DeletePredictionDialogIsOpen">
+            <MatDialogTitle>Delete Prediction Chart</MatDialogTitle>
+            <MatDialogContent>
+                Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="DeletePredictionObject">OK</MatButton>
+                <MatButton OnClick="@(e => { DeletePredictionDialogIsOpen = false; })">Cancel</MatButton>
             </MatDialogActions>
         </MatDialog>
 
@@ -65,101 +151,162 @@
             </MatDialogActions>
         </MatDialog>
 
-        @if (FAQIsOpen)
-        {
-            <div class="FAQContainer">
-                <FAQStatic />
-            </div>
-        }
+        <MatDialog IsOpen="@FAQIsOpen" CanBeClosed="true" Class="FAQContainer">
+            <MatDialogTitle>FAQ</MatDialogTitle>
+            <MatDialogContent>
+                <FAQStatic></FAQStatic>
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="@(e => { FAQIsOpen = false; })">OK</MatButton>
+            </MatDialogActions>
+        </MatDialog>
 
         <MatListGroup>
-            <MatListGroupSubHeader Class="TabGroupHeader">People</MatListGroupSubHeader>
+            <MatListGroupSubHeader Class="TabGroupHeader">
+                <MatIcon Icon="@MatIconNames.Person" /> People
+                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
+                    <MatIconButton title="Add Person" Icon="add_circle" OnClick="DoAddPerson" />
+                </span>
+            </MatListGroupSubHeader>
             <MatList SingleSelection="true">
                 @foreach (var person in ChartSet.People)
                 {
-                    <MatListItem Class="Person" OnClick="@(e => ShowChart(person))">
-                        <MatIcon Icon="@MatIconNames.Person" /> @person.Name
+                    <MatListItem Class="Person" OnClick="@(e => Current = person)">
+                        @person.Name
                     </MatListItem>
                 }
             </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">Groups</MatListGroupSubHeader>
+            <MatListGroupSubHeader Class="TabGroupHeader">
+                <MatIcon Icon="@MatIconNames.Group" /> Groups
+                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
+                    <MatIconButton title="Add Group" Icon="add_circle" OnClick="DoAddGroup" />
+                </span>
+            </MatListGroupSubHeader>
             <MatList SingleSelection="true">
                 @foreach (var group in ChartSet.Groups)
                 {
-                    <MatListItem Class="Group" OnClick="@(e => ShowChart(group))">
-                        <MatIcon Icon="@MatIconNames.Group" /> @group.Name
+                    <MatListItem Class="Group" OnClick="@(e => Current = group)">
+                        @group.Name
                     </MatListItem>
                 }
             </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">Compatibility</MatListGroupSubHeader>
+            <MatListGroupSubHeader Class="TabGroupHeader">
+                <MatIcon Icon="@MatIconNames.Compare" /> Compatibility
+                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
+                    <MatIconButton title="Add Compatibility Chart" Icon="add_circle" OnClick="DoAddCompatibilityChart" />
+                </span>
+            </MatListGroupSubHeader>
             <MatList SingleSelection="true">
                 @foreach (var compat in ChartSet.CompatibilityCharts)
                 {
-                    <MatListItem Class="Compatibility" OnClick="@(e => ShowChart(compat))">
-                        <MatIcon Icon="@MatIconNames.Compare" /> @compat.Name
+                    <MatListItem Class="Compatibility" OnClick="@(e => Current = compat)">
+                        @compat.Name
                     </MatListItem>
                 }
             </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">Prediction</MatListGroupSubHeader>
+            <MatListGroupSubHeader Class="TabGroupHeader">
+                <MatIcon Icon="@MatIconNames.Pregnant_woman" /> Prediction
+                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
+                    <MatIconButton title="Add Prediction Chart" Icon="add_circle" OnClick="DoAddPredictionChart" />
+                </span>
+            </MatListGroupSubHeader>
             <MatList SingleSelection="true">
                 @foreach (var predict in ChartSet.PredictionCharts)
                 {
-                    <MatListItem Class="Prediction" OnClick="@(e => ShowChart(predict))">
-                        <MatIcon Icon="@MatIconNames.Pregnant_woman" /> @predict.Name
+                    <MatListItem Class="Prediction" OnClick="@(e => Current = predict)">
+                        @predict.Name
                     </MatListItem>
                 }
             </MatList>
         </MatListGroup>
 
-        <div class="ChartContainer @(FAQIsOpen ? "ChartHalf" : "ChartFull")">
-            @foreach (var chart in Current)
+        <div class="ChartContainer ChartFull">
+            @if (Current is Person person)
             {
-                if (chart is Person person)
+                <div>
+                    <span style="display: inline-block; width: 200px">
+                        @person.Name
+                    </span>
+                    <span style="display: inline-block; width: 300px">
+                        @($"Born {person.Birthdate:dddd MMMM dd, yyyy}")
+                    </span>
+                    <span style="display: inline-block; transform: scale(.75)">
+                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))" />
+                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))" />
+                    </span>
+                </div>
+                <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+            }
+            else if (Current is Group group)
+            {
+                <div>
+                    <span style="display: inline-block; width: 200px">
+                        Group @group.Name
+                    </span>
+                    <span style="display: inline-block; transform: scale(.75)">
+                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditGroup(group))" />
+                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteGroup(group))" />
+                    </span>
+                </div>
+                @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
                 {
                     <div>
                         <span style="display: inline-block; width: 200px">
-                            @person.Name
+                            @p.Name
                         </span>
                         <span style="display: inline-block; width: 300px">
-                            @($"Born {person.Birthdate:dddd MMMM dd, yyyy}")
-                        </span>
-                        <span style="display: inline-block; transform: scale(.5)">
-                            <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))" />
-                            <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))" />
+                            @($"Born {p.Birthdate:dddd MMMM dd, yyyy}")
                         </span>
                     </div>
-                    <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                    <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
                 }
-                else if (chart is Prediction prediction)
-                {
-                    var mother = ChartSet.GetPerson(prediction.MotherID);
-                    var enddate1 = prediction.ConceptionDate.AddMonths(1);
-                    var gestation = prediction.ConceptionDate.AddDays(280);
-                    var enddate2 = gestation.AddMonths(1);
-                    <div>
-                        Baby's gender prediction for @mother.Name.
-                        Mother's Birthdate @($"{mother.Birthdate:dddd MMMM dd, yyyy}").
-                        Concieved @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}")
-                    </div>
-                    <div>
-                        <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@prediction.ConceptionDate" Enddate="@enddate1" Height="200" />
-                    </div>
-                    <div>
-                        Baby's birth date prediction for @mother.Name.
-                        Baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}")
-                    </div>
-                    <div>
-                        <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@gestation" Enddate="@enddate2" Height="200" />
-                    </div>
-                }
-                else if (chart is Compatibility compat)
-                {
-                    var p1 = ChartSet.GetPerson(compat.ID1);
-                    var p2 = ChartSet.GetPerson(compat.ID2);
-                    <div>
+            }
+            else if (Current is Prediction prediction)
+            {
+                var mother = ChartSet.GetPerson(prediction.MotherID);
+                var enddate1 = prediction.ConceptionDate.AddMonths(1);
+                var gestation = prediction.ConceptionDate.AddDays(280);
+                var enddate2 = gestation.AddMonths(1);
+                <div>
+                    <span style="display: inline-block; width: 200px">
+                        @prediction.Name
+                    </span>
+                    <span style="display: inline-block; transform: scale(.75)">
+                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPrediction(prediction))" />
+                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
+                    </span>
+                </div>
+                <div>
+                    Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
+                    concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
+                    Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
+                    When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
+                    When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
+                </div>
+                <div>
+                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@prediction.ConceptionDate" Enddate="@enddate1" Height="200" />
+                </div>
+                <div>
+                    Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
+                    Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation duration after conception.
+                </div>
+                <div>
+                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@gestation" Enddate="@enddate2" Height="200" />
+                </div>
+            }
+            else if (Current is Compatibility compat)
+            {
+                var p1 = ChartSet.GetPerson(compat.ID1);
+                var p2 = ChartSet.GetPerson(compat.ID2);
+                <div>
+                    <span style="display: inline-block; width: 200px">
                         @compat.Name for @p1.Name and @p2.Name
-                    </div>
-                }
+                    </span>
+                    <span style="display: inline-block; transform: scale(.75)">
+                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditCompatibility(compat))" />
+                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
+                    </span>
+                </div>
             }
         </div>
     </MatAppBarContent>

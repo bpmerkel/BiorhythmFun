@@ -52,10 +52,18 @@ app {
     display: flex;
 }
 
-div.FAQContainer {
+.FAQContainer .mdc-dialog .mdc-dialog__surface {
+    max-width: 50vw;
+}
+
+.mat-accordion {
+    min-width: 60vw;
+}
+
+.FAQContainer {
     flex: 1;
-    width: 50vw;
-    border: 1px solid #CCC;
+    width: 60vw !important;
+    max-width: 60vw !important;
 }
 
 div.ChartContainer {
@@ -72,7 +80,7 @@ div.ChartFull {
 }
 
 .TabGroupHeader {
-    font-weight: bold;
+    font-weight: bold !important;
 }
 
 .Person, .Group, .Compatibility, .Prediction {

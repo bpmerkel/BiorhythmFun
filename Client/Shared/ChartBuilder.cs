@@ -26,6 +26,8 @@ public class ChartBuilder : ComponentBase
     private const string ShadowColor = "#707070";
     private const string RedColor = "#FF0000";
     private const string BlueColor = "#0000FF";
+    private const string GirlColor = "#f4c2c2";
+    private const string BoyColor = "#89cff0";
     private const string Transparent = "transparent";
     private static readonly string GreenColor = FromRgb(0, 128, 0);
     private static readonly string GoldColor = FromRgb(255, 215, 0);
@@ -53,15 +55,29 @@ public class ChartBuilder : ComponentBase
     public DateTime Enddate { get; set; }
 
     /// <summary>
+    /// Gets or sets the Highlite date.
+    /// </summary>
+    [Parameter]
+    public DateTime Highlitedate { get; set; }
+
+    /// <summary>
     /// Gets or sets the Height.
     /// </summary>
     [Parameter]
     public int Height { get; set; }
 
+    public enum ChartType { Standard, GenderPrediction, BirthdatePrediction }
+
+    /// <summary>
+    /// Gets or sets the Chart Type.
+    /// </summary>
+    [Parameter]
+    public ChartType Type { get; set; } = ChartType.Standard;
+
     /// <inheritdoc/>
     protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Cmd_Render(Chart(), 0, builder);
 
-    private static text ShadowText(string text, double x, double y, string color) => new ()
+    private static text ShadowText(string text, double x, double y, string color) => new()
     {
         x = x,
         y = y,
@@ -108,7 +124,7 @@ public class ChartBuilder : ComponentBase
         amp = Convert.ToInt32((Height / 2) - (Daywidth * 1.5));
 
         var offset = 0;
-        for (var dt = Startdate; dt <= Enddate; dt = dt.AddMonths(1))
+        for (var dt = Startdate; dt < Enddate; dt = dt.AddMonths(1))
         {
             var (group, width) = DrawMonth(dt);
             if (offset > 0) group.transform = $"translate({offset})";
@@ -137,7 +153,41 @@ public class ChartBuilder : ComponentBase
         var (pp, ppts) = DrawCycle(RedColor, 23);
         var (pe, epts) = DrawCycle(GreenColor, 28);
         var (pi, ipts) = DrawCycle(BlueColor, 33);
-        var gl = LabelCycles(ppts, epts, ipts);
+        var (gl, cpts) = LabelCycles(ppts, epts, ipts);
+
+        if (Type == ChartType.GenderPrediction)
+        {
+            var top = center - amp;
+            var height = amp * 2;
+            // get P and E and highlite Blue or Pink days to indicate Boy or Girl
+            ppts
+                .Select((p, i) => (p, i))
+                .Where(a => a.p.Y >= center && epts[a.i].Y <= center)
+                .Select(a => a.p.X)
+                .ToList()
+                .ForEach(g => group.Children.Add(new rect { width = Daywidth, height = height, x = g, y = top, fill = GirlColor, fill_opacity = .5 }));
+            ppts
+                .Select((p, i) => (p, i))
+                .Where(a => a.p.Y <= center && epts[a.i].Y >= center)
+                .Select(a => a.p.X)
+                .ToList()
+                .ForEach(b => group.Children.Add(new rect { width = Daywidth, height = height, x = b, y = top, fill = BoyColor, fill_opacity = .5 }));
+            var x = (Highlitedate - Startdate).TotalDays * Daywidth;
+            group.Children.Add(new rect { width = Daywidth, height = height, x = x, y = top, fill = GoldColor, fill_opacity = .9 });
+        }
+        else if (Type == ChartType.BirthdatePrediction)
+        {
+            // cycle through critical days and highlite likely birth days
+            var top = center - amp;
+            var height = amp * 2;
+            cpts
+                .Where(x => Math.Abs((Highlitedate - Startdate.AddDays(x / Daywidth)).TotalDays) <= 7)   // 7 days +/- of expected birthdate
+                .ToList()
+                .ForEach(x => group.Children.Add(new rect { width = Daywidth, height = height, x = x - Daywidth / 2, y = top, fill = GoldColor, fill_opacity = .5 }));
+            var x = (Highlitedate - Startdate).TotalDays * Daywidth;
+            group.Children.Add(new rect { width = Daywidth, height = height, x = x, y = top, fill = GoldColor, fill_opacity = .9 });
+        }
+
         group.Children.Add(pp);
         group.Children.Add(pe);
         group.Children.Add(pi);
@@ -251,7 +301,7 @@ public class ChartBuilder : ComponentBase
         return (p, coords);
     }
 
-    private g LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip)
+    private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip)
     {
         // locate the best place to draw the cycle labels
         var minyoffset = Convert.ToInt32(Daywidth * 1.25);
@@ -357,7 +407,7 @@ public class ChartBuilder : ComponentBase
         group.Children.Add(ShadowText("physical", pl.X + Daywidth, pl.Y, RedColor));
         group.Children.Add(ShadowText("emotional", el.X + Daywidth, el.Y, GreenColor));
         group.Children.Add(ShadowText("intellectual", il.X + Daywidth, il.Y, BlueColor));
-        return group;
+        return (group, criticals.Distinct().ToList());
     }
 
     private class Point

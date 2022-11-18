@@ -340,10 +340,8 @@ public class Set
         Groups
             .ForEach(g =>
             {
-                g.IDs.ForEach(id =>
-                {
-                    if (!has(id)) g.IDs.Remove(id);
-                });
+                var idtoremove = g.IDs.Where(id => !has(id)).ToList();
+                idtoremove.ForEach(id => g.IDs.Remove(id));
             });
         var compatToRemove = CompatibilityCharts
             .Where(c => !has(c.ID1) || !has(c.ID2))

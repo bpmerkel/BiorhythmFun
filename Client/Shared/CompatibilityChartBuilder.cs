@@ -6,6 +6,8 @@ namespace BiorhythmFun.Client;
 
 using System;
 using System.Drawing;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using BiorthymFun.Client.Svg;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -23,8 +25,6 @@ public class CompatibilityChartBuilder : ComponentBase
     private const string DarkBlueColor = "#0000aa";
     private static readonly string GreenColor = FromRgb(0, 128, 0);
     private static readonly string DarkGreenColor = FromRgb(0, 96, 0);
-    private static readonly string GradientStartColor = FromRgb(102, 217, 255);
-    private static readonly string GradientEndColor = FromRgb(179, 236, 255);
 
     /// <summary>
     ///  Gets or sets the 1st birthdate.
@@ -53,18 +53,6 @@ public class CompatibilityChartBuilder : ComponentBase
     /// <inheritdoc/>
     protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Cmd_Render(Chart(), 0, builder);
 
-    private static text ShadowText(string text, double x, double y, string color) => new()
-    {
-        x = x,
-        y = y,
-        dominant_baseline = "middle",
-        font_family = FontFamily,
-        font_size = 25,
-        content = text,
-        fill = color,
-        filter = "url(#dropShadow)"
-    };
-
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
 
     private svg Chart()
@@ -78,10 +66,20 @@ public class CompatibilityChartBuilder : ComponentBase
         };
 
         var defs1 = new defs();
-        var linear1 = new linearGradient { id = "grad1" };
-        linear1.Children.Add(new stop { stop_color = GradientStartColor, offset = "0" });
-        linear1.Children.Add(new stop { stop_color = GradientEndColor, offset = "1" });
-        defs1.Children.Add(linear1);
+        var gradients = new[]
+        {
+            ( "grad1", "#EEEEEE", "#CCCCCC" ),
+            ( "redgradient", RedColor, DarkRedColor ),
+            ( "greengradient", GreenColor, DarkGreenColor ),
+            ( "bluegradient", BlueColor, DarkBlueColor )
+        };
+        foreach (var grad in gradients)
+        {
+            var linear1 = new linearGradient { id = grad.Item1, x1 = "0%", y1 = "0%", x2 = "100%", y2 = "100%" };
+            linear1.Children.Add(new stop { stop_color = grad.Item2, offset = "0%" });
+            linear1.Children.Add(new stop { stop_color = grad.Item3, offset = "100%" });
+            defs1.Children.Add(linear1);
+        }
 
         var filter = new filter { id = "dropShadow" };
         filter.Children.Add(new feDropShadow { dx = .5d, dy = .5d, stdDeviation = .7d, flood_color = ShadowColor, flood_opacity = 1d });
@@ -94,21 +92,44 @@ public class CompatibilityChartBuilder : ComponentBase
         var e = 1d - (daysdiff % 28d) / 28d;
         var i = 1d - (daysdiff % 33d) / 33d;
 
-        var group = new g();
-
         // draw frame and background
-        group.Children.Add(new rect { width = Width, height = Height, x = 0, y = 0, fill = "url(#grad1)", stroke_width = 3, stroke = DarkBlueColor });
+        svg.Children.Add(new rect { x = 0, y = 0, width = Width, height = Height, fill = "url('#grad1')", stroke_width = 3, stroke = "#BBBBBB" });
+
+        // draw grid lines
+        var xmin = 100;
+        var xmax = Width - 10;
+        Enumerable.Range(0, 11)
+            .Select(x => x / 10d)
+            .ToList()
+            .ForEach(f =>
+            {
+                var x = f * (xmax - xmin) + xmin;
+                svg.Children.Add(new line { x1 = x, y1 = 10, x2 = x, y2 = Height - 10, stroke_width = 1, stroke = "#BBBBBB" });
+                svg.Children.Add(new text
+                {
+                    content = $"{f:P0}",
+                    x = x - 2,
+                    y = Height / 3,
+                    fill = "#BBBBBB",
+                    text_anchor = "end",
+                    dominant_baseline = "middle",
+                    font_family = FontFamily,
+                    font_size = 8,
+                    font_weight = "normal",
+                    filter = "url(#dropShadow)"
+                });
+            });
 
         // draw bars
-        group.Children.Add(new rect { width = p * (Width - 100), height = Height / 3 - 20, fill = RedColor, x = 100, y = 10, stroke_width = 1, stroke = DarkRedColor, filter = "url(#dropShadow)" });
-        group.Children.Add(new rect { width = e * (Width - 100), height = Height / 3 - 20, fill = GreenColor, x = 100, y = Height / 3 + 10, stroke_width = 1, stroke = DarkGreenColor, filter = "url(#dropShadow)" });
-        group.Children.Add(new rect { width = i * (Width - 100), height = Height / 3 - 20, fill = BlueColor, x = 100, y = 2 * Height / 3 + 10, stroke_width = 1, stroke = DarkBlueColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = 10, width = p * (xmax - xmin), height = Height / 3 - 20, fill = "url('#redgradient')", stroke_width = 1, stroke = DarkRedColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = Height / 3 + 10, width = e * (xmax - xmin), height = Height / 3 - 20, fill = "url('#greengradient')", stroke_width = 1, stroke = DarkGreenColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = 2 * Height / 3 + 10, width = i * (xmax - xmin), height = Height / 3 - 20, fill = "url('#bluegradient')", stroke_width = 1, stroke = DarkBlueColor, filter = "url(#dropShadow)" });
 
         // draw text labels Physical, Emotional, Intellectual
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = "Physical",
-            x = 90,
+            x = xmin - 5,
             y = Height / 3 / 2,
             fill = RedColor,
             text_anchor = "end",
@@ -118,10 +139,10 @@ public class CompatibilityChartBuilder : ComponentBase
             font_weight = "normal",
             filter = "url(#dropShadow)"
         });
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = "Emotional",
-            x = 90,
+            x = xmin - 5,
             y = Height / 3 / 2 + Height / 3,
             fill = GreenColor,
             text_anchor = "end",
@@ -131,10 +152,10 @@ public class CompatibilityChartBuilder : ComponentBase
             font_weight = "normal",
             filter = "url(#dropShadow)"
         });
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = "Intellectual",
-            x = 90,
+            x = xmin - 5,
             y = Height / 3 / 2 + 2 * Height / 3,
             fill = BlueColor,
             text_anchor = "end",
@@ -146,39 +167,39 @@ public class CompatibilityChartBuilder : ComponentBase
         });
 
         // draw text data labels
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = $"{p:P0}",
-            x = p * (Width - 100) + 110,
+            x = p * (xmax - xmin) + xmin + 10,
             y = Height / 3 / 2,
             fill = RedColor,
-            text_anchor = "left",
+            text_anchor = "start",
             dominant_baseline = "middle",
             font_family = FontFamily,
             font_size = 20,
             font_weight = "normal",
             filter = "url(#dropShadow)"
         });
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = $"{e:P0}",
-            x = e * (Width - 100) + 110,
+            x = e * (xmax - xmin) + xmin + 10,
             y = Height / 3 / 2 + Height / 3,
             fill = GreenColor,
-            text_anchor = "left",
+            text_anchor = "start",
             dominant_baseline = "middle",
             font_family = FontFamily,
             font_size = 20,
             font_weight = "normal",
             filter = "url(#dropShadow)"
         });
-        group.Children.Add(new text
+        svg.Children.Add(new text
         {
             content = $"{i:P0}",
-            x = i * (Width - 100) + 110,
+            x = i * (xmax - xmin) + xmin + 10,
             y = Height / 3 / 2 + 2 * Height / 3,
             fill = BlueColor,
-            text_anchor = "left",
+            text_anchor = "start",
             dominant_baseline = "middle",
             font_family = FontFamily,
             font_size = 20,
@@ -186,7 +207,6 @@ public class CompatibilityChartBuilder : ComponentBase
             filter = "url(#dropShadow)"
         });
 
-        svg.Children.Add(group);
         return svg;
     }
 }

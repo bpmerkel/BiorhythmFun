@@ -310,7 +310,9 @@ public partial class Index
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
         Enddate = Startdate.AddMonths(1);
         await ChartSet.Load(LocalStorage);
-        if (ChartSet.Groups.Any()) Current = ChartSet.Groups.First();
+        if (ChartSet.CompatibilityCharts.Any()) Current = ChartSet.CompatibilityCharts.First();
+        else if (ChartSet.Groups.Any()) Current = ChartSet.Groups.First();
+        else if (ChartSet.People.Any()) Current = ChartSet.People.First();
     }
 }
 

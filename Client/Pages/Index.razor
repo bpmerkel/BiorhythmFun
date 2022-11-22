@@ -358,7 +358,7 @@
                 var p2 = ChartSet.GetPerson(compat.ID2);
                 <div>
                     <span style="display: inline-block; width: 200px">
-                        @compat.Name for @p1.Name and @p2.Name
+                        @compat.Name
                     </span>
                     <span style="display: inline-block; transform: scale(.75)">
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditCompatibility(compat))" />
@@ -366,7 +366,7 @@
                     </span>
                 </div>
                 <div>
-                    <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="600" />
+                    <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
                 </div>
             }
         </div>

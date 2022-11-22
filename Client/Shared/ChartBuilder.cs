@@ -143,10 +143,7 @@ public class ChartBuilder : ComponentBase
         daysdiff = Convert.ToInt32((chartdate.Date - Birthdate.Date).TotalDays) - 1;
 
         var width = daysinmonth * Daywidth;
-        var group = new g
-        {
-            clip_path = $"url(#clipto{daysinmonth})"
-        };
+        var group = new g { clip_path = $"url(#clipto{daysinmonth})" };
 
         group.Children.Add(DrawBackground(chartdate));
 

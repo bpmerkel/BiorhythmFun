@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using BiorhythmFun.Client
 @using BiorhythmFun.Client.Shared
 
 <MatAppBarContainer>
@@ -363,6 +364,9 @@
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditCompatibility(compat))" />
                         <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
                     </span>
+                </div>
+                <div>
+                    <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="600" />
                 </div>
             }
         </div>

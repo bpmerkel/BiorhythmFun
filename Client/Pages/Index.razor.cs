@@ -1,15 +1,22 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using MatBlazor;
+using System.Web;
+using BiorhythmFun.Client.Model;
 
 namespace BiorhythmFun.Client.Pages;
 
 public partial class Index
 {
-    [Inject] public ILocalStorageService LocalStorage { get; set; }
+    [Inject] public ILocalStorageService LocalStorage { get; set; } = default!;
+    [Inject] public IJSRuntime JsRuntime { get; set; } = default!;
+    [Inject] public NavigationManager NavManager { get; set; } = default!;
+    [Inject] public IMatToaster Toaster { get; set; } = default!;
+
     private readonly Set ChartSet = new();
-    private ChartableBase Current;
+    private ChartableBase Current = default!;
 
     private bool FAQIsOpen = false;
     private bool AddPersonDialogIsOpen = false;
@@ -288,6 +295,55 @@ public partial class Index
         }
     }
 
+    private async void DoShare(ChartableBase chart)
+    {
+        // copy the link to the chart to the clipboard
+        var URL = $"{NavManager.Uri}?";
+
+        switch (chart)
+        {
+            case Person p:
+                {
+                    URL += $"t=p&n={p.Name}&b={p.Birthdate.ToString("yyyy-MM-dd")}";
+                    break;
+                }
+            case Group g:
+                {
+                    URL += $"t=g&n={g.Name}&s={g.IDs.Count}&";
+                    // add each member Person
+                    URL += string.Join("&", g.IDs
+                        .Select((id, i) =>
+                        {
+                            var p = ChartSet.GetPerson(id);
+                            return $"p{i + 1}={p.Name}&b{i + 1}={p.Birthdate.ToString("yyyy-MM-dd")}";
+                        }));
+                    break;
+                }
+            case Compatibility c:
+                {
+                    var p1 = ChartSet.GetPerson(c.ID1);
+                    var p2 = ChartSet.GetPerson(c.ID2);
+                    URL += $"t=c&p1={p1.Name}&p2={p2.Name}&b1={p1.Birthdate.ToString("yyyy-MM-dd")}&b2={p2.Birthdate.ToString("yyyy-MM-dd")}";
+                    break;
+                }
+            case Prediction m:
+                {
+                    var mother = ChartSet.GetPerson(m.MotherID);
+                    URL += $"t=m&c={m.ConceptionDate.ToString("yyyy-MM-dd")}&m={mother.Name}&b={mother.Birthdate.ToString("yyyy-MM-dd")}";
+                    break;
+                }
+        }
+
+        await CopyTextToClipboard(URL);
+
+        Toaster.Add("Address copied to clipboard", MatToastType.Info, "Share", "share");
+    }
+
+    private async Task CopyTextToClipboard(string text)
+    {
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
     private void DoPrevious(MouseEventArgs e) => Startdate = Startdate.AddMonths(-1);
 
     private void DoNext(MouseEventArgs e) => Enddate = Enddate.AddMonths(1);
@@ -309,232 +365,11 @@ public partial class Index
     {
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
         Enddate = Startdate.AddMonths(1);
-        await ChartSet.Load(LocalStorage);
-        if (ChartSet.CompatibilityCharts.Any()) Current = ChartSet.CompatibilityCharts.First();
-        else if (ChartSet.Groups.Any()) Current = ChartSet.Groups.First();
-        else if (ChartSet.People.Any()) Current = ChartSet.People.First();
-    }
-}
 
-public class Set
-{
-    private ILocalStorageService LocalStorage { get; set; }
+        //var qs = new Uri(NavManager.Uri).GetComponents(UriComponents.Query, UriFormat.Unescaped);
+        var nvc = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
+        var qd = nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
 
-    public List<Person> People { get; set; } = new List<Person>();
-    public readonly BoolDictionary GroupPeople = new();
-
-    public List<Compatibility> CompatibilityCharts { get; set; } = new List<Compatibility>();
-    public List<Prediction> PredictionCharts { get; set; } = new List<Prediction>();
-    public List<Group> Groups { get; set; } = new List<Group>();
-
-    public Person? GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
-
-    public void AddPerson(Person p)
-    {
-        People.Add(p);
-        GroupPeople.Add(p.ID, false);
-        Save();
-    }
-
-    public void RemovePerson(Person p)
-    {
-        People.Remove(p);
-        Groups
-            .ForEach(g =>
-            {
-                var idtoremove = g.IDs.Where(id => !has(id)).ToList();
-                idtoremove.ForEach(id => g.IDs.Remove(id));
-            });
-        var compatToRemove = CompatibilityCharts
-            .Where(c => !has(c.ID1) || !has(c.ID2))
-            .ToList();
-        compatToRemove.ForEach(c => CompatibilityCharts.Remove(c));
-        var predToRemove = PredictionCharts
-            .Where(pr => !has(pr.MotherID))
-            .ToList();
-        predToRemove.ForEach(pr => PredictionCharts.Remove(pr));
-        GroupPeople.Remove(p.ID);
-
-        Save();
-
-        bool has(string id) => People.Any(pp => pp.ID == id);
-    }
-
-    public void AddGroup(string Name, List<string> IDs)
-    {
-        Groups.Add(new Group(Name, IDs));
-        Save();
-    }
-
-    public void RemoveGroup(Group g)
-    {
-        Groups.Remove(g);
-        Save();
-    }
-
-    public void AddCompatibilityChart(string ID1, string ID2)
-    {
-        var p1 = GetPerson(ID1);
-        var p2 = GetPerson(ID2);
-        if (p1 is not null && p2 is not null)
-        {
-            CompatibilityCharts.Add(new Compatibility($"{p1.Name} - {p2.Name}", ID1, ID2));
-            Save();
-        }
-    }
-
-    public void RemoveCompatibility(Compatibility c)
-    {
-        CompatibilityCharts.Remove(c);
-        Save();
-    }
-
-    public void AddPredictionChart(string MotherID, DateTime ConceptionDate)
-    {
-        var p = GetPerson(MotherID);
-        if (p is not null)
-        {
-            PredictionCharts.Add(new Prediction($"{p.Name} Prediction", MotherID, ConceptionDate));
-            Save();
-        }
-    }
-
-    public void RemovePrediction(Prediction p)
-    {
-        PredictionCharts.Remove(p);
-        Save();
-    }
-
-    public async void Save() => await LocalStorage.SetItemAsync("set", this);
-
-    public async Task Load(ILocalStorageService localStorage)
-    {
-        LocalStorage = localStorage;
-        try
-        {
-            var chartset = await localStorage.GetItemAsync<Set>("set") ?? new Set();
-
-            if (!chartset.People.Any())
-            {
-                People.AddRange(new[]
-                {
-                    new Person("Micky Mouse", DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) ),
-                    new Person("Donald Duck", DateTime.Parse("6/9/1934", null, System.Globalization.DateTimeStyles.AssumeLocal) ),
-                    new Person("Minnie Mouse", DateTime.Parse("11/18/1928", null, System.Globalization.DateTimeStyles.AssumeLocal) )
-                });
-                Save();
-            }
-            else
-            {
-                People.AddRange(chartset.People);
-            }
-
-            // update the GroupPeople dictionary
-            GroupPeople.Clear();
-            People.ForEach(p => GroupPeople.Add(p.ID, false));
-
-            if (!chartset.Groups.Any())
-            {
-                Groups.Add(new Group("Family", People.Select(p => p.ID).ToList()));
-                Save();
-            }
-            else
-            {
-                Groups.AddRange(chartset.Groups);
-            }
-
-            if (!chartset.CompatibilityCharts.Any())
-            {
-                var top2 = chartset.People.Take(2).Select(p => p.ID).ToList();
-                if (top2.Count == 2)
-                {
-                    AddCompatibilityChart(top2.First(), top2.Last());
-                    Save();
-                }
-            }
-            else
-            {
-                CompatibilityCharts.AddRange(chartset.CompatibilityCharts);
-            }
-
-            if (!chartset.PredictionCharts.Any())
-            {
-                AddPredictionChart(People.Select(p => p.ID).Last(), DateTime.Today);
-                Save();
-            }
-            else
-            {
-                PredictionCharts.AddRange(chartset.PredictionCharts);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception occurred: {ex}");
-            await LocalStorage.ClearAsync();
-        }
-    }
-
-    public class BoolDictionary : Dictionary<string, bool>
-    {
-        public bool Contains(string key) => ContainsKey(key);
-    }
-}
-
-public class ChartableBase
-{
-    public string ID { get; init; } = Guid.NewGuid().ToString();
-    public string? Name { get; set; } = string.Empty;
-}
-
-public class Person : ChartableBase
-{
-    private DateTime _birthdate;
-    public DateTime Birthdate
-    {
-        get { return _birthdate.ToLocalTime(); }
-        set { _birthdate = DateTime.SpecifyKind(value, DateTimeKind.Local); }
-    }
-
-    public Person(string name, DateTime birthdate)
-    {
-        Name = name;
-        Birthdate = birthdate;
-    }
-}
-
-public class Group : ChartableBase
-{
-    public List<string> IDs { get; set; }
-
-    public Group(string name, List<string> ids)
-    {
-        Name = name;
-        IDs = ids;
-    }
-}
-
-public class Compatibility : ChartableBase
-{
-    public string ID1 { get; set; }
-    public string ID2 { get; set; }
-
-    public Compatibility(string name, string id1, string id2)
-    {
-        Name = name;
-        ID1 = id1;
-        ID2 = id2;
-    }
-}
-
-public class Prediction : ChartableBase
-{
-    public string MotherID { get; set; }
-    public DateTime ConceptionDate { get; set; }
-
-    public Prediction(string name, string motherID, DateTime conceptionDate)
-    {
-        Name = name;
-        MotherID = motherID;
-        ConceptionDate = conceptionDate;
+        Current = await ChartSet.Load(LocalStorage, qd);
     }
 }

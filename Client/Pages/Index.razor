@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using BiorhythmFun.Client
+@using BiorhythmFun.Client.Model
 @using BiorhythmFun.Client.Shared
 
 <MatAppBarContainer>
@@ -216,7 +217,9 @@
                 <MatButton OnClick="@(e => { FAQIsOpen = false; })">OK</MatButton>
             </MatDialogActions>
         </MatDialog>
-
+        
+        <MatToastContainer />
+        
         <MatListGroup>
             <MatListGroupSubHeader Class="TabGroupHeader">
                 <MatIcon Icon="@MatIconNames.Person" /> People
@@ -289,6 +292,7 @@
                     <span style="display: inline-block; transform: scale(.75)">
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))" />
                         <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))" />
+                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(person))" />
                     </span>
                 </div>
                 <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
@@ -302,6 +306,7 @@
                     <span style="display: inline-block; transform: scale(.75)">
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditGroup(group))" />
                         <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteGroup(group))" />
+                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(group))" />
                     </span>
                 </div>
                 @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
@@ -332,6 +337,7 @@
                     <span style="display: inline-block; transform: scale(.75)">
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPrediction(prediction))" />
                         <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
+                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(prediction))" />
                     </span>
                 </div>
                 <div>
@@ -363,6 +369,7 @@
                     <span style="display: inline-block; transform: scale(.75)">
                         <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditCompatibility(compat))" />
                         <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
+                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(compat))" />
                     </span>
                 </div>
                 <div>

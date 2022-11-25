@@ -195,14 +195,12 @@ public class ChartBuilder : ComponentBase
     private g DrawBackground(DateTime chartdate)
     {
         var group = new g();
+
         // draw the day grid
         for (var d = 0; d < daysinmonth; d++)
         {
             group.Children.Add(new rect { width = Daywidth, height = Height, x = d * Daywidth, y = 0, fill = "url(#grad1)", stroke_width = 0 });
         }
-
-        // draw a month divider hint line
-        group.Children.Add(new rect { width = 1, height = Height, fill = DarkBlueColor, x = 0, y = 0, stroke_width = 0 });
 
         // color the chart date only in the right month
         if (chartdate.Year == DateTime.Today.Year && chartdate.Month == DateTime.Today.Month)
@@ -264,6 +262,8 @@ public class ChartBuilder : ComponentBase
             stroke_width = 0,
             filter = "url(#dropShadow)"
         });
+
+        group.Children.Add(new rect { x = 0, y = 0, width = daysinmonth * Daywidth, height = Height, fill = Transparent, stroke_width = 3, stroke = "#CCCCCC" });
 
         return group;
     }

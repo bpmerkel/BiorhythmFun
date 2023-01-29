@@ -24,36 +24,36 @@ public partial class Index
     private bool DeletePersonDialogIsOpen = false;
     private string AddName = string.Empty;
     private DateTime AddBirthdate = DateTime.Today;
-    private Person? DeletePerson;
-    private Person? EditPerson;
-    private string? EditName = string.Empty;
+    private Person DeletePerson;
+    private Person EditPerson;
+    private string EditName = string.Empty;
     private DateTime EditBirthdate = DateTime.Today;
 
     private bool AddGroupDialogIsOpen = false;
     private bool DeleteGroupDialogIsOpen = false;
     private bool EditGroupDialogIsOpen = false;
-    private Group? DeleteGroup;
-    private Group? EditGroup;
+    private Group DeleteGroup;
+    private Group EditGroup;
     // use AddName and EditName from above
 
     private bool AddCompatibilityChartDialogIsOpen = false;
     private bool EditCompatibilityDialogIsOpen = false;
     private bool DeleteCompatibilityDialogIsOpen = false;
-    private Person? AddPerson1;
-    private Person? AddPerson2;
-    private Compatibility? DeleteCompatibility;
-    private Compatibility? EditCompatibility;
-    private Person? EditPerson1;
-    private Person? EditPerson2;
+    private Person AddPerson1;
+    private Person AddPerson2;
+    private Compatibility DeleteCompatibility;
+    private Compatibility EditCompatibility;
+    private Person EditPerson1;
+    private Person EditPerson2;
 
     private bool AddPredictionChartDialogIsOpen = false;
     private bool EditPredictionDialogIsOpen = false;
     private bool DeletePredictionDialogIsOpen = false;
-    private Person? AddMother;
+    private Person AddMother;
     private DateTime AddConceptionDate = DateTime.Today;
-    private Prediction? DeletePrediction;
-    private Prediction? EditPrediction;
-    private Person? EditMother;
+    private Prediction DeletePrediction;
+    private Prediction EditPrediction;
+    private Person EditMother;
     private DateTime EditConceptionDate = DateTime.Today;
 
     private bool ChangeChartdateDialogIsOpen = false;
@@ -304,7 +304,7 @@ public partial class Index
         {
             case Person p:
                 {
-                    URL += $"t=p&n={p.Name}&b={p.Birthdate.ToString("yyyy-MM-dd")}";
+                    URL += $"t=p&n={p.Name}&b={p.Birthdate:yyyy-MM-dd}";
                     break;
                 }
             case Group g:
@@ -315,7 +315,7 @@ public partial class Index
                         .Select((id, i) =>
                         {
                             var p = ChartSet.GetPerson(id);
-                            return $"p{i + 1}={p.Name}&b{i + 1}={p.Birthdate.ToString("yyyy-MM-dd")}";
+                            return $"p{i + 1}={p.Name}&b{i + 1}={p.Birthdate:yyyy-MM-dd}";
                         }));
                     break;
                 }
@@ -323,13 +323,13 @@ public partial class Index
                 {
                     var p1 = ChartSet.GetPerson(c.ID1);
                     var p2 = ChartSet.GetPerson(c.ID2);
-                    URL += $"t=c&p1={p1.Name}&p2={p2.Name}&b1={p1.Birthdate.ToString("yyyy-MM-dd")}&b2={p2.Birthdate.ToString("yyyy-MM-dd")}";
+                    URL += $"t=c&p1={p1.Name}&p2={p2.Name}&b1={p1.Birthdate:yyyy-MM-dd}&b2={p2.Birthdate:yyyy-MM-dd}";
                     break;
                 }
             case Prediction m:
                 {
                     var mother = ChartSet.GetPerson(m.MotherID);
-                    URL += $"t=m&c={m.ConceptionDate.ToString("yyyy-MM-dd")}&m={mother.Name}&b={mother.Birthdate.ToString("yyyy-MM-dd")}";
+                    URL += $"t=m&c={m.ConceptionDate:yyyy-MM-dd}&m={mother.Name}&b={mother.Birthdate:yyyy-MM-dd}";
                     break;
                 }
         }

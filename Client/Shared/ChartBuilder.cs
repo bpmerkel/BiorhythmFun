@@ -6,13 +6,14 @@ namespace BiorhythmFun.Client;
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using BiorthymFun.Client.Svg;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
 /// <summary>
-/// ChartBuilder control.
+/// ChartBuilder component to render an SVG Biorythm chart
 /// </summary>
 public class ChartBuilder : ComponentBase
 {
@@ -37,31 +38,31 @@ public class ChartBuilder : ComponentBase
     private static readonly string GradientEndColor = FromRgb(179, 236, 255);
 
     /// <summary>
-    ///  Gets or sets the birthdate.
+    ///  Gets or sets the birthdate
     /// </summary>
     [Parameter]
-    public DateTime Birthdate { get; set; }
+    public DateTime BirthDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Start date.
+    /// Gets or sets the Start date
     /// </summary>
     [Parameter]
-    public DateTime Startdate { get; set; }
+    public DateTime StartDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the End date.
+    /// Gets or sets the End date
     /// </summary>
     [Parameter]
-    public DateTime Enddate { get; set; }
+    public DateTime EndDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Highlite date.
+    /// Gets or sets the Highlite date
     /// </summary>
     [Parameter]
-    public DateTime Highlitedate { get; set; }
+    public DateTime HighliteDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Height.
+    /// Gets or sets the Height
     /// </summary>
     [Parameter]
     public int Height { get; set; }
@@ -69,27 +70,13 @@ public class ChartBuilder : ComponentBase
     public enum ChartType { Standard, GenderPrediction, BirthdatePrediction }
 
     /// <summary>
-    /// Gets or sets the Chart Type.
+    /// Gets or sets the Chart Type
     /// </summary>
     [Parameter]
     public ChartType Type { get; set; } = ChartType.Standard;
 
     /// <inheritdoc/>
-    protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Cmd_Render(Chart(), 0, builder);
-
-    private static text ShadowText(string text, double x, double y, string color) => new()
-    {
-        x = x,
-        y = y,
-        dominant_baseline = "middle",
-        font_family = FontFamily,
-        font_size = Daywidth,
-        content = text,
-        fill = color,
-        filter = "url(#dropShadow)"
-    };
-
-    private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
+    protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Render(Chart(), 0, builder);
 
     private svg Chart()
     {
@@ -124,7 +111,7 @@ public class ChartBuilder : ComponentBase
         amp = Convert.ToInt32((Height / 2) - (Daywidth * 1.5));
 
         var offset = 0;
-        for (var dt = Startdate; dt < Enddate; dt = dt.AddMonths(1))
+        for (var dt = StartDate; dt < EndDate; dt = dt.AddMonths(1))
         {
             var (group, width) = DrawMonth(dt);
             if (offset > 0) group.transform = $"translate({offset})";
@@ -140,7 +127,7 @@ public class ChartBuilder : ComponentBase
     private (g, int) DrawMonth(DateTime chartdate)
     {
         daysinmonth = DateTime.DaysInMonth(chartdate.Year, chartdate.Month);
-        daysdiff = Convert.ToInt32((chartdate.Date - Birthdate.Date).TotalDays) - 1;
+        daysdiff = Convert.ToInt32((chartdate.Date - BirthDate.Date).TotalDays) - 1;
 
         var width = daysinmonth * Daywidth;
         var group = new g { clip_path = $"url(#clipto{daysinmonth})" };
@@ -169,7 +156,7 @@ public class ChartBuilder : ComponentBase
                 .Select(a => a.p.X)
                 .ToList()
                 .ForEach(b => group.Children.Add(new rect { width = Daywidth, height = height, x = b, y = top, fill = BoyColor, fill_opacity = .5 }));
-            var x = (Highlitedate - Startdate).TotalDays * Daywidth;
+            var x = (HighliteDate - StartDate).TotalDays * Daywidth;
             group.Children.Add(new rect { width = Daywidth, height = height, x = x, y = top, fill = GoldColor, fill_opacity = .9 });
         }
         else if (Type == ChartType.BirthdatePrediction)
@@ -178,10 +165,10 @@ public class ChartBuilder : ComponentBase
             var top = center - amp;
             var height = amp * 2;
             cpts
-                .Where(x => Math.Abs((Highlitedate - Startdate.AddDays(x / Daywidth)).TotalDays) <= 7)   // 7 days +/- of expected birthdate
+                .Where(x => Math.Abs((HighliteDate - StartDate.AddDays(x / Daywidth)).TotalDays) <= 7)   // 7 days +/- of expected birthdate
                 .ToList()
                 .ForEach(x => group.Children.Add(new rect { width = Daywidth, height = height, x = x - Daywidth / 2, y = top, fill = GoldColor, fill_opacity = .5 }));
-            var x = (Highlitedate - Startdate).TotalDays * Daywidth;
+            var x = (HighliteDate - StartDate).TotalDays * Daywidth;
             group.Children.Add(new rect { width = Daywidth, height = height, x = x, y = top, fill = GoldColor, fill_opacity = .9 });
         }
 
@@ -252,7 +239,7 @@ public class ChartBuilder : ComponentBase
         }
 
         // draw the critical line (note: can't use dropshadow filter on 'line' element)
-        group.Children.Add(new rect
+        var r = new rect
         {
             x = 0,
             y = center - (Daywidth / 8),
@@ -260,8 +247,13 @@ public class ChartBuilder : ComponentBase
             height = Daywidth / 4,
             fill = GoldColor,
             stroke_width = 0,
-            filter = "url(#dropShadow)"
-        });
+            filter = "url(#dropShadow)",
+            stroke_dasharray = $"{daysinmonth * Daywidth}",
+            stroke_linecap = StrokeLinecap.round
+        };
+
+        //r.Children.Add(new animate { attributeName = "stroke-dashoffset", values = $"{daysinmonth * Daywidth};0", dur = 1.0, repeatCount = "1" });
+        group.Children.Add(r);
 
         group.Children.Add(new rect { x = 0, y = 0, width = daysinmonth * Daywidth, height = Height, fill = Transparent, stroke_width = 3, stroke = "#CCCCCC" });
 
@@ -285,6 +277,7 @@ public class ChartBuilder : ComponentBase
             .ToList();
 
         // draw a smooth curve
+        var length = (Daywidth + 4) * daysinmonth;
         var p = new path
         {
             d = $"M {coords[0].X},{coords[0].Y} L " + string.Join(" ", coords.Skip(1).Select(pt => $"{pt.X},{pt.Y}")),
@@ -292,8 +285,12 @@ public class ChartBuilder : ComponentBase
             stroke_width = Daywidth / 3,
             // stroke_linecap = StrokeLinecap.square,
             fill = Transparent,
-            filter = "url(#dropShadow)"
+            filter = "url(#dropShadow)",
+            stroke_dasharray = $"{length}",
+            stroke_linecap = StrokeLinecap.round
         };
+
+        //p.Children.Add(new animate { attributeName = "stroke-dashoffset", values = $"{length};0", dur = 1.0, repeatCount = "1" });
 
         return (p, coords);
     }
@@ -387,16 +384,22 @@ public class ChartBuilder : ComponentBase
         var group = new g();
         foreach (var cc in criticals.Distinct())
         {
-            group.Children.Add(new circle
+            var c = new circle
             {
                 cx = cc,
                 cy = center,
                 r = Daywidth / 3,
                 fill = Transparent,
                 stroke = GoldColor,
-                stroke_width = 5
+                stroke_width = 5,
+                stroke_dasharray = "50.265",
+                stroke_linecap = StrokeLinecap.round
                 // filter = "url(#dropShadow)" // squares off corners too!
-            });
+            };
+
+            //c.Children.Add(new animate { attributeName = "stroke-dashoffset", values = "50.265;0", dur = .75, repeatCount = "3" });
+
+            group.Children.Add(c);
         }
 
         // Labels
@@ -407,10 +410,17 @@ public class ChartBuilder : ComponentBase
         return (group, criticals.Distinct().ToList());
     }
 
-    private class Point
+    private static text ShadowText(string text, double x, double y, string color) => new()
     {
-        public int X { get; init; }
+        x = x,
+        y = y,
+        dominant_baseline = "middle",
+        font_family = FontFamily,
+        font_size = Daywidth,
+        content = text,
+        fill = color,
+        filter = "url(#dropShadow)"
+    };
 
-        public int Y { get; init; }
-    }
+    private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
 }

@@ -6,12 +6,12 @@ namespace BiorthymFun.Client.Svg;
 
 public class SvgHelper
 {
-    public Action<MouseEventArgs, int>? ActionClicked;
+    public Action<MouseEventArgs, int> ActionClicked;
 
     public Dictionary<string, ElementReference> Elementreferences = new();
 
     // Recursive
-    public void Cmd_Render<T>(T _Item, int k, RenderTreeBuilder builder, int Par_ID = 0)
+    public void Render<T>(T _Item, int k, RenderTreeBuilder builder, int Par_ID = 0)
     {
         if (_Item is null) return;
 
@@ -66,7 +66,7 @@ public class SvgHelper
                 {
                     if (boe == BoolOptionsEnum.Yes)
                     {
-                        builder.AddAttribute(1, _attrName, EventCallback.Factory.Create<MouseEventArgs>(this, e => Cmd_Clicked(e, Par_ID)));
+                        builder.AddAttribute(1, _attrName, EventCallback.Factory.Create<MouseEventArgs>(this, e => Clicked(e, Par_ID)));
                     }
                 }
                 else if (_attrName.ToLower().Equals("stoppropagation") && _value is BoolOptionsEnum boe2)
@@ -95,15 +95,15 @@ public class SvgHelper
             }
         }
 
-        var pi_Children = _Item.GetType().GetProperty("Children");
-        if (pi_Children is not null)
+        var Children = _Item.GetType().GetProperty("Children");
+        if (Children is not null)
         {
-            var children = pi_Children.GetValue(_Item) as List<object>;
+            var children = Children.GetValue(_Item) as List<object>;
             if (children is not null && children.Any())
             {
                 foreach (object item in children)
                 {
-                    Cmd_Render(item, k++, builder, Par_ID); ;
+                    Render(item, k++, builder, Par_ID); ;
                 }
             }
         }
@@ -112,5 +112,5 @@ public class SvgHelper
         builder.CloseRegion();
     }
 
-    public void Cmd_Clicked(MouseEventArgs e, int i) => ActionClicked?.Invoke(e, i);
+    public void Clicked(MouseEventArgs e, int i) => ActionClicked?.Invoke(e, i);
 }

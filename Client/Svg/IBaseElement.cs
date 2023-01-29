@@ -2,5 +2,5 @@
 
 public interface IBaseElement
 {
-    string? id { get; set; }
+    string id { get; set; }
 }

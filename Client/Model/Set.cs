@@ -13,7 +13,7 @@ public class Set
     public List<Prediction> PredictionCharts { get; set; } = new List<Prediction>();
     public List<Group> Groups { get; set; } = new List<Group>();
 
-    public Person? GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
+    public Person GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
 
     public Person AddPerson(Person p)
     {
@@ -68,7 +68,7 @@ public class Set
         Save();
     }
 
-    public Compatibility? AddCompatibilityChart(string ID1, string ID2)
+    public Compatibility AddCompatibilityChart(string ID1, string ID2)
     {
         var p1 = GetPerson(ID1);
         var p2 = GetPerson(ID2);
@@ -88,7 +88,7 @@ public class Set
         Save();
     }
 
-    public Prediction? AddPredictionChart(string MotherID, DateTime ConceptionDate)
+    public Prediction AddPredictionChart(string MotherID, DateTime ConceptionDate)
     {
         var p = GetPerson(MotherID);
         if (p is not null)
@@ -112,7 +112,7 @@ public class Set
 
     public async void Save() => await LocalStorage.SetItemAsync("set", this);
 
-    public async Task<ChartableBase?> Load(ILocalStorageService localStorage, Dictionary<string, string> qd)
+    public async Task<ChartableBase> Load(ILocalStorageService localStorage, Dictionary<string, string> qd)
     {
         LocalStorage = localStorage;
         try

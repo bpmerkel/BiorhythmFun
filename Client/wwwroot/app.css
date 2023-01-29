@@ -81,6 +81,7 @@ div.ChartFull {
 
 .TabGroupHeader {
     font-weight: bold !important;
+    white-space: nowrap;
 }
 
 .Person, .Group, .Compatibility, .Prediction {

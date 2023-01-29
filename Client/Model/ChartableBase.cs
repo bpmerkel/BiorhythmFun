@@ -3,5 +3,5 @@
 public class ChartableBase
 {
     public string ID { get; init; } = Guid.NewGuid().ToString();
-    public string? Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 }

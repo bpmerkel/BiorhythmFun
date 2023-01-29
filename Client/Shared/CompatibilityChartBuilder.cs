@@ -5,15 +5,12 @@
 namespace BiorhythmFun.Client;
 
 using System;
-using System.Drawing;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using BiorthymFun.Client.Svg;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
 /// <summary>
-/// ChartBuilder control.
+/// CompatibilityChartBuilder component
 /// </summary>
 public class CompatibilityChartBuilder : ComponentBase
 {
@@ -51,7 +48,7 @@ public class CompatibilityChartBuilder : ComponentBase
     public int Width { get; set; }
 
     /// <inheritdoc/>
-    protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Cmd_Render(Chart(), 0, builder);
+    protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Render(Chart(), 0, builder);
 
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
 

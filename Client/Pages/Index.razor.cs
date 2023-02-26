@@ -1,21 +1,21 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MatBlazor;
 using System.Web;
 using BiorhythmFun.Client.Model;
+using Blazored.LocalStorage;
 
 namespace BiorhythmFun.Client.Pages;
 
 public partial class Index
 {
-    [Inject] public ILocalStorageService LocalStorage { get; set; } = default!;
-    [Inject] public IJSRuntime JsRuntime { get; set; } = default!;
-    [Inject] public NavigationManager NavManager { get; set; } = default!;
-    [Inject] public IMatToaster Toaster { get; set; } = default!;
+    [Inject] public ILocalStorageService LocalStorage { get; set; }
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+    [Inject] public NavigationManager NavManager { get; set; }
+    [Inject] public IMatToaster Toaster { get; set; }
+    public Set ChartSet { get; init; } = new();
 
-    private readonly Set ChartSet = new();
     private ChartableBase Current = default!;
 
     private bool FAQIsOpen = false;
@@ -365,11 +365,9 @@ public partial class Index
     {
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
         Enddate = Startdate.AddMonths(1);
-
         //var qs = new Uri(NavManager.Uri).GetComponents(UriComponents.Query, UriFormat.Unescaped);
         var nvc = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
         var qd = nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
-
         Current = await ChartSet.Load(LocalStorage, qd);
     }
 }

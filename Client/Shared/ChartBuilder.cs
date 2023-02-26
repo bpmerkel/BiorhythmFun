@@ -23,7 +23,7 @@ public class ChartBuilder : ComponentBase
     private int amp;
 
     private const int Daywidth = 25;
-    private const string FontFamily = "tahoma";
+    private const string FontFamily = "arial";
     private const string ShadowColor = "#707070";
     private const string RedColor = "#FF0000";
     private const string BlueColor = "#0000FF";

@@ -4,8 +4,7 @@ namespace BiorhythmFun.Client.Model;
 
 public class Set
 {
-    private ILocalStorageService LocalStorage { get; set; } = default!;
-
+    private ILocalStorageService LocalStorage { get; set; }
     public List<Person> People { get; set; } = new List<Person>();
     public readonly BoolDictionary GroupPeople = new();
 
@@ -110,15 +109,20 @@ public class Set
         Save();
     }
 
-    public async void Save() => await LocalStorage.SetItemAsync("set", this);
+    public async void Save()
+    {
+        if (LocalStorage != null)
+        {
+            await LocalStorage.SetItemAsync("set", this);
+        }
+    }
 
     public async Task<ChartableBase> Load(ILocalStorageService localStorage, Dictionary<string, string> qd)
     {
         LocalStorage = localStorage;
         try
         {
-            var chartset = await localStorage.GetItemAsync<Set>("set") ?? new Set();
-
+            var chartset = await localStorage.GetItemAsync<Set>("set");
             if (chartset.People.Any())
             {
                 People.AddRange(chartset.People);
@@ -133,7 +137,7 @@ public class Set
         catch (Exception ex)
         {
             Console.WriteLine($"Exception occurred: {ex}");
-            await LocalStorage.ClearAsync();
+            await localStorage.ClearAsync();
         }
 
         if (qd.Any())

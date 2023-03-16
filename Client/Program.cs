@@ -9,8 +9,8 @@ using MatBlazor;
 using Blazored.LocalStorage;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.Services.AddBlazoredLocalStorageAsSingleton();
 builder.Services.AddMatBlazor();
-builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddMatToaster(config =>
 {
     config.Position = MatToastPosition.BottomRight;

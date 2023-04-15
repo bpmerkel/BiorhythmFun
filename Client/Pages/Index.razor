@@ -22,7 +22,7 @@
         <MatDialog IsOpen="@AddPersonDialogIsOpen">
             <MatDialogTitle>Add Person</MatDialogTitle>
             <MatDialogContent>
-                <MatTextField @bind-Value="@AddName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatTextField @bind-Value="@AddName" Required="true" Label="Name"></MatTextField>
                 <MatDatePicker @bind-Value="@AddBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
             </MatDialogContent>
             <MatDialogActions>
@@ -34,7 +34,7 @@
         <MatDialog IsOpen="@EditPersonDialogIsOpen">
             <MatDialogTitle>Edit Chart</MatDialogTitle>
             <MatDialogContent>
-                <MatTextField @bind-Value="@EditName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatTextField @bind-Value="@EditName" Required="true" Label="Name"></MatTextField>
                 <MatDatePicker @bind-Value="@EditBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
             </MatDialogContent>
             <MatDialogActions>
@@ -57,7 +57,7 @@
         <MatDialog IsOpen="@AddGroupDialogIsOpen">
             <MatDialogTitle>Add Group</MatDialogTitle>
             <MatDialogContent>
-                <MatTextField @bind-Value="@AddName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatTextField @bind-Value="@AddName" Required="true" Label="Name"></MatTextField>
                 <MatList SingleSelection="false">
                     @foreach (var p in ChartSet.People)
                     {
@@ -76,7 +76,7 @@
         <MatDialog IsOpen="@EditGroupDialogIsOpen">
             <MatDialogTitle>Edit Group</MatDialogTitle>
             <MatDialogContent>
-                <MatTextField @bind-Value="@EditName" Required="true" Label="Name" Style="display: block"></MatTextField>
+                <MatTextField @bind-Value="@EditName" Required="true" Label="Name"></MatTextField>
                 <MatList SingleSelection="false">
                     @foreach (var p in ChartSet.People)
                     {

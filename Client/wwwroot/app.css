@@ -3,6 +3,7 @@ html, body {
 }
 
 #loading {
+    background-color: white;
     background: url('loading.gif') no-repeat center center;
     position: absolute;
     top: 0;

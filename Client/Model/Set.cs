@@ -5,12 +5,11 @@ namespace BiorhythmFun.Client.Model;
 public class Set
 {
     private ILocalStorageService LocalStorage { get; set; }
-    public List<Person> People { get; set; } = new List<Person>();
+    public List<Person> People { get; set; } = new();
     public readonly BoolDictionary GroupPeople = new();
-
-    public List<Compatibility> CompatibilityCharts { get; set; } = new List<Compatibility>();
-    public List<Prediction> PredictionCharts { get; set; } = new List<Prediction>();
-    public List<Group> Groups { get; set; } = new List<Group>();
+    public List<Compatibility> CompatibilityCharts { get; set; } = new();
+    public List<Prediction> PredictionCharts { get; set; } = new();
+    public List<Group> Groups { get; set; } = new();
 
     public Person GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
 
@@ -140,7 +139,7 @@ public class Set
             await localStorage.ClearAsync();
         }
 
-        if (qd.Any())
+        if ((qd?.Any() ?? false) && qd.ContainsKey("t"))
         {
             switch (qd["t"])
             {

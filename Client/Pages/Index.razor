@@ -47,8 +47,8 @@
         <MudList>
             @foreach (var p in ChartSet.People)
             {
-                <MudListItem>
-                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])">@p.Name</MudCheckBox>
+                <MudListItem Class="pt-0 pb-0">
+                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
         </MudList>
@@ -66,8 +66,8 @@
         <MudList>
             @foreach (var p in ChartSet.People)
             {
-                <MudListItem>
-                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])">@p.Name</MudCheckBox>
+                <MudListItem Class="pt-0 pb-0">
+                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
         </MudList>
@@ -153,7 +153,9 @@
                 <MudSelectItem Value="@item">@item.Name</MudSelectItem>
             }
         </MudSelect>
-        <MudDatePicker @bind-Date="@AddConceptionDate" Required="true" Label="Date of Conception" Editable="true" />
+        <MudDatePicker Date="@AddConceptionDate" Required="true" Label="Date of Conception" Editable="true" DateChanged="PredictionConceptionDateChanged" />
+        <MudText>- or -</MudText>
+        <MudDatePicker Date="@AddConceptionBirthDate" Required="true" Label="Date of Birth" Editable="true" DateChanged="PredictionConceptionBirthDateChanged" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="AddPredictionObject">OK</MudButton>
@@ -170,7 +172,9 @@
                 <MudSelectItem Value="@item">@item.Name</MudSelectItem>
             }
         </MudSelect>
-        <MudDatePicker @bind-Date="@EditConceptionDate" Required="true" Label="Date of Conception" Editable="true" />
+        <MudDatePicker Date="@EditConceptionDate" Required="true" Label="Date of Conception" Editable="true" DateChanged="PredictionConceptionDateChanged" />
+        <MudText>- or -</MudText>
+        <MudDatePicker Date="@EditConceptionBirthDate" Required="true" Label="Date of Birth" Editable="true" DateChanged="PredictionConceptionBirthDateChanged" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="EditPredictionObject">OK</MudButton>
@@ -192,7 +196,7 @@
 <MudDialog IsVisible="@ChangeChartdateDialogIsVisible">
     <TitleContent>Change Chart Date</TitleContent>
     <DialogContent>
-        <MudDatePicker @bind-Date="@Chartdate" Required="true" Label="Chart Date" Editable="true" />
+        <MudDatePicker @bind-Date="Chartdate" Required="true" Label="Chart Date" Editable="true" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DoChange">OK</MudButton>
@@ -289,13 +293,13 @@
                 <MudCardContent Class="pt-0 pb-0">
                     @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
                     {
-                        <MudCard Class="pt-0">
-                            <MudCardHeader Class="pt-0 pb-0">
+                        <MudCard Class="pl-0 pt-0">
+                            <MudCardHeader Class="pl-0 pt-0 pb-0">
                                 <CardHeaderContent>
                                     <MudText GutterBottom="false">@p.Name</MudText>
                                 </CardHeaderContent>
                             </MudCardHeader>
-                            <MudCardContent Class="pt-0 pb-0">
+                                <MudCardContent Class="pl-0 pt-0 pb-0">
                                 <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
                             </MudCardContent>
                         </MudCard>
@@ -333,7 +337,7 @@
                     <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
                     <MudText>
                         Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
-                        Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation duration after conception.
+                        Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
                     </MudText>
                     <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
                 </MudCardContent>
@@ -407,6 +411,8 @@
     private Person EditMother;
     private DateTime? AddConceptionDate = DateTime.Today;
     private DateTime? EditConceptionDate = DateTime.Today;
+    private DateTime? AddConceptionBirthDate = DateTime.Today;
+    private DateTime? EditConceptionBirthDate = DateTime.Today;
     private DateTime? Chartdate;
 
     private bool ChangeChartdateDialogIsVisible = false;
@@ -592,10 +598,25 @@
         }
     }
 
+    private void PredictionConceptionDateChanged(DateTime? e)
+    {
+        AddConceptionDate = EditConceptionDate = e.Value;
+        AddConceptionBirthDate = EditConceptionBirthDate = e.Value.AddDays(280);    // birth date is 280 days after conception
+        StateHasChanged();
+    }
+
+    private void PredictionConceptionBirthDateChanged(DateTime? e)
+    {
+        AddConceptionBirthDate = EditConceptionBirthDate = e.Value;
+        AddConceptionDate = EditConceptionDate = e.Value.AddDays(-280);    // conception date is 280 days before birth
+        StateHasChanged();
+    }
+
     private void DoAddPredictionChart(MouseEventArgs e)
     {
         AddMother = null;
         AddConceptionDate = DateTime.Today;
+        AddConceptionBirthDate = DateTime.Today.AddDays(280);
         AddPredictionChartDialogIsVisible = true;
     }
 
@@ -614,6 +635,7 @@
         {
             EditPrediction = prediction;
             EditConceptionDate = prediction.ConceptionDate;
+            EditConceptionBirthDate = prediction.ConceptionDate.AddDays(280);
             EditMother = ChartSet.GetPerson(prediction.MotherID);
             EditPredictionDialogIsVisible = true;
         }

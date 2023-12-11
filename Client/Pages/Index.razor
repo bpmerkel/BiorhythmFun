@@ -8,6 +8,7 @@
 <MudDialog IsVisible="@AddPersonDialogIsVisible">
     <TitleContent>Add Person</TitleContent>
     <DialogContent>
+        <MudText>Add someone to see their Biorhythm chart.</MudText>
         <MudTextField @bind-Value="@AddName" Required="true" Label="Name" />
         <MudDatePicker @bind-Date="@AddBirthdate" Required="true" Label="Birth Date" Editable="true" />
     </DialogContent>
@@ -20,6 +21,7 @@
 <MudDialog IsVisible="@EditPersonDialogIsVisible">
     <TitleContent>Edit Chart</TitleContent>
     <DialogContent>
+        <MudText>Edit someone's details for their Biorhythm chart.</MudText>
         <MudTextField @bind-Value="@EditName" Required="true" Label="Name" />
         <MudDatePicker @bind-Date="@EditBirthdate" Required="true" Label="Birth Date" Editable="true" />
     </DialogContent>
@@ -32,7 +34,7 @@
 <MudDialog IsVisible="@DeletePersonDialogIsVisible">
     <TitleContent>Delete Chart</TitleContent>
     <DialogContent>
-        Are you sure you want to delete chart for '@DeletePerson?.Name'?
+        <MudText>Are you sure you want to delete chart for '@DeletePerson?.Name'?</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DoDeletePersonObject">OK</MudButton>
@@ -43,7 +45,8 @@
 <MudDialog IsVisible="@AddGroupDialogIsVisible">
     <TitleContent>Add Group</TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="@AddName" Required="true" Label="Name" />
+        <MudText>Create a group so you can see all the charts at once.</MudText>
+        <MudTextField @bind-Value="@AddName" Required="true" Label="Group Name" />
         <MudList>
             @foreach (var p in ChartSet.People)
             {
@@ -62,7 +65,8 @@
 <MudDialog IsVisible="@EditGroupDialogIsVisible">
     <TitleContent>Edit Group</TitleContent>
     <DialogContent>
-        <MudTextField @bind-Value="@EditName" Required="true" Label="Name" />
+        <MudText>Edit the members of a group.</MudText>
+        <MudTextField @bind-Value="@EditName" Required="true" Label="Group Name" />
         <MudList>
             @foreach (var p in ChartSet.People)
             {
@@ -81,7 +85,7 @@
 <MudDialog IsVisible="@DeleteGroupDialogIsVisible">
     <TitleContent>Delete Group</TitleContent>
     <DialogContent>
-        Are you sure you want to delete group for '@DeleteGroup?.Name'?
+        <MudText>Are you sure you want to delete group for '@DeleteGroup?.Name'?</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DeleteGroupObject">OK</MudButton>
@@ -92,6 +96,7 @@
 <MudDialog IsVisible="@AddCompatibilityChartDialogIsVisible">
     <TitleContent>Add Compatibility Chart</TitleContent>
     <DialogContent>
+        <MudText>Choose two people to compare their Biorthythm's and see how close to one-another they are.</MudText>
         <MudSelect T="Person" Label="Person 1" @bind-Value="AddPerson1" AnchorOrigin="Origin.BottomCenter">
             @foreach (var item in ChartSet.People)
             {
@@ -114,6 +119,7 @@
 <MudDialog IsVisible="@EditCompatibilityDialogIsVisible">
     <TitleContent>Edit Compatibility Chart</TitleContent>
     <DialogContent>
+        <MudText>Change the people in a Compatibility comparison.</MudText>
         <MudSelect T="Person" Label="Person 1" @bind-Value="EditPerson1" AnchorOrigin="Origin.BottomCenter">
             @foreach (var item in ChartSet.People)
             {
@@ -136,7 +142,7 @@
 <MudDialog IsVisible="@DeleteCompatibilityDialogIsVisible">
     <TitleContent>Delete Compatibility Chart</TitleContent>
     <DialogContent>
-        Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?
+        <MudText>Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DeleteCompatibilityObject">OK</MudButton>
@@ -147,6 +153,7 @@
 <MudDialog IsVisible="@AddPredictionChartDialogIsVisible">
     <TitleContent>Add Prediction Chart</TitleContent>
     <DialogContent>
+        <MudText>Add a Biorhythmic Prediction analysis for a pregnant mother to see the gender of the baby, and the estimated birth data.</MudText>
         <MudSelect T="Person" Label="Mother" @bind-Value="AddMother" AnchorOrigin="Origin.BottomCenter">
             @foreach (var item in ChartSet.People)
             {
@@ -154,7 +161,7 @@
             }
         </MudSelect>
         <MudDatePicker Date="@AddConceptionDate" Required="true" Label="Date of Conception" Editable="true" DateChanged="PredictionConceptionDateChanged" />
-        <MudText>- or -</MudText>
+        <MudText Class="pt-5 pb-5">- or -</MudText>
         <MudDatePicker Date="@AddConceptionBirthDate" Required="true" Label="Date of Birth" Editable="true" DateChanged="PredictionConceptionBirthDateChanged" />
     </DialogContent>
     <DialogActions>
@@ -166,6 +173,7 @@
 <MudDialog IsVisible="@EditPredictionDialogIsVisible">
     <TitleContent>Edit Prediction Chart</TitleContent>
     <DialogContent>
+        <MudText>Adjust the Mother or dates for a Biorhythmic Prediction analysis.</MudText>
         <MudSelect T="Person" Label="Mother" @bind-Value="EditMother" AnchorOrigin="Origin.BottomCenter">
             @foreach (var item in ChartSet.People)
             {
@@ -173,7 +181,7 @@
             }
         </MudSelect>
         <MudDatePicker Date="@EditConceptionDate" Required="true" Label="Date of Conception" Editable="true" DateChanged="PredictionConceptionDateChanged" />
-        <MudText>- or -</MudText>
+        <MudText Class="pt-5 pb-5">- or -</MudText>
         <MudDatePicker Date="@EditConceptionBirthDate" Required="true" Label="Date of Birth" Editable="true" DateChanged="PredictionConceptionBirthDateChanged" />
     </DialogContent>
     <DialogActions>
@@ -185,7 +193,7 @@
 <MudDialog IsVisible="@DeletePredictionDialogIsVisible">
     <TitleContent>Delete Prediction Chart</TitleContent>
     <DialogContent>
-        Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?
+        <MudText>Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DeletePredictionObject">OK</MudButton>
@@ -196,7 +204,8 @@
 <MudDialog IsVisible="@ChangeChartdateDialogIsVisible">
     <TitleContent>Change Chart Date</TitleContent>
     <DialogContent>
-        <MudDatePicker @bind-Date="Chartdate" Required="true" Label="Chart Date" Editable="true" />
+        <MudText>Adjust the date where the Biorhythm charts start.</MudText>
+        <MudDatePicker @bind-Date="Chartdate" Required="true" Label="Chart Date" Editable="true" OpenTo="OpenTo.Month" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="DoChange">OK</MudButton>

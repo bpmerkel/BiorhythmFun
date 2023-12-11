@@ -1,381 +1,724 @@
 ﻿@page "/"
 @using BiorhythmFun.Client
 @using BiorhythmFun.Client.Model
-@using BiorhythmFun.Client.Shared
+@using Blazored.LocalStorage
+@using System.Web
+@inject ISnackbar Snackbar
 
-<MatAppBarContainer>
-    <MatAppBar Fixed="true">
-        <MatAppBarRow>
-            <MatAppBarSection>
-                <MatAppBarTitle>Biorhythm Fun</MatAppBarTitle>
-            </MatAppBarSection>
-            <MatAppBarSection Align="@MatAppBarSectionAlign.End">
-                <MatIconButton title="Prepend Month" Icon="exit_to_app" OnClick="DoPrevious" Style="transform: rotate(180deg)" />
-                <MatIconButton title="Change Plot Date" Icon="insert_invitation" OnClick="DoChangeChartDate" />
-                <MatIconButton title="Append Month" Icon="exit_to_app" OnClick="DoNext" />
-                <MatIconButton title="Read FAQ" Icon="import_contacts" OnClick="DoShowFAQ" />
-            </MatAppBarSection>
-        </MatAppBarRow>
-    </MatAppBar>
+<MudDialog IsVisible="@AddPersonDialogIsVisible">
+    <TitleContent>Add Person</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="@AddName" Required="true" Label="Name" />
+        <MudDatePicker @bind-Date="@AddBirthdate" Required="true" Label="Birth Date" Editable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DoAddPersonObject">OK</MudButton>
+        <MudButton OnClick="@(e => { AddPersonDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-    <MatAppBarContent Class="Content">
-        <MatDialog IsOpen="@AddPersonDialogIsOpen">
-            <MatDialogTitle>Add Person</MatDialogTitle>
-            <MatDialogContent>
-                <MatTextField @bind-Value="@AddName" Required="true" Label="Name"></MatTextField>
-                <MatDatePicker @bind-Value="@AddBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DoAddPersonObject">OK</MatButton>
-                <MatButton OnClick="@(e => { AddPersonDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@EditPersonDialogIsVisible">
+    <TitleContent>Edit Chart</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="@EditName" Required="true" Label="Name" />
+        <MudDatePicker @bind-Date="@EditBirthdate" Required="true" Label="Birth Date" Editable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DoEditPersonObject">OK</MudButton>
+        <MudButton OnClick="@(e => { EditPersonDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@EditPersonDialogIsOpen">
-            <MatDialogTitle>Edit Chart</MatDialogTitle>
-            <MatDialogContent>
-                <MatTextField @bind-Value="@EditName" Required="true" Label="Name"></MatTextField>
-                <MatDatePicker @bind-Value="@EditBirthdate" Required="true" Label="Birth Date"></MatDatePicker>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DoEditPersonObject">OK</MatButton>
-                <MatButton OnClick="@(e => { EditPersonDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@DeletePersonDialogIsVisible">
+    <TitleContent>Delete Chart</TitleContent>
+    <DialogContent>
+        Are you sure you want to delete chart for '@DeletePerson?.Name'?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DoDeletePersonObject">OK</MudButton>
+        <MudButton OnClick="@(e => { DeletePersonDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@DeletePersonDialogIsOpen">
-            <MatDialogTitle>Delete Chart</MatDialogTitle>
-            <MatDialogContent>
-                Are you sure you want to delete chart for '@DeletePerson?.Name'?
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DoDeletePersonObject">OK</MatButton>
-                <MatButton OnClick="@(e => { DeletePersonDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@AddGroupDialogIsVisible">
+    <TitleContent>Add Group</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="@AddName" Required="true" Label="Name" />
+        <MudList>
+            @foreach (var p in ChartSet.People)
+            {
+                <MudListItem>
+                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])">@p.Name</MudCheckBox>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DoAddGroupObject">OK</MudButton>
+        <MudButton OnClick="@(e => { AddGroupDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@AddGroupDialogIsOpen">
-            <MatDialogTitle>Add Group</MatDialogTitle>
-            <MatDialogContent>
-                <MatTextField @bind-Value="@AddName" Required="true" Label="Name"></MatTextField>
-                <MatList SingleSelection="false">
-                    @foreach (var p in ChartSet.People)
-                    {
-                        <MatListItem>
-                            <MatCheckbox @bind-Value="@ChartSet.GroupPeople[p.ID]" Label="@p.Name"></MatCheckbox>
-                        </MatListItem>
-                    }
-                </MatList>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DoAddGroupObject">OK</MatButton>
-                <MatButton OnClick="@(e => { AddGroupDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@EditGroupDialogIsVisible">
+    <TitleContent>Edit Group</TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="@EditName" Required="true" Label="Name" />
+        <MudList>
+            @foreach (var p in ChartSet.People)
+            {
+                <MudListItem>
+                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])">@p.Name</MudCheckBox>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="EditGroupObject">OK</MudButton>
+        <MudButton OnClick="@(e => { EditGroupDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@EditGroupDialogIsOpen">
-            <MatDialogTitle>Edit Group</MatDialogTitle>
-            <MatDialogContent>
-                <MatTextField @bind-Value="@EditName" Required="true" Label="Name"></MatTextField>
-                <MatList SingleSelection="false">
-                    @foreach (var p in ChartSet.People)
-                    {
-                        <MatListItem>
-                            <MatCheckbox @bind-Value="@ChartSet.GroupPeople[p.ID]" Label="@p.Name"></MatCheckbox>
-                        </MatListItem>
-                    }
-                </MatList>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="EditGroupObject">OK</MatButton>
-                <MatButton OnClick="@(e => { EditGroupDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@DeleteGroupDialogIsVisible">
+    <TitleContent>Delete Group</TitleContent>
+    <DialogContent>
+        Are you sure you want to delete group for '@DeleteGroup?.Name'?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DeleteGroupObject">OK</MudButton>
+        <MudButton OnClick="@(e => { DeleteGroupDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@DeleteGroupDialogIsOpen">
-            <MatDialogTitle>Delete Group</MatDialogTitle>
-            <MatDialogContent>
-                Are you sure you want to delete group for '@DeleteGroup?.Name'?
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DeleteGroupObject">OK</MatButton>
-                <MatButton OnClick="@(e => { DeleteGroupDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@AddCompatibilityChartDialogIsVisible">
+    <TitleContent>Add Compatibility Chart</TitleContent>
+    <DialogContent>
+        <MudSelect T="Person" Label="Person 1" @bind-Value="AddPerson1" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="Person" Label="Person 2" @bind-Value="AddPerson2" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AddCompatibilityObject">OK</MudButton>
+        <MudButton OnClick="@(e => { AddCompatibilityChartDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@AddCompatibilityChartDialogIsOpen">
-            <MatDialogTitle>Add Compatibility Chart</MatDialogTitle>
-            <MatDialogContent>
-                <MatSelectItem @bind-Value="@AddPerson1" Items="@ChartSet.People" Label="Person 1" HelperText="Choose Person 1" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-                <MatSelectItem @bind-Value="@AddPerson2" Items="@ChartSet.People" Label="Person 2" HelperText="Choose Person 2" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="AddCompatibilityObject">OK</MatButton>
-                <MatButton OnClick="@(e => { AddCompatibilityChartDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@EditCompatibilityDialogIsVisible">
+    <TitleContent>Edit Compatibility Chart</TitleContent>
+    <DialogContent>
+        <MudSelect T="Person" Label="Person 1" @bind-Value="EditPerson1" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="Person" Label="Person 2" @bind-Value="EditPerson2" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="EditCompatibilityObject">OK</MudButton>
+        <MudButton OnClick="@(e => { EditCompatibilityDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@EditCompatibilityDialogIsOpen">
-            <MatDialogTitle>Edit Compatibility Chart</MatDialogTitle>
-            <MatDialogContent>
-                <MatSelectItem @bind-Value="@EditPerson1" Items="@ChartSet.People" Label="Person 1" HelperText="Choose Person 1" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-                <MatSelectItem @bind-Value="@EditPerson2" Items="@ChartSet.People" Label="Person 2" HelperText="Choose Person 2" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="EditCompatibilityObject">OK</MatButton>
-                <MatButton OnClick="@(e => { EditCompatibilityDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@DeleteCompatibilityDialogIsVisible">
+    <TitleContent>Delete Compatibility Chart</TitleContent>
+    <DialogContent>
+        Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DeleteCompatibilityObject">OK</MudButton>
+        <MudButton OnClick="@(e => { DeleteCompatibilityDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@DeleteCompatibilityDialogIsOpen">
-            <MatDialogTitle>Delete Compatibility Chart</MatDialogTitle>
-            <MatDialogContent>
-                Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DeleteCompatibilityObject">OK</MatButton>
-                <MatButton OnClick="@(e => { DeleteCompatibilityDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@AddPredictionChartDialogIsVisible">
+    <TitleContent>Add Prediction Chart</TitleContent>
+    <DialogContent>
+        <MudSelect T="Person" Label="Mother" @bind-Value="AddMother" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudDatePicker @bind-Date="@AddConceptionDate" Required="true" Label="Date of Conception" Editable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AddPredictionObject">OK</MudButton>
+        <MudButton OnClick="@(e => { AddPredictionChartDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@AddPredictionChartDialogIsOpen">
-            <MatDialogTitle>Add Prediction Chart</MatDialogTitle>
-            <MatDialogContent>
-                <MatSelectItem @bind-Value="@AddMother" Items="@ChartSet.People" Label="Mother" HelperText="Choose the Mother" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-                <MatDatePicker @bind-Value="@AddConceptionDate" Required="true" Label="Date of Conception"></MatDatePicker>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="AddPredictionObject">OK</MatButton>
-                <MatButton OnClick="@(e => { AddPredictionChartDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@EditPredictionDialogIsVisible">
+    <TitleContent>Edit Prediction Chart</TitleContent>
+    <DialogContent>
+        <MudSelect T="Person" Label="Mother" @bind-Value="EditMother" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var item in ChartSet.People)
+            {
+                <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+            }
+        </MudSelect>
+        <MudDatePicker @bind-Date="@EditConceptionDate" Required="true" Label="Date of Conception" Editable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="EditPredictionObject">OK</MudButton>
+        <MudButton OnClick="@(e => { EditPredictionDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@EditPredictionDialogIsOpen">
-            <MatDialogTitle>Edit Prediction Chart</MatDialogTitle>
-            <MatDialogContent>
-                <MatSelectItem @bind-Value="@EditMother" Items="@ChartSet.People" Label="Mother" HelperText="Choose the Mother" FullWidth="true">
-                    <ItemTemplate>
-                        @context?.Name
-                    </ItemTemplate>
-                </MatSelectItem>
-                <MatDatePicker @bind-Value="@EditConceptionDate" Required="true" Label="Date of Conception"></MatDatePicker>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="EditPredictionObject">OK</MatButton>
-                <MatButton OnClick="@(e => { EditPredictionDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@DeletePredictionDialogIsVisible">
+    <TitleContent>Delete Prediction Chart</TitleContent>
+    <DialogContent>
+        Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DeletePredictionObject">OK</MudButton>
+        <MudButton OnClick="@(e => { DeletePredictionDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@DeletePredictionDialogIsOpen">
-            <MatDialogTitle>Delete Prediction Chart</MatDialogTitle>
-            <MatDialogContent>
-                Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DeletePredictionObject">OK</MatButton>
-                <MatButton OnClick="@(e => { DeletePredictionDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@ChangeChartdateDialogIsVisible">
+    <TitleContent>Change Chart Date</TitleContent>
+    <DialogContent>
+        <MudDatePicker @bind-Date="@Chartdate" Required="true" Label="Chart Date" Editable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="DoChange">OK</MudButton>
+        <MudButton OnClick="@(e => { ChangeChartdateDialogIsVisible = false; })">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@ChangeChartdateDialogIsOpen">
-            <MatDialogTitle>Change Chart Date</MatDialogTitle>
-            <MatDialogContent>
-                <MatDatePicker @bind-Value="@Chartdate" Required="true" Label="Chart Date"></MatDatePicker>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="DoChange">OK</MatButton>
-                <MatButton OnClick="@(e => { ChangeChartdateDialogIsOpen = false; })">Cancel</MatButton>
-            </MatDialogActions>
-        </MatDialog>
+<MudDialog IsVisible="@FAQIsVisible">
+    <TitleContent>FAQ</TitleContent>
+    <DialogContent>
+        <FAQStatic />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(e => { FAQIsVisible = false; })">OK</MudButton>
+    </DialogActions>
+</MudDialog>
 
-        <MatDialog IsOpen="@FAQIsOpen" CanBeClosed="true" Class="FAQContainer">
-            <MatDialogTitle>FAQ</MatDialogTitle>
-            <MatDialogContent>
-                <FAQStatic></FAQStatic>
-            </MatDialogContent>
-            <MatDialogActions>
-                <MatButton OnClick="@(e => { FAQIsOpen = false; })">OK</MatButton>
-            </MatDialogActions>
-        </MatDialog>
-        
-        <MatToastContainer />
-        
-        <MatListGroup>
-            <MatListGroupSubHeader Class="TabGroupHeader">
-                <MatIcon Icon="@MatIconNames.Person" /> People
-                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
-                    <MatIconButton title="Add Person" Icon="add_circle" OnClick="DoAddPerson" />
-                </span>
-            </MatListGroupSubHeader>
-            <MatList SingleSelection="true">
+<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+    <MudText>Biorhythm Fun</MudText>
+    <MudSpacer />
+    <MudIconButton Title="Prepend Month" Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" OnClick="DoPrevious" />
+    <MudIconButton Title="Change Plot Date" Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" OnClick="DoChangeChartDate" OpenTo="OpenTo.Month" />
+    <MudIconButton Title="Append Month" Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" OnClick="DoNext" />
+    <MudIconButton Title="Read FAQ" Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" OnClick="DoShowFAQ" />
+</MudAppBar>
+
+<MudLayout>
+    <MudDrawer Open="true">
+        <MudNavMenu>
+            <MudNavGroup Title="People" Icon="@Icons.Material.Filled.Person" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
                 @foreach (var person in ChartSet.People)
                 {
-                    <MatListItem Class="Person" OnClick="@(e => Current = person)">
-                        @person.Name
-                    </MatListItem>
+                    <MudNavLink OnClick="@(e => Current = person)">@person.Name</MudNavLink>
                 }
-            </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">
-                <MatIcon Icon="@MatIconNames.Group" /> Groups
-                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
-                    <MatIconButton title="Add Group" Icon="add_circle" OnClick="DoAddGroup" />
-                </span>
-            </MatListGroupSubHeader>
-            <MatList SingleSelection="true">
+                <MudNavLink Icon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Success" OnClick="DoAddPerson">Add Person</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Group" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
                 @foreach (var group in ChartSet.Groups)
                 {
-                    <MatListItem Class="Group" OnClick="@(e => Current = group)">
-                        @group.Name
-                    </MatListItem>
+                    <MudNavLink OnClick="@(e => Current = group)">@group.Name</MudNavLink>
                 }
-            </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">
-                <MatIcon Icon="@MatIconNames.Compare" /> Compatibility
-                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
-                    <MatIconButton title="Add Compatibility Chart" Icon="add_circle" OnClick="DoAddCompatibilityChart" />
-                </span>
-            </MatListGroupSubHeader>
-            <MatList SingleSelection="true">
+                <MudNavLink Icon="@Icons.Material.Filled.GroupAdd" IconColor="Color.Success" OnClick="DoAddGroup">Add Group</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Compatibility" Icon="@Icons.Material.Filled.Compare" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
                 @foreach (var compat in ChartSet.CompatibilityCharts)
                 {
-                    <MatListItem Class="Compatibility" OnClick="@(e => Current = compat)">
-                        @compat.Name
-                    </MatListItem>
+                    <MudNavLink OnClick="@(e => Current = compat)">@compat.Name</MudNavLink>
                 }
-            </MatList>
-            <MatListGroupSubHeader Class="TabGroupHeader">
-                <MatIcon Icon="@MatIconNames.Pregnant_woman" /> Prediction
-                <span style="display: inline-block; transform: scale(.75); vertical-align: -3pt;">
-                    <MatIconButton title="Add Prediction Chart" Icon="add_circle" OnClick="DoAddPredictionChart" />
-                </span>
-            </MatListGroupSubHeader>
-            <MatList SingleSelection="true">
+                <MudNavLink Icon="@Icons.Material.Filled.AddChart" IconColor="Color.Success" OnClick="DoAddCompatibilityChart">Add Compatibility Chart</MudNavLink>
+            </MudNavGroup>
+            <MudNavGroup Title="Prediction" Icon="@Icons.Material.Filled.PregnantWoman" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
                 @foreach (var predict in ChartSet.PredictionCharts)
                 {
-                    <MatListItem Class="Prediction" OnClick="@(e => Current = predict)">
-                        @predict.Name
-                    </MatListItem>
+                    <MudNavLink OnClick="@(e => Current = predict)">@predict.Name</MudNavLink>
                 }
-            </MatList>
-        </MatListGroup>
-
-        <div class="ChartContainer ChartFull">
-            @if (Current is Person person)
-            {
-                <div>
-                    <span style="display: inline-block; width: 200px">
-                        @person.Name
-                    </span>
-                    <span style="display: inline-block; width: 300px">
-                        @($"Born {person.Birthdate:dddd MMMM dd, yyyy}")
-                    </span>
-                    <span style="display: inline-block; transform: scale(.75)">
-                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPerson(person))" />
-                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePerson(person))" />
-                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(person))" />
-                    </span>
-                </div>
-                <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
-            }
-            else if (Current is Group group)
-            {
-                <div>
-                    <span style="display: inline-block; width: 200px">
-                        Group @group.Name
-                    </span>
-                    <span style="display: inline-block; transform: scale(.75)">
-                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditGroup(group))" />
-                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteGroup(group))" />
-                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(group))" />
-                    </span>
-                </div>
-                @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
-                {
-                    <div>
-                        <span style="display: inline-block; width: 200px">
-                            @p.Name
-                        </span>
-                        <span style="display: inline-block; width: 300px">
-                            @($"Born {p.Birthdate:dddd MMMM dd, yyyy}")
-                        </span>
-                    </div>
-                    <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
-                }
-            }
-            else if (Current is Prediction prediction)
-            {
-                var mother = ChartSet.GetPerson(prediction.MotherID);
-                var startdate1 = prediction.ConceptionDate.AddDays(-prediction.ConceptionDate.Day + 1);
-                var enddate1 = startdate1.AddMonths(1).AddDays(-1);
-                var gestation = prediction.ConceptionDate.AddDays(280);
-                var startdate2 = gestation.AddDays(-gestation.Day + 1);
-                var enddate2 = startdate2.AddMonths(1).AddDays(-1);
-                <div>
-                    <span style="display: inline-block; width: 200px">
-                        @prediction.Name
-                    </span>
-                    <span style="display: inline-block; transform: scale(.75)">
-                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditPrediction(prediction))" />
-                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
-                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(prediction))" />
-                    </span>
-                </div>
-                <div>
-                    Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
-                    concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
-                    Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
-                    When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
-                    When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
-                </div>
-                <div>
+                <MudNavLink Icon="@Icons.Material.Filled.AddReaction" IconColor="Color.Success" OnClick="DoAddPredictionChart">Add Prediction Chart</MudNavLink>
+            </MudNavGroup>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent Class="pt-0">
+        @if (Current is Person person)
+        {
+            <MudCard>
+                <MudCardHeader Class="pb-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@person.Name</MudText>
+                        <MudSpacer />
+                        <MudText GutterBottom="false">@($"Born {person.Birthdate:dddd MMMM dd, yyyy}")</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPerson(person))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePerson(person))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(person))" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pt-0">
+                    <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                </MudCardContent>
+            </MudCard>
+        }
+        else if (Current is Group group)
+        {
+            <MudCard>
+                <MudCardHeader Class="pb-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@group.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditGroup(group))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteGroup(group))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(group))" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pt-0 pb-0">
+                    @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
+                    {
+                        <MudCard Class="pt-0">
+                            <MudCardHeader Class="pt-0 pb-0">
+                                <CardHeaderContent>
+                                    <MudText GutterBottom="false">@p.Name</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Class="pt-0 pb-0">
+                                <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                            </MudCardContent>
+                        </MudCard>
+                    }
+                </MudCardContent>
+            </MudCard>
+        }
+        else if (Current is Prediction prediction)
+        {
+            var mother = ChartSet.GetPerson(prediction.MotherID);
+            var startdate1 = prediction.ConceptionDate.AddDays(-prediction.ConceptionDate.Day + 1);
+            var enddate1 = startdate1.AddMonths(1).AddDays(-1);
+            var gestation = prediction.ConceptionDate.AddDays(280);
+            var startdate2 = gestation.AddDays(-gestation.Day + 1);
+            var enddate2 = startdate2.AddMonths(1).AddDays(-1);
+            <MudCard>
+                <MudCardHeader Class="pb-0">
+                    <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@prediction.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPrediction(prediction))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(prediction))" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pt-0">
+                    <MudText>
+                        Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
+                        concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
+                        Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
+                        When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
+                        When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
+                    </MudText>
                     <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
-                </div>
-                <div>
-                    Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
-                    Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation duration after conception.
-                </div>
-                <div>
+                    <MudText>
+                        Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
+                        Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation duration after conception.
+                    </MudText>
                     <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
-                </div>
-            }
-            else if (Current is Compatibility compat)
-            {
-                var p1 = ChartSet.GetPerson(compat.ID1);
-                var p2 = ChartSet.GetPerson(compat.ID2);
-                <div>
-                    <span style="display: inline-block; width: 200px">
-                        @compat.Name
-                    </span>
-                    <span style="display: inline-block; transform: scale(.75)">
-                        <MatIconButton title="Edit" Icon="edit" OnClick="@(e => DoEditCompatibility(compat))" />
-                        <MatIconButton title="Delete" Icon="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
-                        <MatIconButton title="Share" Icon="share" OnClick="@(e => DoShare(compat))" />
-                    </span>
-                </div>
-                <div>
+                </MudCardContent>
+            </MudCard>
+        }
+        else if (Current is Compatibility compat)
+        {
+            var p1 = ChartSet.GetPerson(compat.ID1);
+            var p2 = ChartSet.GetPerson(compat.ID2);
+            <MudCard>
+                <MudCardHeader Class="pb-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@compat.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditCompatibility(compat))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(compat))" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pt-0">
                     <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
-                </div>
+                </MudCardContent>
+            </MudCard>
+        }
+    </MudMainContent>
+</MudLayout>
+
+@code
+{
+    [Inject] public ILocalStorageService LocalStorage { get; set; }
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+    [Inject] public NavigationManager NavManager { get; set; }
+    public Set ChartSet { get; init; } = new();
+
+    private ChartableBase Current = default!;
+
+    private bool FAQIsVisible = false;
+    private bool AddPersonDialogIsVisible = false;
+    private bool EditPersonDialogIsVisible = false;
+    private bool DeletePersonDialogIsVisible = false;
+    private string AddName = string.Empty;
+    private DateTime? AddBirthdate = DateTime.Today;
+    private Person DeletePerson;
+    private Person EditPerson;
+    private string EditName = string.Empty;
+    private DateTime? EditBirthdate = DateTime.Today;
+
+    private bool AddGroupDialogIsVisible = false;
+    private bool DeleteGroupDialogIsVisible = false;
+    private bool EditGroupDialogIsVisible = false;
+    private Group DeleteGroup;
+    private Group EditGroup;
+
+    private bool AddCompatibilityChartDialogIsVisible = false;
+    private bool EditCompatibilityDialogIsVisible = false;
+    private bool DeleteCompatibilityDialogIsVisible = false;
+    private Person AddPerson1;
+    private Person AddPerson2;
+    private Compatibility DeleteCompatibility;
+    private Compatibility EditCompatibility;
+    private Person EditPerson1;
+    private Person EditPerson2;
+
+    private bool AddPredictionChartDialogIsVisible = false;
+    private bool EditPredictionDialogIsVisible = false;
+    private bool DeletePredictionDialogIsVisible = false;
+    private Person AddMother;
+    private Prediction DeletePrediction;
+    private Prediction EditPrediction;
+    private Person EditMother;
+    private DateTime? AddConceptionDate = DateTime.Today;
+    private DateTime? EditConceptionDate = DateTime.Today;
+    private DateTime? Chartdate;
+
+    private bool ChangeChartdateDialogIsVisible = false;
+
+    private DateTime Startdate;
+    private DateTime Enddate;
+
+    public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
+
+    private void DoAddPerson(MouseEventArgs e)
+    {
+        AddName = string.Empty;
+        AddBirthdate = DateTime.Today;
+        AddPersonDialogIsVisible = true;
+    }
+
+    private void DoAddPersonObject(MouseEventArgs e)
+    {
+        AddPersonDialogIsVisible = false;
+        // save Name and Birthdate to localStorage
+        if (!string.IsNullOrWhiteSpace(AddName))
+        {
+            var p = new Person(AddName, AddBirthdate.Value);
+            ChartSet.AddPerson(p);
+            Current = p;
+        }
+    }
+
+    private void DoEditPerson(Person p)
+    {
+        if (p != null)
+        {
+            EditPerson = p;
+            EditName = p.Name;
+            EditBirthdate = p.Birthdate;
+            EditPersonDialogIsVisible = true;
+        }
+    }
+
+    private void DoEditPersonObject()
+    {
+        if (EditPerson != null)
+        {
+            EditPersonDialogIsVisible = false;
+            if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
+            EditPerson.Birthdate = EditBirthdate.Value;
+            ChartSet.Save();
+        }
+    }
+
+    private void DoDeletePerson(Person p)
+    {
+        DeletePerson = p;
+        DeletePersonDialogIsVisible = true;
+    }
+
+    private void DoDeletePersonObject()
+    {
+        if (DeletePerson != null)
+        {
+            DeletePersonDialogIsVisible = false;
+            ChartSet.RemovePerson(DeletePerson);
+            Current = ChartSet.People.First();
+        }
+    }
+
+    private void DoAddGroup(MouseEventArgs e)
+    {
+        AddName = string.Empty;
+        AddGroupDialogIsVisible = true;
+    }
+
+    private void DoAddGroupObject(MouseEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(AddName))
+        {
+            AddGroupDialogIsVisible = false;
+            ChartSet.AddGroup(AddName, ChartSet.GroupPeople.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToList());
+        }
+    }
+
+    private void DoEditGroup(Group group)
+    {
+        if (group != null)
+        {
+            EditGroup = group;
+            EditName = group.Name;
+            foreach (var g in ChartSet.GroupPeople)
+            {
+                ChartSet.GroupPeople[g.Key] = false;
             }
-        </div>
-    </MatAppBarContent>
-</MatAppBarContainer>
+            foreach (var g in group.IDs)
+            {
+                ChartSet.GroupPeople[g] = true;
+            }
+            EditGroupDialogIsVisible = true;
+        }
+    }
+
+    private void EditGroupObject()
+    {
+        if (EditGroup != null)
+        {
+            EditGroupDialogIsVisible = false;
+            if (!string.IsNullOrWhiteSpace(EditName)) EditGroup.Name = EditName;
+            EditGroup.IDs.Clear();
+            foreach (var kvp in ChartSet.GroupPeople)
+            {
+                if (kvp.Value) EditGroup.IDs.Add(kvp.Key);
+            }
+            ChartSet.Save();
+        }
+    }
+
+    private void DoDeleteGroup(Group group)
+    {
+        DeleteGroup = group;
+        DeleteGroupDialogIsVisible = true;
+    }
+
+    private void DeleteGroupObject()
+    {
+        if (DeleteGroup != null)
+        {
+            DeleteGroupDialogIsVisible = false;
+            ChartSet.RemoveGroup(DeleteGroup);
+            Current = ChartSet.People.First();
+        }
+    }
+
+    private void DoAddCompatibilityChart(MouseEventArgs e)
+    {
+        AddPerson1 = null;
+        AddPerson2 = null;
+        AddCompatibilityChartDialogIsVisible = true;
+    }
+
+    private void AddCompatibilityObject(MouseEventArgs e)
+    {
+        AddCompatibilityChartDialogIsVisible = false;
+        if (AddPerson1 != null && AddPerson2 != null)
+        {
+            ChartSet.AddCompatibilityChart(AddPerson1.ID, AddPerson2.ID);
+        }
+    }
+
+    private void DoEditCompatibility(Compatibility compat)
+    {
+        if (compat != null)
+        {
+            EditCompatibility = compat;
+            EditPerson1 = ChartSet.GetPerson(compat.ID1);
+            EditPerson2 = ChartSet.GetPerson(compat.ID2);
+            EditCompatibilityDialogIsVisible = true;
+        }
+    }
+
+    private void EditCompatibilityObject()
+    {
+        if (EditCompatibility != null && EditPerson1 != null && EditPerson2 != null)
+        {
+            EditCompatibility.ID1 = EditPerson1.ID;
+            EditCompatibility.ID2 = EditPerson2.ID;
+            EditCompatibility.Name = $"{EditPerson1.Name} - {EditPerson2.Name}";
+            EditCompatibilityDialogIsVisible = false;
+            ChartSet.Save();
+        }
+    }
+
+    private void DoDeleteCompatibility(Compatibility compat)
+    {
+        DeleteCompatibility = compat;
+        DeleteCompatibilityDialogIsVisible = true;
+    }
+
+    private void DeleteCompatibilityObject(MouseEventArgs e)
+    {
+        if (DeleteCompatibility != null)
+        {
+            DeleteCompatibilityDialogIsVisible = false;
+            ChartSet.RemoveCompatibility(DeleteCompatibility);
+            Current = ChartSet.People.First();
+        }
+    }
+
+    private void DoAddPredictionChart(MouseEventArgs e)
+    {
+        AddMother = null;
+        AddConceptionDate = DateTime.Today;
+        AddPredictionChartDialogIsVisible = true;
+    }
+
+    private void AddPredictionObject(MouseEventArgs e)
+    {
+        AddPredictionChartDialogIsVisible = false;
+        if (AddMother != null)
+        {
+            ChartSet.AddPredictionChart(AddMother.ID, AddConceptionDate.Value);
+        }
+    }
+
+    private void DoEditPrediction(Prediction prediction)
+    {
+        if (prediction != null)
+        {
+            EditPrediction = prediction;
+            EditConceptionDate = prediction.ConceptionDate;
+            EditMother = ChartSet.GetPerson(prediction.MotherID);
+            EditPredictionDialogIsVisible = true;
+        }
+    }
+
+    private void EditPredictionObject(MouseEventArgs e)
+    {
+        if (EditPrediction != null && EditMother != null)
+        {
+            EditPrediction.MotherID = EditMother.ID;
+            EditPrediction.ConceptionDate = EditConceptionDate.Value;
+            EditPrediction.Name = $"{EditMother.Name} Prediction";
+            EditPredictionDialogIsVisible = false;
+            ChartSet.Save();
+        }
+    }
+
+    private void DoDeletePrediction(Prediction prediction)
+    {
+        DeletePrediction = prediction;
+        DeletePredictionDialogIsVisible = true;
+    }
+
+    private void DeletePredictionObject(MouseEventArgs e)
+    {
+        if (DeletePrediction != null)
+        {
+            DeletePredictionDialogIsVisible = false;
+            ChartSet.RemovePrediction(DeletePrediction);
+            Current = ChartSet.People.First();
+        }
+    }
+
+    private async void DoShare(ChartableBase chart)
+    {
+        // copy the link to the chart to the clipboard
+        var URL = $"{NavManager.Uri}?";
+
+        switch (chart)
+        {
+            case Person p:
+                {
+                    URL += $"t=p&n={p.Name}&b={p.Birthdate:yyyy-MM-dd}";
+                    break;
+                }
+            case Group g:
+                {
+                    URL += $"t=g&n={g.Name}&s={g.IDs.Count}&";
+                    // add each member Person
+                    URL += string.Join("&", g.IDs
+                        .Select((id, i) =>
+                        {
+                            var p = ChartSet.GetPerson(id);
+                            return $"p{i + 1}={p.Name}&b{i + 1}={p.Birthdate:yyyy-MM-dd}";
+                        }));
+                    break;
+                }
+            case Compatibility c:
+                {
+                    var p1 = ChartSet.GetPerson(c.ID1);
+                    var p2 = ChartSet.GetPerson(c.ID2);
+                    URL += $"t=c&p1={p1.Name}&p2={p2.Name}&b1={p1.Birthdate:yyyy-MM-dd}&b2={p2.Birthdate:yyyy-MM-dd}";
+                    break;
+                }
+            case Prediction m:
+                {
+                    var mother = ChartSet.GetPerson(m.MotherID);
+                    URL += $"t=m&c={m.ConceptionDate:yyyy-MM-dd}&m={mother.Name}&b={mother.Birthdate:yyyy-MM-dd}";
+                    break;
+                }
+        }
+
+        await CopyTextToClipboard(URL);
+        Snackbar.Add("Address copied to clipboard", Severity.Normal);
+    }
+
+    private async Task CopyTextToClipboard(string text)
+    {
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
+    private void DoPrevious(MouseEventArgs e) => Startdate = Startdate.AddMonths(-1);
+
+    private void DoNext(MouseEventArgs e) => Enddate = Enddate.AddMonths(1);
+
+    private void DoChangeChartDate(MouseEventArgs e)
+    {
+        Chartdate = Startdate;
+        ChangeChartdateDialogIsVisible = true;
+    }
+
+    private void DoChange(MouseEventArgs e)
+    {
+        ChangeChartdateDialogIsVisible = false;
+        Startdate = new DateTime(Chartdate.Value.Year, Chartdate.Value.Month, 1);
+        Enddate = Startdate.AddMonths(1);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
+        Enddate = Startdate.AddMonths(1);
+        //var qs = new Uri(NavManager.Uri).GetComponents(UriComponents.Query, UriFormat.Unescaped);
+        var nvc = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
+        var qd = nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
+        Current = await ChartSet.Load(LocalStorage, qd);
+    }
+}

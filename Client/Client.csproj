@@ -8,25 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Shared\ChartBuilder.Double.cs" />
-    <Compile Remove="Shared\ChartBuilder.OneMonth.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Shared\Chart.OneMonth.razor" />
-    <Content Remove="Shared\Chart.razor" />
-    <Content Remove="Shared\FAQ.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-    <PackageReference Include="MatBlazor" Version="2.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+    <PackageReference Include="MudBlazor" Version="6.11.1" />
   </ItemGroup>
 
 </Project>

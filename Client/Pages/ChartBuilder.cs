@@ -2,7 +2,7 @@
 // Copyright (c) Brady P. Merkel. All rights reserved.
 // </copyright>
 
-namespace BiorhythmFun.Client;
+namespace BiorhythmFun.Client.Pages;
 
 using System;
 using System.Collections.Generic;
@@ -107,8 +107,8 @@ public class ChartBuilder : ComponentBase
 
         svg.Children.Add(defs1);
 
-        center = (Height / 2) + Daywidth;
-        amp = Convert.ToInt32((Height / 2) - (Daywidth * 1.5));
+        center = Height / 2 + Daywidth;
+        amp = Convert.ToInt32(Height / 2 - Daywidth * 1.5);
 
         var offset = 0;
         for (var dt = StartDate; dt < EndDate; dt = dt.AddMonths(1))
@@ -202,7 +202,7 @@ public class ChartBuilder : ComponentBase
             group.Children.Add(new text
             {
                 content = $"{day:ddd}",
-                x = (d * Daywidth) + (Daywidth / 2),
+                x = d * Daywidth + Daywidth / 2,
                 y = Daywidth / 2,
                 fill = DarkBlueColor,
                 text_anchor = "middle",
@@ -214,7 +214,7 @@ public class ChartBuilder : ComponentBase
             group.Children.Add(new text
             {
                 content = $"{day:MMM}",
-                x = (d * Daywidth) + (Daywidth / 2),
+                x = d * Daywidth + Daywidth / 2,
                 y = Daywidth,
                 fill = DarkBlueColor,
                 text_anchor = "middle",
@@ -226,7 +226,7 @@ public class ChartBuilder : ComponentBase
             group.Children.Add(new text
             {
                 content = $"{day.Day}",
-                x = (d * Daywidth) + (Daywidth / 2),
+                x = d * Daywidth + Daywidth / 2,
                 y = Daywidth * 1.5,
                 fill = DarkBlueColor,
                 text_anchor = "middle",
@@ -242,7 +242,7 @@ public class ChartBuilder : ComponentBase
         var r = new rect
         {
             x = 0,
-            y = center - (Daywidth / 8),
+            y = center - Daywidth / 8,
             width = daysinmonth * Daywidth,
             height = Daywidth / 4,
             fill = GoldColor,
@@ -264,14 +264,14 @@ public class ChartBuilder : ComponentBase
     {
         const double twopi = 2d * Math.PI;
         var diff = daysdiff - .5d; // offsets the sine wave so it looks nicer
-        var coords = Enumerable.Range(-1, (daysinmonth * 2) + 3)
+        var coords = Enumerable.Range(-1, daysinmonth * 2 + 3)
             .Select(j =>
             {
                 diff += .5d;
                 return new Point
                 {
                     X = Convert.ToInt32(j * Daywidth / 2d),
-                    Y = Convert.ToInt32(center - (amp * Math.Sin(diff / cycle * twopi)))
+                    Y = Convert.ToInt32(center - amp * Math.Sin(diff / cycle * twopi))
                 };
             })
             .ToList();

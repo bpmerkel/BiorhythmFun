@@ -4,24 +4,26 @@
 
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using BiorhythmFun.Client;
-using MatBlazor;
 using Blazored.LocalStorage;
+using MudBlazor.Services;
+using MudBlazor;
+using BiorhythmFun.Client.Pages;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddBlazoredLocalStorageAsSingleton();
-builder.Services.AddMatBlazor();
-builder.Services.AddMatToaster(config =>
-{
-    config.Position = MatToastPosition.BottomRight;
-    config.PreventDuplicates = true;
-    config.NewestOnTop = true;
-    config.ShowCloseButton = true;
-    config.MaximumOpacity = 95;
-    config.VisibleStateDuration = 3000;
-});
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 5000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
 
 var app = builder.Build();
 await app.RunAsync();

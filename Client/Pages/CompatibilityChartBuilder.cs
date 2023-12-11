@@ -2,7 +2,7 @@
 // Copyright (c) Brady P. Merkel. All rights reserved.
 // </copyright>
 
-namespace BiorhythmFun.Client;
+namespace BiorhythmFun.Client.Pages;
 
 using System;
 using BiorthymFun.Client.Svg;
@@ -85,9 +85,9 @@ public class CompatibilityChartBuilder : ComponentBase
         svg.Children.Add(defs1);
 
         var daysdiff = Math.Abs((Birthdate1.Date - Birthdate2.Date).TotalDays);
-        var p = 1d - (daysdiff % 23d) / 23d;
-        var e = 1d - (daysdiff % 28d) / 28d;
-        var i = 1d - (daysdiff % 33d) / 33d;
+        var p = 1d - daysdiff % 23d / 23d;
+        var e = 1d - daysdiff % 28d / 28d;
+        var i = 1d - daysdiff % 33d / 33d;
 
         // draw frame and background
         svg.Children.Add(new rect { x = 0, y = 0, width = Width, height = Height, fill = "url('#grad1')", stroke_width = 3, stroke = "#BBBBBB" });

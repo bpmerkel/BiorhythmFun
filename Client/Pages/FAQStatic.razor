@@ -97,9 +97,7 @@
             </MudText>
         </TitleContent>
         <ChildContent>
-            <MudText Typo="Typo.body1" GutterBottom="true">
-                Version @GetVersion()
-            </MudText>
+            This is version @GetVersion()
         </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
@@ -109,6 +107,6 @@
     {
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         var buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
-        return $"{version} - {buildDate:ddd MM-dd-yyyy hh\\:mm tt}";
+        return $"{version}, built on {buildDate:ddd MM-dd-yyyy hh\\:mm tt}";
     }
 }

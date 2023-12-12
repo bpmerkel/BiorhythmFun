@@ -52,7 +52,7 @@
             {
                 <MudListItem Class="pt-0 pb-0">
                     <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
-                </MudListItem>
+                    </MudListItem>
             }
         </MudList>
     </DialogContent>
@@ -72,7 +72,7 @@
             {
                 <MudListItem Class="pt-0 pb-0">
                     <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
-                </MudListItem>
+                    </MudListItem>
             }
         </MudList>
     </DialogContent>
@@ -272,19 +272,21 @@
                 <MudCardHeader Class="pb-0">
                     <CardHeaderContent>
                         <MudText Typo="Typo.h6">@person.Name</MudText>
-                        <MudSpacer />
-                        <MudText GutterBottom="false">@($"Born {person.Birthdate:dddd MMMM dd, yyyy}")</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPerson(person))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePerson(person))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(person))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
-                </MudCardContent>
-            </MudCard>
+                            <MudSpacer />
+                            <MudText GutterBottom="false">@($"Born {person.Birthdate:dddd MMMM dd, yyyy}")</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPerson(person))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePerson(person))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(person))" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0">
+                        <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                            <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                        </Animate>
+                    </MudCardContent>
+                </MudCard>
         }
         else if (Current is Group group)
         {
@@ -308,8 +310,10 @@
                                     <MudText GutterBottom="false">@p.Name</MudText>
                                 </CardHeaderContent>
                             </MudCardHeader>
-                                <MudCardContent Class="pl-0 pt-0 pb-0">
-                                <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                            <MudCardContent Class="pl-0 pt-0 pb-0">
+                                <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                    <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                                </Animate>
                             </MudCardContent>
                         </MudCard>
                     }
@@ -327,30 +331,34 @@
             <MudCard>
                 <MudCardHeader Class="pb-0">
                     <CardHeaderContent>
-                    <MudText Typo="Typo.h6">@prediction.Name</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPrediction(prediction))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(prediction))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <MudText>
-                        Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
-                        concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
-                        Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
-                        When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
-                        When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
-                    </MudText>
-                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
-                    <MudText>
-                        Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
-                        Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
-                    </MudText>
-                    <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
+                        <MudText Typo="Typo.h6">@prediction.Name</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPrediction(prediction))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(prediction))" />
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent Class="pt-0">
+                        <MudText>
+                            Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
+                            concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
+                            Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
+                            When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
+                            When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
+                        </MudText>
+                        <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
+                        </Animate>
+                        <MudText>
+                            Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
+                            Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
+                        </MudText>
+                        <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
+                        </Animate>
                 </MudCardContent>
-            </MudCard>
+                </MudCard>
         }
         else if (Current is Compatibility compat)
         {
@@ -368,7 +376,9 @@
                     </CardHeaderActions>
                 </MudCardHeader>
                 <MudCardContent Class="pt-0">
-                    <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
+                    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                        <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
+                    </Animate>
                 </MudCardContent>
             </MudCard>
         }

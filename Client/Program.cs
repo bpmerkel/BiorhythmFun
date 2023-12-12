@@ -8,6 +8,7 @@ using Blazored.LocalStorage;
 using MudBlazor.Services;
 using MudBlazor;
 using BiorhythmFun.Client.Pages;
+using BlazorAnimate;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddBlazoredLocalStorageAsSingleton();
@@ -23,6 +24,11 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.HideTransitionDuration = 500;
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
+builder.Services.Configure<AnimateOptions>(options =>
+{
+    options.Animation = Animations.FadeDown;
+    options.Duration = TimeSpan.FromMilliseconds(100);
 });
 
 var app = builder.Build();

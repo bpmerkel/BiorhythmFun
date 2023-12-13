@@ -186,7 +186,20 @@ public class ChartBuilder : ComponentBase
         // draw the day grid
         for (var d = 0; d < daysinmonth; d++)
         {
-            group.Children.Add(new rect { width = Daywidth, height = Height, x = d * Daywidth, y = 0, fill = "url(#grad1)", stroke_width = 0 });
+            group.Children.Add(new rect
+            {
+                width = Daywidth,
+                height = Height,
+                x = d * Daywidth,
+                y = 0,
+                fill = "url(#grad1)",
+                stroke_width = 0,
+                fill_opacity = 0d,
+                Children = new[]
+                {
+                    new animate { id = $"b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"b{d-1}.end", dur = "50ms", repeatCount = "1" },
+                }
+            });
         }
 
         // color the chart date only in the right month
@@ -259,7 +272,7 @@ public class ChartBuilder : ComponentBase
                 opacity = 0d,
                 Children = new[]
                 {
-                    new animate { id = $"wd{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
+                    new animate { attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
                 }
             });
             day = day.AddDays(1);
@@ -304,19 +317,29 @@ public class ChartBuilder : ComponentBase
 
         // draw a smooth curve
         var length = (Daywidth + 4) * daysinmonth;
+        var id = $"c{cycle}";
+        var begin = cycle switch
+        {
+            23 => "1s",
+            28 => "c23.begin+.5s",
+            33 => "c28.begin+.5s"
+        };
+
         var p = new path
         {
             d = $"M {coords[0].X},{coords[0].Y} L " + string.Join(" ", coords.Skip(1).Select(pt => $"{pt.X},{pt.Y}")),
             stroke = color,
             stroke_width = Daywidth / 3,
-            // stroke_linecap = StrokeLinecap.square,
             fill = Transparent,
             filter = "url(#dropShadow)",
             stroke_dasharray = $"{length}",
-            stroke_linecap = StrokeLinecap.round
+            stroke_linecap = StrokeLinecap.round,
+            stroke_dashoffset = length,
+            Children = new[]
+            {
+                new animate { id = id, attributeName = "stroke-dashoffset", from = length, to = 0, begin = begin, dur = "1.5s", repeatCount = "1" },
+            }
         };
-
-        //p.Children.Add(new animate { attributeName = "stroke-dashoffset", values = $"{length};0", dur = 1.0, repeatCount = "1" });
 
         return (p, coords);
     }

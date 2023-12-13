@@ -1,6 +1,7 @@
 ﻿namespace BiorthymFun.Client.Svg;
 
-public class defs
+public class defs : IBaseElement
 {
-    public ICollection<object> Children { get; set; } = new List<object>();
+    public string id { get; set; }
+    public ICollection<IBaseElement> Children { get; set; } = [];
 }

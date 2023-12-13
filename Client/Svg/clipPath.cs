@@ -1,7 +1,7 @@
 ﻿namespace BiorthymFun.Client.Svg;
 
-public class clipPath
+public class clipPath : IBaseElement
 {
-    public string id { get; set; } = null;
-    public ICollection<object> Children { get; set; } = new List<object>();
+    public string id { get; set; }
+    public ICollection<IBaseElement> Children { get; set; } = [];
 }

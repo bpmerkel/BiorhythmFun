@@ -192,7 +192,19 @@ public class ChartBuilder : ComponentBase
         // color the chart date only in the right month
         if (chartdate.Year == DateTime.Today.Year && chartdate.Month == DateTime.Today.Month)
         {
-            group.Children.Add(new rect { width = Daywidth, height = Height, fill = LighBlueColor, x = Daywidth * (DateTime.Today.Day - 1), y = 0 });
+            group.Children.Add(new rect
+            {
+                width = Daywidth,
+                height = Height,
+                fill = LighBlueColor,
+                x = Daywidth * (DateTime.Today.Day - 1),
+                y = 0,
+                fill_opacity = 0d,
+                Children = new[]
+                {
+                    new animate { attributeName = "fill-opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1" }
+                }
+            });
         }
 
         // draw the day numbers
@@ -209,7 +221,12 @@ public class ChartBuilder : ComponentBase
                 dominant_baseline = "middle",
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
-                font_weight = "normal"
+                font_weight = "normal",
+                opacity = 0d,
+                Children = new[]
+                {
+                    new animate { id = $"day{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = d == 0 ? "0s" : $"day{d-1}.end" }
+                }
             });
             group.Children.Add(new text
             {
@@ -221,7 +238,12 @@ public class ChartBuilder : ComponentBase
                 dominant_baseline = "middle",
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
-                font_weight = "normal"
+                font_weight = "normal",
+                opacity = 0d,
+                Children = new[]
+                {
+                    new animate { id = $"mon{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"day{d}.end" }
+                }
             });
             group.Children.Add(new text
             {
@@ -233,13 +255,18 @@ public class ChartBuilder : ComponentBase
                 dominant_baseline = "middle",
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
-                font_weight = "normal"
+                font_weight = "normal",
+                opacity = 0d,
+                Children = new[]
+                {
+                    new animate { id = $"wd{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
+                }
             });
             day = day.AddDays(1);
         }
 
         // draw the critical line (note: can't use dropshadow filter on 'line' element)
-        var r = new rect
+        group.Children.Add(new rect
         {
             x = 0,
             y = center - Daywidth / 8,
@@ -248,12 +275,11 @@ public class ChartBuilder : ComponentBase
             fill = GoldColor,
             stroke_width = 0,
             filter = "url(#dropShadow)",
-            stroke_dasharray = $"{daysinmonth * Daywidth}",
-            stroke_linecap = StrokeLinecap.round
-        };
-
-        //r.Children.Add(new animate { attributeName = "stroke-dashoffset", values = $"{daysinmonth * Daywidth};0", dur = 1.0, repeatCount = "1" });
-        group.Children.Add(r);
+            Children = new[]
+            {
+                new animate { attributeName = "width", from = 0d, to = daysinmonth * Daywidth, dur = "1.5s", repeatCount = "1" },
+            }
+        });
 
         group.Children.Add(new rect { x = 0, y = 0, width = daysinmonth * Daywidth, height = Height, fill = Transparent, stroke_width = 3, stroke = "#CCCCCC" });
 
@@ -388,13 +414,20 @@ public class ChartBuilder : ComponentBase
             {
                 cx = cc,
                 cy = center,
-                r = Daywidth / 3,
+                r = Daywidth / 3d,
                 fill = Transparent,
                 stroke = GoldColor,
                 stroke_width = 5,
                 stroke_dasharray = "50.265",
-                stroke_linecap = StrokeLinecap.round
+                stroke_linecap = StrokeLinecap.round,
+                opacity = 0d,
                 // filter = "url(#dropShadow)" // squares off corners too!
+                Children = new[]
+                {
+                    new animate { attributeName = "r", from = 0d, to = Daywidth / 3d, dur = "1.5s", repeatCount = "1" },
+                    new animate { attributeName = "stroke-width", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1", additive = "sum" },
+                    new animate { attributeName = "opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1", additive = "sum" }
+                }
             };
 
             //c.Children.Add(new animate { attributeName = "stroke-dashoffset", values = "50.265;0", dur = .75, repeatCount = "3" });
@@ -419,7 +452,13 @@ public class ChartBuilder : ComponentBase
         font_size = Daywidth,
         content = text,
         fill = color,
-        filter = "url(#dropShadow)"
+        filter = "url(#dropShadow)",
+        opacity = 0d,
+        Children = new[]
+        {
+            new animate { attributeName = "x", from = 0d, to = x, dur = "2s", repeatCount = "1" },
+            new animate { attributeName = "opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1", additive = "sum" }
+        }
     };
 
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";

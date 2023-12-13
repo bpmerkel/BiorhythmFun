@@ -1,21 +1,21 @@
 ﻿namespace BiorthymFun.Client.Svg;
 
-public class filter
+public class filter : IBaseElement
 {
-    public string id { get; set; } = null;
+    public string id { get; set; }
     // "units to define filter effect region"
-    public string filterUnits { get; set; } = null;
+    public string filterUnits { get; set; }
     // "units to define primitive filter subregion"
-    public string primitiveUnits { get; set; } = null;
+    public string primitiveUnits { get; set; }
     // "x-axis co-ordinate"
-    public string x { get; set; } = null;
+    public string x { get; set; }
     // "y-axis co-ordinate"
-    public string y { get; set; } = null;
+    public string y { get; set; }
     // "length"
-    public string width { get; set; } = null;
+    public string width { get; set; }
     // "length"
-    public string height { get; set; } = null;
+    public string height { get; set; }
     // "numbers for filter region"
-    public string filterRes { get; set; } = null;
-    public ICollection<object> Children { get; set; } = new List<object>();
+    public string filterRes { get; set; }
+    public ICollection<IBaseElement> Children { get; set; } = [];
 }

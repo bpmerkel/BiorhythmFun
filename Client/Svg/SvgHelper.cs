@@ -98,12 +98,12 @@ public class SvgHelper
         var Children = _Item.GetType().GetProperty("Children");
         if (Children is not null)
         {
-            var children = Children.GetValue(_Item) as List<object>;
+            var children = Children.GetValue(_Item) as ICollection<IBaseElement>;
             if (children is not null && children.Any())
             {
-                foreach (object item in children)
+                foreach (IBaseElement item in children)
                 {
-                    Render(item, k++, builder, Par_ID); ;
+                    Render(item, k++, builder, Par_ID);
                 }
             }
         }

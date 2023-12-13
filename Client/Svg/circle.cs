@@ -2,14 +2,15 @@
 
 public class circle : strokeBase, IBaseElement, IEventBase
 {
-    public string id { get; set; } = null;
+    public string id { get; set; }
     public double cx { get; set; } = double.NaN;
     public double cy { get; set; } = double.NaN;
     public double r { get; set; } = double.NaN;
-    public string fill { get; set; } = null;
-    public string filter { get; set; } = null;
-    public string transform { get; set; } = null;
-    public ICollection<object> Children { get; set; } = new List<object>();
+    public string fill { get; set; }
+    public string filter { get; set; }
+    public string transform { get; set; }
+    public double opacity { get; set; } = 1d;
+    public ICollection<IBaseElement> Children { get; set; } = [];
     public BoolOptionsEnum onclick { get; set; } = BoolOptionsEnum.none;
     public BoolOptionsEnum StopPropagation { get; set; } = BoolOptionsEnum.none;
 }

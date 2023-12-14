@@ -442,7 +442,7 @@
 
     public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
 
-    public void ShowCycleInfo((ChartBuilder chart, DateTime day) args)
+    public void ShowCycleInfo((ChartBuilder chart, DateTime day, int x, int y) args)
     {
         Snackbar.Add($"You clicked {args.day:MM/dd/yyyy} for chart {args.chart.BirthDate:MM/dd/yyyy}", Severity.Normal);
     }

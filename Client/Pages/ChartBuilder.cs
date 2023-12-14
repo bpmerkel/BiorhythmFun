@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Security.Principal;
 using BiorthymFun.Client.Svg;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
@@ -52,11 +51,11 @@ public class ChartBuilder : ComponentBase
     /// </summary>
     [Parameter] public ChartType Type { get; set; } = ChartType.Standard;
 
-    [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
-    private static EventCallback<(ChartBuilder, DateTime, int, int, int, int)> onCycleHover;
+    [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
+    private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
     
-    [Parameter] public EventCallback<(ChartBuilder, DateTime)> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
-    private static EventCallback<(ChartBuilder, DateTime)> onCycleClick;
+    [Parameter] public EventCallback<(ChartBuilder, DateTime, int x, int y)> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
+    private static EventCallback<(ChartBuilder, DateTime, int x, int y)> onCycleClick;
 
     private const int Daywidth = 25;
     private const string FontFamily = "arial";
@@ -79,7 +78,7 @@ public class ChartBuilder : ComponentBase
 
     protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Render(Chart(), 0, builder);
 
-    private static Dictionary<string, ChartBuilder> ChartRegistry = [];
+    private static readonly Dictionary<string, ChartBuilder> ChartRegistry = [];
 
     private string genID()
     {
@@ -94,7 +93,9 @@ public class ChartBuilder : ComponentBase
         {
             id = genID(),
             height = Height,
-            xmlns = "http://www.w3.org/2000/svg"
+            xmlns = "http://www.w3.org/2000/svg",
+            onclick = GenerateOnclickCallback()
+            //onmouseover = $"DotNet.invokeMethod('{Assembly.GetExecutingAssembly().GetName().Name}', '{nameof(IdentifyCycle)}', '{id}', evt.offsetX, evt.offsetY)",
         };
 
         var defs1 = new defs();
@@ -189,12 +190,16 @@ public class ChartBuilder : ComponentBase
         return (group, width);
     }
 
+    private string GenerateOnclickCallback()
+    {
+        return $"DotNet.invokeMethod('{Assembly.GetExecutingAssembly().GetName().Name}', '{nameof(IdentifyDay)}', '{id}', evt.offsetX, evt.offsetY)";
+    }
+
     private g DrawBackground(DateTime chartdate)
     {
         var group = new g();
 
         // draw the day grid
-        var day = chartdate;
         for (var d = 0; d < daysinmonth; d++)
         {
             group.Children.Add(new rect
@@ -206,14 +211,11 @@ public class ChartBuilder : ComponentBase
                 fill = "url(#grad1)",
                 stroke_width = 0,
                 fill_opacity = 0d,
-                //onmouseover = $"DotNet.invokeMethod('{Assembly.GetExecutingAssembly().GetName().Name}', '{nameof(IdentifyCycle)}', '{id}', {day:MM/dd/yyyy}', evt.x, evt.y, evt.screenX, evt.screenY)",
-                onclick = $"DotNet.invokeMethod('{Assembly.GetExecutingAssembly().GetName().Name}', '{nameof(IdentifyDay)}', '{id}', '{day:MM/dd/yyyy}')",
                 Children = new[]
                 {
                     new animate { id = $"b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"b{d-1}.end", dur = "50ms", repeatCount = "1" },
                 }
             });
-            day = day.AddDays(1);
         }
 
         // color the chart date only in the right month
@@ -235,7 +237,7 @@ public class ChartBuilder : ComponentBase
         }
 
         // draw the day numbers
-        day = chartdate;
+        var day = chartdate;
         for (var d = 0; d < daysinmonth; d++)
         {
             group.Children.Add(new text
@@ -360,19 +362,23 @@ public class ChartBuilder : ComponentBase
     }
 
     [JSInvokable]
-    public static void IdentifyCycle(string id, string dayString, int x, int y, int screenX, int screenY)
+    public static void IdentifyCycle(string id, int x, int y)
     {
         var instance = ChartRegistry[id];
-        var day = DateTime.Parse(dayString);
-        onCycleHover.InvokeAsync((instance, day, x, y, screenX, screenY));
+        // compute the day based on the click x,y
+        var days = x / Daywidth;
+        var day = instance.StartDate.AddDays(days);
+        onCycleHover.InvokeAsync((instance, day, x, y));
     }
 
     [JSInvokable]
-    public static void IdentifyDay(string id, string dayString)
+    public static void IdentifyDay(string id, int x, int y)
     {
         var instance = ChartRegistry[id];
-        var day = DateTime.Parse(dayString);
-        onCycleClick.InvokeAsync((instance, day));
+        // compute the day based on the click x,y
+        var days = x / Daywidth;
+        var day = instance.StartDate.AddDays(days);
+        onCycleClick.InvokeAsync((instance, day, x, y));
     }
 
     private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip)

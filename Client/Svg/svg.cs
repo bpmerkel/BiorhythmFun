@@ -10,7 +10,7 @@ public class svg : IBaseElement
     public string transform { get; set; }
     public string viewBox { get; set; }
     public string preserveAspectRatio { get; set; }
-    public BoolOptionsEnum onclick { get; set; } = BoolOptionsEnum.none;
+    public string onclick { get; set; }
     public BoolOptionsEnum StopPropagation { get; set; } = BoolOptionsEnum.none;
     public ICollection<IBaseElement> Children { get; set; } = [];
 }

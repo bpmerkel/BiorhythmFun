@@ -10,6 +10,6 @@ public class g : strokeBase, IBaseElement, IEventBase
     public string clip_path { get; set; }
     public string transform { get; set; }
     public ICollection<IBaseElement> Children { get; set; } = [];
-    public BoolOptionsEnum onclick { get; set; } = BoolOptionsEnum.none;
+    public string onclick { get; set; }
     public BoolOptionsEnum StopPropagation { get; set; } = BoolOptionsEnum.none;
 }

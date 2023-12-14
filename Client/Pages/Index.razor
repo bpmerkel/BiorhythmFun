@@ -3,7 +3,6 @@
 @using BiorhythmFun.Client.Model
 @using Blazored.LocalStorage
 @using System.Web
-@inject ISnackbar Snackbar
 
 <MudDialog IsVisible="@AddPersonDialogIsVisible">
     <TitleContent>Add Person</TitleContent>
@@ -283,7 +282,7 @@
                     </MudCardHeader>
                     <MudCardContent Class="pt-0">
                         <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                            <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                            <ChartBuilder Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" OnCycleClick="ShowCycleInfo" Height="200" />
                         </Animate>
                     </MudCardContent>
                 </MudCard>
@@ -312,7 +311,7 @@
                             </MudCardHeader>
                             <MudCardContent Class="pl-0 pt-0 pb-0">
                                 <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                                    <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" Height="200" />
+                                        <ChartBuilder Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" OnCycleClick="ShowCycleInfo" Height="200" />
                                 </Animate>
                             </MudCardContent>
                         </MudCard>
@@ -348,14 +347,14 @@
                             When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
                         </MudText>
                         <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
+                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" OnCycleClick="ShowCycleInfo" Height="200" Type="@ChartBuilder.ChartType.GenderPrediction" />
                         </Animate>
                         <MudText>
                             Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
                             Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
                         </MudText>
                         <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
+                            <ChartBuilder Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" OnCycleClick="ShowCycleInfo" Height="200" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
                         </Animate>
                 </MudCardContent>
                 </MudCard>
@@ -390,6 +389,8 @@
     [Inject] public ILocalStorageService LocalStorage { get; set; }
     [Inject] public IJSRuntime JsRuntime { get; set; }
     [Inject] public NavigationManager NavManager { get; set; }
+    [Inject] public ISnackbar Snackbar { get; set; }
+
     public Set ChartSet { get; init; } = new();
 
     private ChartableBase Current = default!;
@@ -440,6 +441,11 @@
     private DateTime Enddate;
 
     public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
+
+    public void ShowCycleInfo((ChartBuilder chart, DateTime day) args)
+    {
+        Snackbar.Add($"You clicked {args.day:MM/dd/yyyy} for chart {args.chart.BirthDate:MM/dd/yyyy}", Severity.Normal);
+    }
 
     private void DoAddPerson(MouseEventArgs e)
     {

@@ -13,7 +13,8 @@ public class rect : strokeBase, IBaseElement, IEventBase
     public string fill { get; set; }
     public string filter { get; set; }
     public double fill_opacity { get; set; } = 1d;
-    public BoolOptionsEnum onclick { get; set; } = BoolOptionsEnum.none;
+    public string onclick { get; set; }
+    public string onmouseover { get; set; }
     public BoolOptionsEnum StopPropagation { get; set; } = BoolOptionsEnum.none;
     public ICollection<IBaseElement> Children { get; set; } = [];
 }

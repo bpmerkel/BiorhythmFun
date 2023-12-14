@@ -11,6 +11,6 @@ public class circle : strokeBase, IBaseElement, IEventBase
     public string transform { get; set; }
     public double opacity { get; set; } = 1d;
     public ICollection<IBaseElement> Children { get; set; } = [];
-    public BoolOptionsEnum onclick { get; set; } = BoolOptionsEnum.none;
+    public string onclick { get; set; }
     public BoolOptionsEnum StopPropagation { get; set; } = BoolOptionsEnum.none;
 }

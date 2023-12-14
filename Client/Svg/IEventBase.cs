@@ -2,7 +2,7 @@
 
 public interface IEventBase
 {
-    public BoolOptionsEnum onclick { get; set; }
+    public string onclick { get; set; }
 
     public BoolOptionsEnum StopPropagation { get; set; }
 }

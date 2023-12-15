@@ -442,9 +442,9 @@
 
     public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
 
-    public void ShowCycleInfo((ChartBuilder chart, DateTime day, int x, int y) args)
+    public void ShowCycleInfo(ChartClickEventArgs args)
     {
-        Snackbar.Add($"You clicked {args.day:MM/dd/yyyy} for chart {args.chart.BirthDate:MM/dd/yyyy}", Severity.Normal);
+        Snackbar.Add($"You clicked {args.Date:MM/dd/yyyy} for chart {args.Chart.BirthDate:MM/dd/yyyy} {(args.IsCritical ? "Critical" : "Normal")}", Severity.Normal);
     }
 
     private void DoAddPerson(MouseEventArgs e)

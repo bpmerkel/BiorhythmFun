@@ -54,10 +54,11 @@ public class ChartBuilder : ComponentBase
     [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
     private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
     
-    [Parameter] public EventCallback<(ChartBuilder, DateTime, int x, int y)> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
-    private static EventCallback<(ChartBuilder, DateTime, int x, int y)> onCycleClick;
+    [Parameter] public EventCallback<ChartClickEventArgs> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
+    private static EventCallback<ChartClickEventArgs> onCycleClick;
 
     private const int Daywidth = 25;
+    private const double twopi = 2d * Math.PI;
     private const string FontFamily = "arial";
     private const string ShadowColor = "#707070";
     private const string RedColor = "#FF0000";
@@ -70,6 +71,7 @@ public class ChartBuilder : ComponentBase
     private static readonly string DarkBlueColor = FromRgb(0, 0, 140);
     private static readonly string GradientStartColor = FromRgb(102, 217, 255);
     private static readonly string GradientEndColor = FromRgb(179, 236, 255);
+
     private int daysinmonth;
     private int daysdiff;
     private int center;
@@ -188,11 +190,6 @@ public class ChartBuilder : ComponentBase
         group.Children.Add(pi);
         group.Children.Add(gl);
         return (group, width);
-    }
-
-    private string GenerateOnclickCallback()
-    {
-        return $"DotNet.invokeMethod('{Assembly.GetExecutingAssembly().GetName().Name}', '{nameof(IdentifyDay)}', '{id}', evt.offsetX, evt.offsetY)";
     }
 
     private g DrawBackground(DateTime chartdate)
@@ -317,7 +314,6 @@ public class ChartBuilder : ComponentBase
 
     private (path, IList<Point>) DrawCycle(string color, int cycle)
     {
-        const double twopi = 2d * Math.PI;
         var diff = daysdiff - .5d; // offsets the sine wave so it looks nicer
         var coords = Enumerable.Range(-1, daysinmonth * 2 + 3)
             .Select(j =>
@@ -361,6 +357,13 @@ public class ChartBuilder : ComponentBase
         return (p, coords);
     }
 
+    private string GenerateOnclickCallback()
+    {
+        var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+        var method = nameof(IdentifyDay);
+        return $"DotNet.invokeMethod('{assemblyName}', '{method}', '{id}', evt.offsetX, evt.offsetY)";
+    }
+
     [JSInvokable]
     public static void IdentifyCycle(string id, int x, int y)
     {
@@ -378,7 +381,19 @@ public class ChartBuilder : ComponentBase
         // compute the day based on the click x,y
         var days = x / Daywidth;
         var day = instance.StartDate.AddDays(days);
-        onCycleClick.InvokeAsync((instance, day, x, y));
+        var args = new ChartClickEventArgs { Chart = instance, Date = day, X = x, Y = y };
+
+        // compute the chart percentages
+        var diff = (day - instance.BirthDate).TotalDays;
+        args.Physical = Convert.ToInt32(100 * Math.Sin(diff / 23d * twopi));
+        args.Emotional = Convert.ToInt32(100 * Math.Sin(diff / 28d * twopi));
+        args.Intellectual = Convert.ToInt32(100 * Math.Sin(diff / 33d * twopi));
+
+        // set whether the date is a critical day
+        args.IsCritical = args.Physical == 0 || args.Emotional == 0 || args.Intellectual == 0
+            || Math.Abs(args.Physical) <= 14 || Math.Abs(args.Intellectual) <= 10;
+
+        onCycleClick.InvokeAsync(args);
     }
 
     private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip)
@@ -521,4 +536,16 @@ public class ChartBuilder : ComponentBase
     };
 
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
+}
+
+public class ChartClickEventArgs
+{
+    public ChartBuilder Chart { get; set; }
+    public DateTime Date { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int Physical { get; set; }
+    public int Emotional { get; set; }
+    public int Intellectual { get; set; }
+    public bool IsCritical { get; set; }
 }

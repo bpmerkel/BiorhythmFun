@@ -87,7 +87,12 @@
             </MudText>
         </TitleContent>
         <ChildContent>
-            Critical days occur when a cycle transitions from plus to minus, or vice versa. The critical days are not, in themselves, dangerous. Rather, they are days during which an individual’s reaction to their environment may bring about a critical situation. Critical days are switch-point days when individuals tend to exhibit a degree of instability. People should be very careful on their critical days, and when two or more cycles occur on the same day, a person should be extra cautious.
+            Critical days occur when a cycle transitions from plus to minus, or vice versa.
+            The critical days are not, in themselves, dangerous. Rather, they are days during which an
+            individual’s reaction to their environment may bring about a critical situation.
+            Critical days are switch-point days when individuals tend to exhibit a degree of instability.
+            People should be very careful on their critical days, and when two or more cycles occur on
+            the same day, a person should be extra cautious.
         </ChildContent>
     </MudExpansionPanel>
     <MudExpansionPanel Text="Panel One" IsExpanded="true">
@@ -97,16 +102,24 @@
             </MudText>
         </TitleContent>
         <ChildContent>
-            This is version @GetVersion()
+            This is version @Version
         </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
 
 @code {
-    string GetVersion()
+    string version;
+    string Version
     {
-        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-        var buildDate = new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
-        return $"{version}, built on {buildDate:ddd MM-dd-yyyy hh\\:mm tt}";
+        get
+        {
+            if (version == null)
+            {
+                var build = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                var buildDate = new DateTime(2000, 1, 1).AddDays(build.Build).AddSeconds(build.Revision * 2);
+                version = $"{build}, built on {buildDate:ddd MM-dd-yyyy hh\\:mm tt}";
+            }
+            return version;
+        }
     }
 }

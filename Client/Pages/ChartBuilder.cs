@@ -44,6 +44,11 @@ public class ChartBuilder : ComponentBase
     /// </summary>
     [Parameter] public int Height { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Chart name
+    /// </summary>
+    [Parameter] public string Name { get; set; }
+
     public enum ChartType { Standard, GenderPrediction, BirthdatePrediction }
 
     /// <summary>
@@ -381,17 +386,22 @@ public class ChartBuilder : ComponentBase
         // compute the day based on the click x,y
         var days = x / Daywidth;
         var day = instance.StartDate.AddDays(days);
-        var args = new ChartClickEventArgs { Chart = instance, Date = day, X = x, Y = y };
-
-        // compute the chart percentages
         var diff = (day - instance.BirthDate).TotalDays;
-        args.Physical = Convert.ToInt32(100 * Math.Sin(diff / 23d * twopi));
-        args.Emotional = Convert.ToInt32(100 * Math.Sin(diff / 28d * twopi));
-        args.Intellectual = Convert.ToInt32(100 * Math.Sin(diff / 33d * twopi));
+        var args = new ChartClickEventArgs { Chart = instance, Date = day, X = x, Y = y, DaysDiff = Convert.ToInt32(diff) };
 
-        // set whether the date is a critical day
-        args.IsCritical = args.Physical == 0 || args.Emotional == 0 || args.Intellectual == 0
-            || Math.Abs(args.Physical) <= 14 || Math.Abs(args.Intellectual) <= 10;
+        // compute the chart status
+        var physical = Math.Sin(diff / 23d * twopi);
+        var emotional = Math.Sin(diff / 28d * twopi);
+        var intellectual = Math.Sin(diff / 33d * twopi);
+        args.Physical = physical < -.14d ? ChartClickEventArgs.CycleStatus.Negative
+            : physical > .14d ? ChartClickEventArgs.CycleStatus.Positive
+            : ChartClickEventArgs.CycleStatus.Critical;
+        args.Emotional = emotional < -.01d ? ChartClickEventArgs.CycleStatus.Negative
+            : emotional > .01d ? ChartClickEventArgs.CycleStatus.Positive
+            : ChartClickEventArgs.CycleStatus.Critical;
+        args.Intellectual = intellectual < -.10d ? ChartClickEventArgs.CycleStatus.Negative
+            : intellectual > .10d ? ChartClickEventArgs.CycleStatus.Positive
+            : ChartClickEventArgs.CycleStatus.Critical;
 
         onCycleClick.InvokeAsync(args);
     }
@@ -540,12 +550,13 @@ public class ChartBuilder : ComponentBase
 
 public class ChartClickEventArgs
 {
+    public enum CycleStatus { Positive, Negative, Critical }
     public ChartBuilder Chart { get; set; }
     public DateTime Date { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
-    public int Physical { get; set; }
-    public int Emotional { get; set; }
-    public int Intellectual { get; set; }
-    public bool IsCritical { get; set; }
+    public int DaysDiff { get; set; }
+    public CycleStatus Physical { get; set; }
+    public CycleStatus Emotional { get; set; }
+    public CycleStatus Intellectual { get; set; }
 }

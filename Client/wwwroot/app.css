@@ -63,18 +63,8 @@ app {
     display: flex;
 }
 
-.FAQContainer .mdc-dialog .mdc-dialog__surface {
-    max-width: 50vw;
-}
-
 .mat-accordion {
     min-width: 60vw;
-}
-
-.FAQContainer {
-    flex: 1;
-    width: 60vw !important;
-    max-width: 60vw !important;
 }
 
 div.ChartContainer {
@@ -110,6 +100,21 @@ div.ChartFull {
 
 .validation-message {
     color: red;
+}
+
+tr {
+    vertical-align: top;
+}
+
+td:nth-child(1) {
+    font-weight: bold;
+    white-space: nowrap;
+    padding-right: 1em;
+    min-width: 17em;
+}
+
+td:nth-child(2) {
+    padding-bottom: 1em;
 }
 
 #blazor-error-ui {

@@ -212,8 +212,8 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="FAQIsVisible">
-    <TitleContent>FAQ</TitleContent>
+<MudDialog IsVisible="FAQIsVisible" Options="FAQDialogOptions">
+    <TitleContent>Frequently Asked Questions</TitleContent>
     <DialogContent>
         <FAQStatic />
     </DialogContent>
@@ -496,6 +496,7 @@
     private DateTime Enddate;
     private bool ShowInfo = false;
     private ChartClickEventArgs cycledata;
+    private DialogOptions FAQDialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.Medium };
 
     public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
 

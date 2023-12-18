@@ -5,11 +5,11 @@ namespace BiorhythmFun.Client.Model;
 public class Set
 {
     private ILocalStorageService LocalStorage { get; set; }
-    public List<Person> People { get; set; } = new();
-    public readonly BoolDictionary GroupPeople = new();
-    public List<Compatibility> CompatibilityCharts { get; set; } = new();
-    public List<Prediction> PredictionCharts { get; set; } = new();
-    public List<Group> Groups { get; set; } = new();
+    public List<Person> People { get; set; } = [];
+    public readonly BoolDictionary GroupPeople = [];
+    public List<Compatibility> CompatibilityCharts { get; set; } = [];
+    public List<Prediction> PredictionCharts { get; set; } = [];
+    public List<Group> Groups { get; set; } = [];
 
     public Person GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
 
@@ -112,7 +112,7 @@ public class Set
     {
         if (LocalStorage != null)
         {
-            await LocalStorage.SetItemAsync("set", this);
+            await LocalStorage.SetItemAsync(nameof(Set), this);
         }
     }
 
@@ -121,8 +121,8 @@ public class Set
         LocalStorage = localStorage;
         try
         {
-            var chartset = await localStorage.GetItemAsync<Set>("set");
-            if (chartset.People.Any())
+            var chartset = await localStorage.GetItemAsync<Set>(nameof(Set));
+            if (chartset?.People?.Any() ?? false)
             {
                 People.AddRange(chartset.People);
                 // update the GroupPeople dictionary
@@ -132,63 +132,65 @@ public class Set
                 CompatibilityCharts.AddRange(chartset.CompatibilityCharts);
                 PredictionCharts.AddRange(chartset.PredictionCharts);
             }
+
+            if ((qd?.Any() ?? false) && qd.ContainsKey("t"))
+            {
+                switch (qd["t"])
+                {
+                    case "p":
+                        // n = name
+                        // b = birthdate
+                        var p = AddPerson(new Person(qd["n"], DateTime.Parse(qd["b"])));
+                        Save();
+                        return p;
+                    case "g":
+                        // n = name
+                        // s = size of group
+                        var size = Convert.ToInt32(qd["s"]);
+                        var ids = Enumerable.Range(1, size)
+                            .Select(i =>
+                            {
+                                var p = AddPerson(new Person(qd[$"p{i}"], DateTime.Parse(qd[$"b{i}"])));
+                                return p.ID;
+                            })
+                            .ToList();
+                        var g = AddGroup(qd["n"], ids);
+                        Save();
+                        return g;
+                    case "c":
+                        // p1 = name of 1st person
+                        // p2 = name of 2nd person
+                        // b1 = birthdate of 1st person
+                        // b2 = birthdate of 2nd person
+                        var two = Enumerable.Range(1, 2)
+                            .Select(i =>
+                            {
+                                var p = AddPerson(new Person(qd[$"p{i}"], DateTime.Parse(qd[$"b{i}"])));
+                                return p.ID;
+                            })
+                            .ToList();
+                        var c = AddCompatibilityChart(two.First(), two.Last());
+                        Save();
+                        return c;
+                    case "m":
+                        // b = mother's birthdate
+                        // c = conception date
+                        var mother = AddPerson(new Person(qd["m"], DateTime.Parse(qd["b"])));
+                        var m = AddPredictionChart(mother.ID, DateTime.Parse(qd["c"]));
+                        Save();
+                        return m;
+                }
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception occurred: {ex}");
+            Console.WriteLine($"Loading local storage exception occurred: {ex}");
             await localStorage.ClearAsync();
         }
 
-        if ((qd?.Any() ?? false) && qd.ContainsKey("t"))
-        {
-            switch (qd["t"])
-            {
-                case "p":
-                    // n = name
-                    // b = birthdate
-                    var p = AddPerson(new Person(qd["n"], DateTime.Parse(qd["b"])));
-                    Save();
-                    return p;
-                case "g":
-                    // n = name
-                    // s = size of group
-                    var size = Convert.ToInt32(qd["s"]);
-                    var ids = Enumerable.Range(1, size)
-                        .Select(i =>
-                        {
-                            var p = AddPerson(new Person(qd[$"p{i}"], DateTime.Parse(qd[$"b{i}"])));
-                            return p.ID;
-                        })
-                        .ToList();
-                    var g = AddGroup(qd["n"], ids);
-                    Save();
-                    return g;
-                case "c":
-                    // p1 = name of 1st person
-                    // p2 = name of 2nd person
-                    // b1 = birthdate of 1st person
-                    // b2 = birthdate of 2nd person
-                    var two = Enumerable.Range(1, 2)
-                        .Select(i =>
-                        {
-                            var p = AddPerson(new Person(qd[$"p{i}"], DateTime.Parse(qd[$"b{i}"])));
-                            return p.ID;
-                        })
-                        .ToList();
-                    var c = AddCompatibilityChart(two.First(), two.Last());
-                    Save();
-                    return c;
-                case "m":
-                    // b = mother's birthdate
-                    // c = conception date
-                    var mother = AddPerson(new Person(qd["m"], DateTime.Parse(qd["b"])));
-                    var m = AddPredictionChart(mother.ID, DateTime.Parse(qd["c"]));
-                    Save();
-                    return m;
-            }
-        }
-
-        return Groups.Any() ? Groups.First() : People.First();
+        return Groups.Any() ? Groups.First()
+            : People.Any() ? People.First()
+            : new Group("Family", []);
     }
 
     public class BoolDictionary : Dictionary<string, bool>

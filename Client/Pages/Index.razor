@@ -822,7 +822,6 @@
     {
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);
         Enddate = Startdate.AddMonths(1);
-        //var qs = new Uri(NavManager.Uri).GetComponents(UriComponents.Query, UriFormat.Unescaped);
         var nvc = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
         var qd = nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
         Current = await ChartSet.Load(LocalStorage, qd);

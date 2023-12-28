@@ -50,7 +50,7 @@
             @foreach (var p in ChartSet.People)
             {
                 <MudListItem Class="pt-0 pb-0">
-                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
+                    <MudCheckBox @bind-Value="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
         </MudList>
@@ -70,7 +70,7 @@
             @foreach (var p in ChartSet.People)
             {
                 <MudListItem Class="pt-0 pb-0">
-                    <MudCheckBox @bind-Checked="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
+                    <MudCheckBox @bind-Value="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
         </MudList>

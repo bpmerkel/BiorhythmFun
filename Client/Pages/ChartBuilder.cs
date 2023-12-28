@@ -40,14 +40,31 @@ public class ChartBuilder : ComponentBase
     [Parameter] public DateTime HighliteDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Height
-    /// </summary>
-    [Parameter] public int Height { get; set; }
-
-    /// <summary>
     /// Gets or sets the Chart name
     /// </summary>
     [Parameter] public string Name { get; set; }
+
+    private int Height = 200;
+    private static int Daywidth = 25;
+    private int sizeAdjust = 0;
+
+    /// <summary>
+    /// Gets or sets the Chart size adjustment
+    /// </summary>
+    [Parameter]
+    public int SizeAdjust
+    {
+        get
+        {
+            return sizeAdjust;
+        }
+        set
+        {
+            sizeAdjust = value;
+            Daywidth = 37 + sizeAdjust * 4;
+            Height = Daywidth * 8;
+        }
+    }
 
     public enum ChartType { Standard, GenderPrediction, BirthdatePrediction }
 
@@ -58,11 +75,10 @@ public class ChartBuilder : ComponentBase
 
     [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
     private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
-    
+
     [Parameter] public EventCallback<ChartClickEventArgs> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
     private static EventCallback<ChartClickEventArgs> onCycleClick;
 
-    private const int Daywidth = 25;
     private const double twopi = 2d * Math.PI;
     private const string FontFamily = "arial";
     private const string ShadowColor = "#707070";
@@ -320,7 +336,7 @@ public class ChartBuilder : ComponentBase
     private (path, IList<Point>) DrawCycle(string color, int cycle)
     {
         var diff = daysdiff - .5d; // offsets the sine wave so it looks nicer
-        var coords = Enumerable.Range(-1, daysinmonth * 2 + 3)
+        var coords = Enumerable.Range(-1, daysinmonth * 2 + 4)
             .Select(j =>
             {
                 diff += .5d;
@@ -332,8 +348,16 @@ public class ChartBuilder : ComponentBase
             })
             .ToList();
 
-        // draw a smooth curve
-        var length = (Daywidth + 4) * daysinmonth;
+        // compute the length of the curve
+        var length = 0d;
+        for (var i = 1; i < coords.Count; i++)
+        {
+            var p1 = coords[i - 1];
+            var p2 = coords[i];
+            length += Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
+        }
+        length = Math.Round(length, 2);
+
         var id = $"c{cycle}";
         var begin = cycle switch
         {
@@ -343,6 +367,7 @@ public class ChartBuilder : ComponentBase
             _ => "1s"
         };
 
+        // draw a smooth curve
         var p = new path
         {
             d = $"M {coords[0].X},{coords[0].Y} L " + string.Join(" ", coords.Skip(1).Select(pt => $"{pt.X},{pt.Y}")),
@@ -505,8 +530,8 @@ public class ChartBuilder : ComponentBase
                 r = Daywidth / 3d,
                 fill = "none",
                 stroke = GoldColor,
-                stroke_width = 5,
-                stroke_dasharray = "50.265",
+                stroke_width = Daywidth / 5d,
+                stroke_dasharray = $"{Daywidth * 2}",
                 stroke_linecap = StrokeLinecap.round,
                 opacity = 0d,
                 // filter = "url(#dropShadow)" // squares off corners too!

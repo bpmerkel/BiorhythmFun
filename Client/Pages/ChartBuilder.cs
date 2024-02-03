@@ -103,7 +103,7 @@ public class ChartBuilder : ComponentBase
 
     private static readonly Dictionary<string, ChartBuilder> ChartRegistry = [];
 
-    private string genID()
+    private string GenID()
     {
         id = $"{BirthDate:MMddyy}{StartDate:MMddyy}{EndDate:MMddyy}{Type}";
         ChartRegistry[id] = this;
@@ -114,7 +114,7 @@ public class ChartBuilder : ComponentBase
     {
         var svg = new svg
         {
-            id = genID(),
+            id = GenID(),
             height = Height,
             xmlns = "http://www.w3.org/2000/svg",
             onclick = GenerateOnclickCallback()

@@ -133,9 +133,9 @@ public class Set
                 PredictionCharts.AddRange(chartset.PredictionCharts);
             }
 
-            if ((qd?.Any() ?? false) && qd.ContainsKey("t"))
+            if (qd.TryGetValue("t", out string value))
             {
-                switch (qd["t"])
+                switch (value)
                 {
                     case "p":
                         // n = name

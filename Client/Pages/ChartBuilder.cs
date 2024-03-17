@@ -147,7 +147,7 @@ public class ChartBuilder : ComponentBase
         var offset = 0;
         for (var dt = StartDate; dt < EndDate; dt = dt.AddMonths(1))
         {
-            var (group, width) = DrawMonth(dt);
+            var (group, width) = DrawMonth(dt, offset == 0);
             if (offset > 0) group.transform = $"translate({offset})";
             svg.Children.Add(group);
             offset += width;
@@ -158,7 +158,7 @@ public class ChartBuilder : ComponentBase
         return svg;
     }
 
-    private (g, int) DrawMonth(DateTime chartdate)
+    private (g, int) DrawMonth(DateTime chartdate, bool withAnimations)
     {
         daysinmonth = DateTime.DaysInMonth(chartdate.Year, chartdate.Month);
         daysdiff = Convert.ToInt32((chartdate.Date - BirthDate.Date).TotalDays) - 1;
@@ -166,12 +166,12 @@ public class ChartBuilder : ComponentBase
         var width = daysinmonth * Daywidth;
         var group = new g { clip_path = $"url(#clipto{daysinmonth})" };
 
-        group.Children.Add(DrawBackground(chartdate));
+        group.Children.Add(DrawBackground(chartdate, withAnimations));
 
-        var (pp, ppts) = DrawCycle(RedColor, 23);
-        var (pe, epts) = DrawCycle(GreenColor, 28);
-        var (pi, ipts) = DrawCycle(BlueColor, 33);
-        var (gl, cpts) = LabelCycles(ppts, epts, ipts);
+        var (pp, ppts) = DrawCycle(RedColor, 23, withAnimations);
+        var (pe, epts) = DrawCycle(GreenColor, 28, withAnimations);
+        var (pi, ipts) = DrawCycle(BlueColor, 33, withAnimations);
+        var (gl, cpts) = LabelCycles(ppts, epts, ipts, withAnimations);
 
         if (Type == ChartType.GenderPrediction)
         {
@@ -213,7 +213,7 @@ public class ChartBuilder : ComponentBase
         return (group, width);
     }
 
-    private g DrawBackground(DateTime chartdate)
+    private g DrawBackground(DateTime chartdate, bool withAnimations)
     {
         var group = new g();
 
@@ -228,11 +228,13 @@ public class ChartBuilder : ComponentBase
                 y = 0,
                 fill = "url(#grad1)",
                 stroke_width = 0,
-                fill_opacity = 0d,
-                Children = new[]
-                {
-                    new animate { id = $"b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"b{d-1}.end", dur = "50ms", repeatCount = "1" },
-                }
+                fill_opacity = withAnimations ? 0d : 1d,
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { id = $"b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"b{d-1}.end", dur = "50ms", repeatCount = "1" },
+                    }
+                    : null
             });
         }
 
@@ -246,11 +248,13 @@ public class ChartBuilder : ComponentBase
                 fill = LighBlueColor,
                 x = Daywidth * (DateTime.Today.Day - 1),
                 y = 0,
-                fill_opacity = 0d,
-                Children = new[]
-                {
-                    new animate { attributeName = "fill-opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1" }
-                }
+                fill_opacity = withAnimations ? 0d : 1d,
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { attributeName = "fill-opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1" }
+                    }
+                    : null
             });
         }
 
@@ -269,11 +273,13 @@ public class ChartBuilder : ComponentBase
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
                 font_weight = "normal",
-                opacity = 0d,
-                Children = new[]
-                {
-                    new animate { id = $"day{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = d == 0 ? "0s" : $"day{d-1}.end" }
-                }
+                opacity = withAnimations ? 0d : 1d,
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { id = $"day{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = d == 0 ? "0s" : $"day{d-1}.end" }
+                    }
+                    : null
             });
             group.Children.Add(new text
             {
@@ -286,11 +292,13 @@ public class ChartBuilder : ComponentBase
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
                 font_weight = "normal",
-                opacity = 0d,
-                Children = new[]
-                {
-                    new animate { id = $"mon{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"day{d}.end" }
-                }
+                opacity = withAnimations ? 0d : 1d,
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { id = $"mon{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"day{d}.end" }
+                    }
+                    : null
             });
             group.Children.Add(new text
             {
@@ -303,11 +311,13 @@ public class ChartBuilder : ComponentBase
                 font_family = FontFamily,
                 font_size = Daywidth / 2,
                 font_weight = "normal",
-                opacity = 0d,
-                Children = new[]
-                {
-                    new animate { attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
-                }
+                opacity = withAnimations ? 0d : 1d,
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
+                    }
+                    : null
             });
             day = day.AddDays(1);
         }
@@ -322,10 +332,12 @@ public class ChartBuilder : ComponentBase
             fill = GoldColor,
             stroke_width = 0,
             filter = "url(#dropShadow)",
-            Children = new[]
-            {
-                new animate { attributeName = "width", from = 0d, to = daysinmonth * Daywidth, dur = "1.5s", repeatCount = "1" },
-            }
+            Children = withAnimations
+                ? new[]
+                {
+                    new animate { attributeName = "width", from = 0d, to = daysinmonth * Daywidth, dur = "1.5s", repeatCount = "1" },
+                }
+                : null
         });
 
         group.Children.Add(new rect { x = 0, y = 0, width = daysinmonth * Daywidth, height = Height, fill = "none", stroke_width = 3, stroke = "#CCCCCC" });
@@ -333,7 +345,7 @@ public class ChartBuilder : ComponentBase
         return group;
     }
 
-    private (path, IList<Point>) DrawCycle(string color, int cycle)
+    private (path, IList<Point>) DrawCycle(string color, int cycle, bool withAnimations)
     {
         var diff = daysdiff - .5d; // offsets the sine wave so it looks nicer
         var coords = Enumerable.Range(-1, daysinmonth * 2 + 4)
@@ -377,11 +389,13 @@ public class ChartBuilder : ComponentBase
             filter = "url(#dropShadow)",
             stroke_dasharray = $"{length}",
             stroke_linecap = StrokeLinecap.round,
-            stroke_dashoffset = length,
-            Children = new[]
-            {
-                new animate { id = id, attributeName = "stroke-dashoffset", from = length, to = 0, begin = begin, dur = "1.5s", repeatCount = "1" },
-            }
+            stroke_dashoffset = 0d,
+            Children = withAnimations
+                ? new[]
+                {
+                    new animate { id = id, attributeName = "stroke-dashoffset", from = length, to = 0d, begin = begin, dur = "1.5s", repeatCount = "1" },
+                }
+                : null
         };
 
         return (p, coords);
@@ -431,12 +445,12 @@ public class ChartBuilder : ComponentBase
         onCycleClick.InvokeAsync(args);
     }
 
-    private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip)
+    private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip, bool withAnimations)
     {
         // locate the best place to draw the cycle labels
         var minyoffset = Convert.ToInt32(Daywidth * 1.25);
         const int minday = 1;
-        var maxday = pp.Count - 14;
+        var maxday = daysinmonth - 7;
         var pcandidates = new List<(Point point, int Score)>();
         var ecandidates = new List<(Point point, int Score)>();
         var icandidates = new List<(Point point, int Score)>();
@@ -530,29 +544,31 @@ public class ChartBuilder : ComponentBase
                 r = Daywidth / 3d,
                 fill = "none",
                 stroke = GoldColor,
-                stroke_width = Daywidth / 5d,
+                stroke_width = withAnimations ? 1d : Daywidth / 5d,
                 stroke_dasharray = $"{Daywidth * 2}",
                 stroke_linecap = StrokeLinecap.round,
-                opacity = 0d,
+                opacity = withAnimations ? 0d : 1d,
                 // filter = "url(#dropShadow)" // squares off corners too!
-                Children = new[]
-                {
-                    new animate { attributeName = "r", from = 0d, to = Daywidth / 3d, begin = begin, dur = "400ms", repeatCount = "1" },
-                    new animate { attributeName = "stroke-width", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" },
-                    new animate { id = id, attributeName = "opacity", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" }
-                }
+                Children = withAnimations
+                    ? new[]
+                    {
+                        new animate { attributeName = "r", from = 0d, to = Daywidth / 3d, begin = begin, dur = "400ms", repeatCount = "1" },
+                        new animate { attributeName = "stroke-width", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" },
+                        new animate { id = id, attributeName = "opacity", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" }
+                    }
+                    : null
             });
         }
 
         // Labels
-        group.Children.Add(ShadowText("critical", clx, center, GoldColor));
-        group.Children.Add(ShadowText("physical", pl.X + Daywidth, pl.Y, RedColor));
-        group.Children.Add(ShadowText("emotional", el.X + Daywidth, el.Y, GreenColor));
-        group.Children.Add(ShadowText("intellectual", il.X + Daywidth, il.Y, BlueColor));
+        group.Children.Add(ShadowText("critical", clx, center, GoldColor, withAnimations));
+        group.Children.Add(ShadowText("physical", pl.X + Daywidth, pl.Y, RedColor, withAnimations));
+        group.Children.Add(ShadowText("emotional", el.X + Daywidth, el.Y, GreenColor, withAnimations));
+        group.Children.Add(ShadowText("intellectual", il.X + Daywidth, il.Y, BlueColor, withAnimations));
         return (group, criticals.Distinct().ToList());
     }
 
-    private static text ShadowText(string text, double x, double y, string color) => new()
+    private static text ShadowText(string text, double x, double y, string color, bool withAnimations) => new()
     {
         x = x,
         y = y,
@@ -562,12 +578,14 @@ public class ChartBuilder : ComponentBase
         content = text,
         fill = color,
         filter = "url(#dropShadow)",
-        opacity = 0d,
-        Children = new[]
-        {
-            new animate { attributeName = "x", from = 0d, to = x, dur = "2s", repeatCount = "1" },
-            new animate { attributeName = "opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1", additive = "sum" }
-        }
+        opacity = withAnimations ? 0d : 1d,
+        Children = withAnimations
+            ? new[]
+            {
+                new animate { attributeName = "x", from = 0d, to = x, dur = "2s", repeatCount = "1" },
+                new animate { attributeName = "opacity", from = 0d, to = 1d, dur = "1.5s", repeatCount = "1", additive = "sum" }
+            }
+            : null
     };
 
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";

@@ -226,23 +226,23 @@
     <TitleContent>Cycle Info for @cycledata.Chart.Name on @($"{cycledata.Date:d-MMM-yyyy}") (@($"{cycledata.DaysDiff:#,##0}") days old)</TitleContent>
     <DialogContent>
         @{
-            var  (picon, pcolor, ptext) = cycledata.Physical switch
+            var (picon, pcolor, ptext) = cycledata.Physical switch
             {
-                ChartClickEventArgs.CycleStatus.Positive => ( Icons.Material.Filled.Mood, Color.Success, "Full of stamina—vigorous, eager, athletic competition, travel, surgical operations, work that requires physical strength" ),
-                ChartClickEventArgs.CycleStatus.Negative => ( Icons.Material.Filled.MoodBad, Color.Error, "Lacking in stamina—easy to get tired, infectious to disease, best for rest and medicine" ),
-                _ => ( Icons.Material.Filled.Warning, Color.Warning, "Unstable in physical condition—recharge, lethargy, tiresome, headache, fever, stroke, worsening of disease, sickness, outbreak of accidents" )
+                ChartClickEventArgs.CycleStatus.Positive => (Icons.Material.Filled.Mood, Color.Success, "Full of stamina—vigorous, eager, athletic competition, travel, surgical operations, work that requires physical strength"),
+                ChartClickEventArgs.CycleStatus.Negative => (Icons.Material.Filled.MoodBad, Color.Error, "Lacking in stamina—easy to get tired, infectious to disease, best for rest and medicine"),
+                _ => (Icons.Material.Filled.Warning, Color.Warning, "Unstable in physical condition—recharge, lethargy, tiresome, headache, fever, stroke, worsening of disease, sickness, outbreak of accidents")
             };
             var (eicon, ecolor, etext) = cycledata.Emotional switch
             {
-                ChartClickEventArgs.CycleStatus.Positive => ( Icons.Material.Filled.Mood, Color.Success, "Full of energy—optimistic, good-natured, performance, courting, dating, teamwork" ),
-                ChartClickEventArgs.CycleStatus.Negative => ( Icons.Material.Filled.MoodBad, Color.Error, "Lacking in energy—be sensitive to personal relations, humdrum, pessimism" ),
-                _ => ( Icons.Material.Filled.Warning, Color.Warning, "Unstable in emotion—slip of the tongue, quarrel, dispute" )
+                ChartClickEventArgs.CycleStatus.Positive => (Icons.Material.Filled.Mood, Color.Success, "Full of energy—optimistic, good-natured, performance, courting, dating, teamwork"),
+                ChartClickEventArgs.CycleStatus.Negative => (Icons.Material.Filled.MoodBad, Color.Error, "Lacking in energy—be sensitive to personal relations, humdrum, pessimism"),
+                _ => (Icons.Material.Filled.Warning, Color.Warning, "Unstable in emotion—slip of the tongue, quarrel, dispute")
             };
             var (iicon, icolor, itext) = cycledata.Intellectual switch
             {
-                ChartClickEventArgs.CycleStatus.Positive => ( Icons.Material.Filled.Mood, Color.Success, "Excellent in thinking power—study of weak subjects, making a plan, examination, decision" ),
-                ChartClickEventArgs.CycleStatus.Negative => ( Icons.Material.Filled.MoodBad, Color.Error, "Lacking in thinking power—gathering data, study, repetition, research" ),
-                _ => ( Icons.Material.Filled.Warning, Color.Warning, "Unstable in intellectual power—failure of memory, mistake, error, lower ability and attentiveness, lack of focus, outbreak of accidents" )
+                ChartClickEventArgs.CycleStatus.Positive => (Icons.Material.Filled.Mood, Color.Success, "Excellent in thinking power—study of weak subjects, making a plan, examination, decision"),
+                ChartClickEventArgs.CycleStatus.Negative => (Icons.Material.Filled.MoodBad, Color.Error, "Lacking in thinking power—gathering data, study, repetition, research"),
+                _ => (Icons.Material.Filled.Warning, Color.Warning, "Unstable in intellectual power—failure of memory, mistake, error, lower ability and attentiveness, lack of focus, outbreak of accidents")
             };
         }
         <MudSimpleTable Hover="false" Dense="true" FixedHeader="true">
@@ -277,166 +277,169 @@
     </DialogActions>
 </MudDialog>
 
-<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
-    <MudText>Biorhythm Fun</MudText>
-    <MudSpacer />
-    <MudIconButton Title="Prepend Month" Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" OnClick="DoPrevious" />
-    <MudIconButton Title="Change Plot Date" Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" OnClick="DoChangeChartDate" OpenTo="OpenTo.Month" />
-    <MudIconButton Title="Append Month" Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" OnClick="DoNext" />
-    <MudIconButton Title="Larger" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
-    <MudIconButton Title="Smaller" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
-    <MudIconButton Title="Read FAQ" Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" OnClick="DoShowFAQ" />
-</MudAppBar>
-
 <MudLayout>
-    <MudDrawer Open="true" Breakpoint="@Breakpoint.XlAndUp" Variant="@DrawerVariant.Persistent" DisableOverlay="true">
-        <MudNavMenu>
-            <MudNavGroup Title="People" Icon="@Icons.Material.Filled.Person" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                @foreach (var person in ChartSet.People)
-                {
-                    <MudNavLink OnClick="@(e => Current = person)">@person.Name</MudNavLink>
-                }
-                <MudNavLink Icon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Success" OnClick="DoAddPerson">Add Person</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Title="Group" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                @foreach (var group in ChartSet.Groups)
-                {
-                    <MudNavLink OnClick="@(e => Current = group)">@group.Name</MudNavLink>
-                }
-                <MudNavLink Icon="@Icons.Material.Filled.GroupAdd" IconColor="Color.Success" OnClick="DoAddGroup">Add Group</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Title="Compatibility" Icon="@Icons.Material.Filled.Compare" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                @foreach (var compat in ChartSet.CompatibilityCharts)
-                {
-                    <MudNavLink OnClick="@(e => Current = compat)">@compat.Name</MudNavLink>
-                }
-                <MudNavLink Icon="@Icons.Material.Filled.AddChart" IconColor="Color.Success" OnClick="DoAddCompatibilityChart">Add Compatibility Chart</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Title="Prediction" Icon="@Icons.Material.Filled.PregnantWoman" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                @foreach (var predict in ChartSet.PredictionCharts)
-                {
-                    <MudNavLink OnClick="@(e => Current = predict)">@predict.Name</MudNavLink>
-                }
-                <MudNavLink Icon="@Icons.Material.Filled.AddReaction" IconColor="Color.Success" OnClick="DoAddPredictionChart">Add Prediction Chart</MudNavLink>
-            </MudNavGroup>
-        </MudNavMenu>
-    </MudDrawer>
+    <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+        <MudText>Biorhythm Fun</MudText>
+        <MudSpacer />
+        <MudIconButton Title="Prepend Month" Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" OnClick="DoPrevious" />
+        <MudIconButton Title="Change Plot Date" Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" OnClick="DoChangeChartDate" OpenTo="OpenTo.Month" />
+        <MudIconButton Title="Append Month" Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" OnClick="DoNext" />
+        <MudIconButton Title="Larger" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
+        <MudIconButton Title="Smaller" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
+        <MudIconButton Title="Read FAQ" Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" OnClick="DoShowFAQ" />
+    </MudAppBar>
     <MudMainContent Class="pt-0">
-        @if (Current is Person person)
-        {
-            <MudCard>
-                <MudCardHeader Class="pb-0">
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">@person.Name</MudText>
-                        <MudSpacer />
-                        <MudText GutterBottom="false">@($"Born {person.Birthdate:dddd MMMM dd, yyyy}")</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPerson(person))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePerson(person))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(person))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                        <ChartBuilder Name="@person.Name" Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" />
-                    </Animate>
-                </MudCardContent>
-            </MudCard>
-        }
-        else if (Current is Group group)
-        {
-            <MudCard Class="pb-5">
-                <MudCardHeader Class="pb-0">
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">@group.Name</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditGroup(group))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteGroup(group))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(group))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0 pb-0">
-                    @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
-                    {
-                        <MudCard Class="pl-0 pt-0">
-                            <MudCardHeader Class="pl-0 pt-0 pb-0">
-                                <CardHeaderContent>
-                                    <MudText GutterBottom="false">@p.Name</MudText>
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent Class="pl-0 pt-0 pb-0">
-                                <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                                    <ChartBuilder Name="@p.Name" Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" />
-                                </Animate>
-                            </MudCardContent>
-                        </MudCard>
-                    }
-                </MudCardContent>
-            </MudCard>
-        }
-        else if (Current is Prediction prediction)
-        {
-            var mother = ChartSet.GetPerson(prediction.MotherID);
-            var startdate1 = prediction.ConceptionDate.AddDays(-prediction.ConceptionDate.Day + 1);
-            var enddate1 = startdate1.AddMonths(1).AddDays(-1);
-            var gestation = prediction.ConceptionDate.AddDays(280);
-            var startdate2 = gestation.AddDays(-gestation.Day + 1);
-            var enddate2 = startdate2.AddMonths(1).AddDays(-1);
-            <MudCard>
-                <MudCardHeader Class="pb-0">
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">@prediction.Name</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPrediction(prediction))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(prediction))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <MudText>
-                        Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
-                        concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
-                        Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
-                        When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
-                        When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
-                    </MudText>
-                    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                        <ChartBuilder Name="@mother.Name" Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" Type="@ChartBuilder.ChartType.GenderPrediction" />
-                    </Animate>
-                    <MudText>
-                        Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
-                        Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
-                    </MudText>
-                    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                        <ChartBuilder Name="@mother.Name" Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
-                    </Animate>
-                </MudCardContent>
-            </MudCard>
-        }
-        else if (Current is Compatibility compat)
-        {
-            var p1 = ChartSet.GetPerson(compat.ID1);
-            var p2 = ChartSet.GetPerson(compat.ID2);
-            <MudCard>
-                <MudCardHeader Class="pb-0">
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">@compat.Name</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditCompatibility(compat))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(compat))" />
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent Class="pt-0">
-                    <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
-                        <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
-                    </Animate>
-                </MudCardContent>
-            </MudCard>
-        }
+        <MudStack Justify="@Justify.FlexStart" Row="true">
+            <MudPaper Outlined="true" MinWidth="250">
+                <MudNavMenu>
+                    <MudNavGroup Title="People" Icon="@Icons.Material.Filled.Person" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
+                        @foreach (var person in ChartSet.People)
+                        {
+                            <MudNavLink OnClick="@(e => Current = person)">@person.Name</MudNavLink>
+                        }
+                        <MudNavLink Icon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Success" OnClick="DoAddPerson">Add Person</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavGroup Title="Group" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
+                        @foreach (var group in ChartSet.Groups)
+                        {
+                            <MudNavLink OnClick="@(e => Current = group)">@group.Name</MudNavLink>
+                        }
+                        <MudNavLink Icon="@Icons.Material.Filled.GroupAdd" IconColor="Color.Success" OnClick="DoAddGroup">Add Group</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavGroup Title="Compatibility" Icon="@Icons.Material.Filled.Compare" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
+                        @foreach (var compat in ChartSet.CompatibilityCharts)
+                        {
+                            <MudNavLink OnClick="@(e => Current = compat)">@compat.Name</MudNavLink>
+                        }
+                        <MudNavLink Icon="@Icons.Material.Filled.AddChart" IconColor="Color.Success" OnClick="DoAddCompatibilityChart">Add Compatibility Chart</MudNavLink>
+                    </MudNavGroup>
+                    <MudNavGroup Title="Prediction" Icon="@Icons.Material.Filled.PregnantWoman" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
+                        @foreach (var predict in ChartSet.PredictionCharts)
+                        {
+                            <MudNavLink OnClick="@(e => Current = predict)">@predict.Name</MudNavLink>
+                        }
+                        <MudNavLink Icon="@Icons.Material.Filled.AddReaction" IconColor="Color.Success" OnClick="DoAddPredictionChart">Add Prediction Chart</MudNavLink>
+                    </MudNavGroup>
+                </MudNavMenu>
+            </MudPaper>
+            <MudPaper Outlined="true">
+                @if (Current is Person person)
+                {
+                    <MudCard>
+                        <MudCardHeader Class="pb-0">
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@person.Name</MudText>
+                                <MudSpacer />
+                                <MudText GutterBottom="false">@($"Born {person.Birthdate:dddd MMMM dd, yyyy}")</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPerson(person))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePerson(person))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(person))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                <ChartBuilder Name="@person.Name" Birthdate="@person.Birthdate" Startdate="@Startdate" Enddate="@Enddate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" />
+                            </Animate>
+                        </MudCardContent>
+                    </MudCard>
+                }
+                else if (Current is Group group)
+                {
+                    <MudCard Class="pb-5">
+                        <MudCardHeader Class="pb-0">
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@group.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditGroup(group))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteGroup(group))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(group))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0 pb-0">
+                            @foreach (var p in group.IDs.Select(id => ChartSet.GetPerson(id)))
+                            {
+                                <MudCard Class="pl-0 pt-0">
+                                    <MudCardHeader Class="pl-0 pt-0 pb-0">
+                                        <CardHeaderContent>
+                                            <MudText GutterBottom="false">@p.Name</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent Class="pl-0 pt-0 pb-0">
+                                        <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                            <ChartBuilder Name="@p.Name" Birthdate="@p.Birthdate" Startdate="@Startdate" Enddate="@Enddate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" />
+                                        </Animate>
+                                    </MudCardContent>
+                                </MudCard>
+                            }
+                        </MudCardContent>
+                    </MudCard>
+                }
+                else if (Current is Prediction prediction)
+                {
+                    var mother = ChartSet.GetPerson(prediction.MotherID);
+                    var startdate1 = prediction.ConceptionDate.AddDays(-prediction.ConceptionDate.Day + 1);
+                    var enddate1 = startdate1.AddMonths(1).AddDays(-1);
+                    var gestation = prediction.ConceptionDate.AddDays(280);
+                    var startdate2 = gestation.AddDays(-gestation.Day + 1);
+                    var enddate2 = startdate2.AddMonths(1).AddDays(-1);
+                    <MudCard>
+                        <MudCardHeader Class="pb-0">
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@prediction.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditPrediction(prediction))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeletePrediction(prediction))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(prediction))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <MudText>
+                                Baby's gender prediction for mother @mother.Name, with birth date @($"{mother.Birthdate:dddd MMMM dd, yyyy}"),
+                                concieved around @($"{prediction.ConceptionDate:dddd MMMM dd, yyyy}").
+                                Biorhythm science indicates the mother's body chemistry at conception influences the acceptance of an X or Y chromosome to determine the child as female or male.
+                                When a mother's biorhythm cycles are high in Emotional and low in Physical, then a girl (X chromosome) is likely.
+                                When high in Physical and low in Emotional, then a boy (Y chromosome) is likely.
+                            </MudText>
+                            <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                <ChartBuilder Name="@mother.Name" Birthdate="@mother.Birthdate" Startdate="@startdate1" Enddate="@enddate1" Highlitedate="@prediction.ConceptionDate" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" Type="@ChartBuilder.ChartType.GenderPrediction" />
+                            </Animate>
+                            <MudText>
+                                Baby's birth date prediction for mother @mother.Name, with baby's birth date around @($"{gestation:dddd MMMM dd, yyyy}").
+                                Biorhythm science indicates that baby's are born on or near the mother's critical day--so look for a critical day near the 280-day gestation after conception.
+                            </MudText>
+                            <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                <ChartBuilder Name="@mother.Name" Birthdate="@mother.Birthdate" Startdate="@startdate2" Enddate="@enddate2" Highlitedate="@gestation" SizeAdjust="@Size" OnCycleClick="ShowCycleInfo" Type="@ChartBuilder.ChartType.BirthdatePrediction" />
+                            </Animate>
+                        </MudCardContent>
+                    </MudCard>
+                }
+                else if (Current is Compatibility compat)
+                {
+                    var p1 = ChartSet.GetPerson(compat.ID1);
+                    var p2 = ChartSet.GetPerson(compat.ID2);
+                    <MudCard>
+                        <MudCardHeader Class="pb-0">
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@compat.Name</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" OnClick="@(e => DoEditCompatibility(compat))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Primary" aria-label="delete" OnClick="@(e => DoDeleteCompatibility(compat))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Primary" aria-label="share" OnClick="@(e => DoShare(compat))" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="pt-0">
+                            <Animate Animation="Animations.FadeLeft" Duration="TimeSpan.FromSeconds(0.5)">
+                                <CompatibilityChartBuilder Birthdate1="@p1.Birthdate" Birthdate2="@p2.Birthdate" Height="200" Width="700" />
+                            </Animate>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudPaper>
+        </MudStack>
     </MudMainContent>
 </MudLayout>

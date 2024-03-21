@@ -281,45 +281,37 @@
     <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
         <MudText>Biorhythm Fun</MudText>
         <MudSpacer />
-        <MudIconButton Title="Prepend Month" Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" OnClick="DoPrevious" />
-        <MudIconButton Title="Change Plot Date" Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" OnClick="DoChangeChartDate" OpenTo="OpenTo.Month" />
-        <MudIconButton Title="Append Month" Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" OnClick="DoNext" />
+        <MudIconButton Title="Prepend Month" Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" aria-label="previous" OnClick="DoPrevious" />
+        <MudIconButton Title="Change Plot Date" Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" aria-label="set chart date" OnClick="DoChangeChartDate" OpenTo="OpenTo.Month" />
+        <MudIconButton Title="Append Month" Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" aria-label="next" OnClick="DoNext" />
+        <MudIconButton Title="Add Person" Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add person" OnClick="DoAddPerson" />
+        <MudIconButton Title="Add Group" Icon="@Icons.Material.Filled.GroupAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add group" OnClick="DoAddGroup" />
+        <MudIconButton Title="Add Compatibility Chart" Icon="@Icons.Material.Filled.AddChart" Color="Color.Warning" Edge="Edge.End" aria-label="add compatibility chart" OnClick="DoAddCompatibilityChart" />
+        <MudIconButton Title="Add Predicition Chart" Icon="@Icons.Material.Filled.AddReaction" Color="Color.Warning" Edge="Edge.End" aria-label="add prediction chart" OnClick="DoAddPredictionChart" />
         <MudIconButton Title="Larger" Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
         <MudIconButton Title="Smaller" Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
-        <MudIconButton Title="Read FAQ" Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" OnClick="DoShowFAQ" />
+        <MudIconButton Title="Read FAQ" Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" aria-label="show faq" OnClick="DoShowFAQ" />
     </MudAppBar>
     <MudMainContent Class="pt-0">
         <MudStack Justify="@Justify.FlexStart" Row="true">
             <MudPaper Outlined="true" MinWidth="250">
                 <MudNavMenu>
-                    <MudNavGroup Title="People" Icon="@Icons.Material.Filled.Person" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                        @foreach (var person in ChartSet.People)
-                        {
-                            <MudNavLink OnClick="@(e => Current = person)">@person.Name</MudNavLink>
-                        }
-                        <MudNavLink Icon="@Icons.Material.Filled.PersonAdd" IconColor="Color.Success" OnClick="DoAddPerson">Add Person</MudNavLink>
-                    </MudNavGroup>
-                    <MudNavGroup Title="Group" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                        @foreach (var group in ChartSet.Groups)
-                        {
-                            <MudNavLink OnClick="@(e => Current = group)">@group.Name</MudNavLink>
-                        }
-                        <MudNavLink Icon="@Icons.Material.Filled.GroupAdd" IconColor="Color.Success" OnClick="DoAddGroup">Add Group</MudNavLink>
-                    </MudNavGroup>
-                    <MudNavGroup Title="Compatibility" Icon="@Icons.Material.Filled.Compare" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                        @foreach (var compat in ChartSet.CompatibilityCharts)
-                        {
-                            <MudNavLink OnClick="@(e => Current = compat)">@compat.Name</MudNavLink>
-                        }
-                        <MudNavLink Icon="@Icons.Material.Filled.AddChart" IconColor="Color.Success" OnClick="DoAddCompatibilityChart">Add Compatibility Chart</MudNavLink>
-                    </MudNavGroup>
-                    <MudNavGroup Title="Prediction" Icon="@Icons.Material.Filled.PregnantWoman" IconColor="Color.Primary" Expanded="true" HideExpandIcon="true">
-                        @foreach (var predict in ChartSet.PredictionCharts)
-                        {
-                            <MudNavLink OnClick="@(e => Current = predict)">@predict.Name</MudNavLink>
-                        }
-                        <MudNavLink Icon="@Icons.Material.Filled.AddReaction" IconColor="Color.Success" OnClick="DoAddPredictionChart">Add Prediction Chart</MudNavLink>
-                    </MudNavGroup>
+                    @foreach (var person in ChartSet.People.OrderBy(c => c.Name))
+                    {
+                        <MudNavLink OnClick="@(e => Current = person)" Icon="@Icons.Material.Filled.Person">@person.Name</MudNavLink>
+                    }
+                    @foreach (var group in ChartSet.Groups.OrderBy(c => c.Name))
+                    {
+                        <MudNavLink OnClick="@(e => Current = group)" Icon="@Icons.Material.Filled.Groups">@group.Name</MudNavLink>
+                    }
+                    @foreach (var compat in ChartSet.CompatibilityCharts.OrderBy(c => c.Name))
+                    {
+                        <MudNavLink OnClick="@(e => Current = compat)" Icon="@Icons.Material.Filled.Compare">@compat.Name</MudNavLink>
+                    }
+                    @foreach (var predict in ChartSet.PredictionCharts.OrderBy(c => c.Name))
+                    {
+                        <MudNavLink OnClick="@(e => Current = predict)" Icon="@Icons.Material.Filled.PregnantWoman">@predict.Name</MudNavLink>
+                    }
                 </MudNavMenu>
             </MudPaper>
             <MudPaper Outlined="true">

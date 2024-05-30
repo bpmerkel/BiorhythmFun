@@ -10,11 +10,26 @@ namespace BiorhythmFun.Client.Pages
 {
     public partial class Index
     {
+        /// <summary>
+        /// Gets or sets the local storage service.
+        /// </summary>
         [Inject] public ILocalStorageService LocalStorage { get; set; }
+        /// <summary>
+        /// Gets or sets the JavaScript runtime.
+        /// </summary>
         [Inject] public IJSRuntime JsRuntime { get; set; }
+        /// <summary>
+        /// Gets or sets the navigation manager.
+        /// </summary>
         [Inject] public NavigationManager NavManager { get; set; }
+        /// <summary>
+        /// Gets or sets the snackbar.
+        /// </summary>
         [Inject] public ISnackbar Snackbar { get; set; }
 
+        /// <summary>
+        /// Gets the chart set.
+        /// </summary>
         public Set ChartSet { get; init; } = new();
 
         private ChartableBase Current = default!;

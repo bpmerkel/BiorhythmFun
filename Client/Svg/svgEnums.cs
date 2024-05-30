@@ -1,5 +1,8 @@
 ﻿namespace BiorthymFun.Client.Svg;
 
+/// <summary>
+/// Enum representing boolean options.
+/// </summary>
 public enum BoolOptionsEnum
 {
     none,
@@ -7,6 +10,9 @@ public enum BoolOptionsEnum
     No
 }
 
+/// <summary>
+/// Enum representing different types of stroke line caps in SVG.
+/// </summary>
 public enum StrokeLinecap
 {
     none,
@@ -15,6 +21,9 @@ public enum StrokeLinecap
     square
 }
 
+/// <summary>
+/// Enum representing different types of stroke line joins in SVG.
+/// </summary>
 public enum StrokeLineJoin
 {
     none,

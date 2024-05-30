@@ -10,10 +10,25 @@ using MudBlazor;
 using BiorhythmFun.Client.Pages;
 using BlazorAnimate;
 
+/// <summary>
+/// Main entry point for the application.
+/// </summary>
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.Services.AddBlazoredLocalStorageAsSingleton();
+
+/// <summary>
+/// Adds the root components to the builder.
+/// </summary>
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+/// <summary>
+/// Adds the Blazored LocalStorage service as a singleton.
+/// </summary>
+builder.Services.AddBlazoredLocalStorageAsSingleton();
+
+/// <summary>
+/// Adds and configures the MudBlazor services.
+/// </summary>
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -25,11 +40,18 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.ShowTransitionDuration = 500;
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
+
+/// <summary>
+/// Configures the animation options.
+/// </summary>
 builder.Services.Configure<AnimateOptions>(options =>
 {
     options.Animation = Animations.FadeDown;
     options.Duration = TimeSpan.FromMilliseconds(100);
 });
 
+/// <summary>
+/// Builds and runs the application.
+/// </summary>
 var app = builder.Build();
 await app.RunAsync();

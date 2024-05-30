@@ -2,17 +2,44 @@
 
 namespace BiorhythmFun.Client.Model;
 
+/// <summary>
+/// Handle saving/fecthing objects from local storage
+/// </summary>
 public class Set
 {
     private ILocalStorageService LocalStorage { get; set; }
+    /// <summary>
+    /// The list of people.
+    /// </summary>
     public List<Person> People { get; set; } = [];
-    public readonly BoolDictionary GroupPeople = [];
-    public List<Compatibility> CompatibilityCharts { get; set; } = [];
-    public List<Prediction> PredictionCharts { get; set; } = [];
+    /// <summary>
+    /// The list of groups.
+    /// </summary>
     public List<Group> Groups { get; set; } = [];
-
+    /// <summary>
+    /// The dictionary of people in groups.
+    /// </summary>
+    public readonly BoolDictionary GroupPeople = [];
+    /// <summary>
+    /// The list of compatibility charts.
+    /// </summary>
+    public List<Compatibility> CompatibilityCharts { get; set; } = [];
+    /// <summary>
+    /// The list of prediction charts.
+    /// </summary>
+    public List<Prediction> PredictionCharts { get; set; } = [];
+    /// <summary>
+    /// Get the Person for the given ID.
+    /// </summary>
+    /// <param name="ID"></param>
+    /// <returns></returns>
     public Person GetPerson(string ID) => People.FirstOrDefault(p => p.ID == ID);
 
+    /// <summary>
+    /// Add a person and save it.
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
     public Person AddPerson(Person p)
     {
         if (!People.Any(pp => pp.Name == p.Name && pp.Birthdate == p.Birthdate))
@@ -28,6 +55,10 @@ public class Set
         }
     }
 
+    /// <summary>
+    /// Remove a person.
+    /// </summary>
+    /// <param name="p"></param>
     public void RemovePerson(Person p)
     {
         People.Remove(p);
@@ -52,6 +83,12 @@ public class Set
         bool has(string id) => People.Any(pp => pp.ID == id);
     }
 
+    /// <summary>
+    /// Add a group.
+    /// </summary>
+    /// <param name="Name"></param>
+    /// <param name="IDs"></param>
+    /// <returns></returns>
     public Group AddGroup(string Name, List<string> IDs)
     {
         var g = new Group(Name, IDs);
@@ -60,12 +97,22 @@ public class Set
         return g;
     }
 
+    /// <summary>
+    /// Remove a group.
+    /// </summary>
+    /// <param name="g"></param>
     public void RemoveGroup(Group g)
     {
         Groups.Remove(g);
         Save();
     }
 
+    /// <summary>
+    /// Add a compatibility chart.
+    /// </summary>
+    /// <param name="ID1"></param>
+    /// <param name="ID2"></param>
+    /// <returns></returns>
     public Compatibility AddCompatibilityChart(string ID1, string ID2)
     {
         var p1 = GetPerson(ID1);
@@ -80,12 +127,22 @@ public class Set
         return null;
     }
 
+    /// <summary>
+    /// Remove a compatibility chart.
+    /// </summary>
+    /// <param name="c"></param>
     public void RemoveCompatibility(Compatibility c)
     {
         CompatibilityCharts.Remove(c);
         Save();
     }
 
+    /// <summary>
+    /// Add a prediction chart.
+    /// </summary>
+    /// <param name="MotherID"></param>
+    /// <param name="ConceptionDate"></param>
+    /// <returns></returns>
     public Prediction AddPredictionChart(string MotherID, DateTime ConceptionDate)
     {
         var p = GetPerson(MotherID);
@@ -102,12 +159,19 @@ public class Set
         return null;
     }
 
+    /// <summary>
+    /// Remove a prediction chart.
+    /// </summary>
+    /// <param name="p"></param>
     public void RemovePrediction(Prediction p)
     {
         PredictionCharts.Remove(p);
         Save();
     }
 
+    /// <summary>
+    /// Save to local storage.
+    /// </summary>
     public async void Save()
     {
         if (LocalStorage != null)
@@ -116,6 +180,12 @@ public class Set
         }
     }
 
+    /// <summary>
+    /// Load from local storage.
+    /// </summary>
+    /// <param name="localStorage"></param>
+    /// <param name="qd"></param>
+    /// <returns></returns>
     public async Task<ChartableBase> Load(ILocalStorageService localStorage, Dictionary<string, string> qd)
     {
         LocalStorage = localStorage;
@@ -193,6 +263,9 @@ public class Set
             : new Group("Family", []);
     }
 
+    /// <summary>
+    /// A simple dictionary of strings to bools.
+    /// </summary>
     public class BoolDictionary : Dictionary<string, bool>
     {
         public bool Contains(string key) => ContainsKey(key);

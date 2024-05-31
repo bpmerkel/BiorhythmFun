@@ -105,7 +105,13 @@ public class ChartBuilder : ComponentBase
 
     private string GenID()
     {
-        id = $"{BirthDate:MMddyy}{StartDate:MMddyy}{EndDate:MMddyy}{Type}";
+        var t = Type switch
+        {
+            ChartType.GenderPrediction => "G",
+            ChartType.BirthdatePrediction => "B",
+            _ => "S"
+        };
+        id = $"{t}{BirthDate:MMddyy}{StartDate:MMddyy}{EndDate:MMddyy}";
         ChartRegistry[id] = this;
         return id;
     }
@@ -232,7 +238,7 @@ public class ChartBuilder : ComponentBase
                 Children = withAnimations
                     ? new[]
                     {
-                        new animate { id = $"b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"b{d-1}.end", dur = "50ms", repeatCount = "1" },
+                        new animate { id = $"{id}b{d}", attributeName = "fill-opacity", from = 0d, to = 1d, begin = d == 0 ? "0s" : $"{id}b{d-1}.end", dur = "50ms", repeatCount = "1" },
                     }
                     : null
             });
@@ -277,7 +283,7 @@ public class ChartBuilder : ComponentBase
                 Children = withAnimations
                     ? new[]
                     {
-                        new animate { id = $"day{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = d == 0 ? "0s" : $"day{d-1}.end" }
+                        new animate { id = $"{id}day{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = d == 0 ? "0s" : $"{id}day{d-1}.end" }
                     }
                     : null
             });
@@ -296,7 +302,7 @@ public class ChartBuilder : ComponentBase
                 Children = withAnimations
                     ? new[]
                     {
-                        new animate { id = $"mon{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"day{d}.end" }
+                        new animate { id = $"{id}mon{d}", attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"{id}day{d}.end" }
                     }
                     : null
             });
@@ -315,7 +321,7 @@ public class ChartBuilder : ComponentBase
                 Children = withAnimations
                     ? new[]
                     {
-                        new animate { attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"mon{d}.end" }
+                        new animate { attributeName = "opacity", from = 0d, to = 1d, dur = ".1s", repeatCount = "1", begin = $"{id}mon{d}.end" }
                     }
                     : null
             });
@@ -370,12 +376,12 @@ public class ChartBuilder : ComponentBase
         }
         length = Math.Round(length, 2);
 
-        var id = $"c{cycle}";
+        var idx = $"{id}c{cycle}";
         var begin = cycle switch
         {
             23 => "1s",
-            28 => "c23.begin+.5s",
-            33 => "c28.begin+.5s",
+            28 => $"{id}c23.begin+.5s",
+            33 => $"{id}c28.begin+.5s",
             _ => "1s"
         };
 
@@ -393,7 +399,7 @@ public class ChartBuilder : ComponentBase
             Children = withAnimations
                 ? new[]
                 {
-                    new animate { id = id, attributeName = "stroke-dashoffset", from = length, to = 0d, begin = begin, dur = "1.5s", repeatCount = "1" },
+                    new animate { id = idx, attributeName = "stroke-dashoffset", from = length, to = 0d, begin = begin, dur = "1.5s", repeatCount = "1" },
                 }
                 : null
         };
@@ -536,7 +542,7 @@ public class ChartBuilder : ComponentBase
         foreach (var cc in criticals.Distinct())
         {
             var begin = priorid == null ? null : $"{priorid}.end";
-            var id = priorid = $"crit{(cc < 0 ? -cc : cc)}";
+            var idx = priorid = $"{id}crit{(cc < 0 ? -cc : cc)}";
             group.Children.Add(new circle
             {
                 cx = cc,
@@ -553,8 +559,8 @@ public class ChartBuilder : ComponentBase
                     ? new[]
                     {
                         new animate { attributeName = "r", from = 0d, to = Daywidth / 3d, begin = begin, dur = "400ms", repeatCount = "1" },
-                        new animate { attributeName = "stroke-width", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" },
-                        new animate { id = id, attributeName = "opacity", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" }
+                        new animate { attributeName = "stroke-width", from = 0d, to = Daywidth / 5d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" },
+                        new animate { id = idx, attributeName = "opacity", from = 0d, to = 1d, begin = begin, dur = "400ms", repeatCount = "1", additive = "sum" }
                     }
                     : null
             });

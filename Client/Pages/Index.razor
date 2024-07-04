@@ -4,7 +4,7 @@
 @using Blazored.LocalStorage
 @using System.Web
 
-<MudDialog IsVisible="AddPersonDialogIsVisible">
+<MudDialog @bind-Visible="AddPersonDialogIsVisible">
     <TitleContent>Add Person</TitleContent>
     <DialogContent>
         <MudText>Add someone to see their Biorhythm chart.</MudText>
@@ -17,7 +17,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="EditPersonDialogIsVisible">
+<MudDialog @bind-Visible="EditPersonDialogIsVisible">
     <TitleContent>Edit Chart</TitleContent>
     <DialogContent>
         <MudText>Edit someone's details for their Biorhythm chart.</MudText>
@@ -30,7 +30,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="DeletePersonDialogIsVisible">
+<MudDialog @bind-Visible="DeletePersonDialogIsVisible">
     <TitleContent>Delete Chart</TitleContent>
     <DialogContent>
         <MudText>Are you sure you want to delete chart for '@DeletePerson?.Name'?</MudText>
@@ -41,15 +41,15 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="AddGroupDialogIsVisible">
+<MudDialog @bind-Visible="AddGroupDialogIsVisible">
     <TitleContent>Add Group</TitleContent>
     <DialogContent>
         <MudText>Create a group so you can see all the charts at once.</MudText>
         <MudTextField @bind-Value="@AddName" Required="true" Label="Group Name" />
-        <MudList>
+        <MudList T="Person">
             @foreach (var p in ChartSet.People)
             {
-                <MudListItem Class="pt-0 pb-0">
+                <MudListItem Class="pt-0 pb-0" T="Person">
                     <MudCheckBox @bind-Value="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
@@ -61,15 +61,15 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="EditGroupDialogIsVisible">
+<MudDialog @bind-Visible="EditGroupDialogIsVisible">
     <TitleContent>Edit Group</TitleContent>
     <DialogContent>
         <MudText>Edit the members of a group.</MudText>
         <MudTextField @bind-Value="@EditName" Required="true" Label="Group Name" />
-        <MudList>
+        <MudList T="Person">
             @foreach (var p in ChartSet.People)
             {
-                <MudListItem Class="pt-0 pb-0">
+                <MudListItem Class="pt-0 pb-0" T="Person">
                     <MudCheckBox @bind-Value="@(ChartSet.GroupPeople[p.ID])" Class="pt-0 pb-0">@p.Name</MudCheckBox>
                 </MudListItem>
             }
@@ -81,7 +81,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="DeleteGroupDialogIsVisible">
+<MudDialog @bind-Visible="DeleteGroupDialogIsVisible">
     <TitleContent>Delete Group</TitleContent>
     <DialogContent>
         <MudText>Are you sure you want to delete group for '@DeleteGroup?.Name'?</MudText>
@@ -92,7 +92,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="AddCompatibilityChartDialogIsVisible">
+<MudDialog @bind-Visible="AddCompatibilityChartDialogIsVisible">
     <TitleContent>Add Compatibility Chart</TitleContent>
     <DialogContent>
         <MudText>Choose two people to compare their Biorthythm's and see how close to one-another they are.</MudText>
@@ -115,7 +115,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="EditCompatibilityDialogIsVisible">
+<MudDialog @bind-Visible="EditCompatibilityDialogIsVisible">
     <TitleContent>Edit Compatibility Chart</TitleContent>
     <DialogContent>
         <MudText>Change the people in a Compatibility comparison.</MudText>
@@ -138,7 +138,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="DeleteCompatibilityDialogIsVisible">
+<MudDialog @bind-Visible="DeleteCompatibilityDialogIsVisible">
     <TitleContent>Delete Compatibility Chart</TitleContent>
     <DialogContent>
         <MudText>Are you sure you want to delete Compatibility chart '@DeleteCompatibility?.Name'?</MudText>
@@ -149,7 +149,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="AddPredictionChartDialogIsVisible">
+<MudDialog @bind-Visible="AddPredictionChartDialogIsVisible">
     <TitleContent>Add Prediction Chart</TitleContent>
     <DialogContent>
         <MudText>Add a Biorhythmic Prediction analysis for a pregnant mother to see the gender of the baby, and the estimated birth data.</MudText>
@@ -169,7 +169,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="EditPredictionDialogIsVisible">
+<MudDialog @bind-Visible="EditPredictionDialogIsVisible">
     <TitleContent>Edit Prediction Chart</TitleContent>
     <DialogContent>
         <MudText>Adjust the Mother or dates for a Biorhythmic Prediction analysis.</MudText>
@@ -189,7 +189,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="DeletePredictionDialogIsVisible">
+<MudDialog @bind-Visible="DeletePredictionDialogIsVisible">
     <TitleContent>Delete Prediction Chart</TitleContent>
     <DialogContent>
         <MudText>Are you sure you want to delete Prediction chart for '@DeletePrediction?.Name'?</MudText>
@@ -200,7 +200,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="ChangeChartdateDialogIsVisible">
+<MudDialog @bind-Visible="ChangeChartdateDialogIsVisible">
     <TitleContent>Change Chart Date</TitleContent>
     <DialogContent>
         <MudText>Adjust the date where the Biorhythm charts start.</MudText>
@@ -212,7 +212,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog IsVisible="FAQIsVisible" Options="FAQDialogOptions">
+<MudDialog @bind-Visible="FAQIsVisible" Options="FAQDialogOptions">
     <TitleContent>Frequently Asked Questions</TitleContent>
     <DialogContent>
         <FAQStatic />
@@ -222,7 +222,7 @@
     </DialogActions>
 </MudDialog>
 
-<MudDialog @bind-IsVisible="ShowInfo">
+<MudDialog @bind-Visible="ShowInfo">
     <TitleContent>Cycle Info for @cycledata.Chart.Name on @($"{cycledata.Date:d-MMM-yyyy}") (@($"{cycledata.DaysDiff:#,##0}") days old)</TitleContent>
     <DialogContent>
         @{

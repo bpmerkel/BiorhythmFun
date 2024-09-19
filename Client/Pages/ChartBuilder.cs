@@ -520,19 +520,19 @@ public class ChartBuilder : ComponentBase
                 criticals.Add((ip[d - 1].X + ip[d].X) / 2);
         }
 
-        var pl = pcandidates.Any()
+        var pl = pcandidates.Count != 0
             ? pcandidates.OrderByDescending(e => e.Score).First().point
             : new Point { X = pp[1].X, Y = pp[1].Y };
 
-        var el = ecandidates.Any()
+        var el = ecandidates.Count != 0
             ? ecandidates.OrderByDescending(e => e.Score).First().point
             : new Point { X = ep[1].X, Y = ep[1].Y };
 
-        var il = icandidates.Any()
+        var il = icandidates.Count != 0
             ? icandidates.OrderByDescending(e => e.Score).First().point
             : new Point { X = ip[1].X, Y = ip[1].Y };
 
-        var clx = ccandidates.Any()
+        var clx = ccandidates.Count != 0
             ? ccandidates.OrderByDescending(e => e.Score).First().X
             : 2 * Daywidth;
 

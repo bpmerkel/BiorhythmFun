@@ -13,6 +13,7 @@ using BlazorAnimate;
 /// <summary>
 /// Main entry point for the application.
 /// </summary>
+/// <param name="args">The arguments.</param>
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 /// <summary>
@@ -29,6 +30,7 @@ builder.Services.AddBlazoredLocalStorageAsSingleton();
 /// <summary>
 /// Adds and configures the MudBlazor services.
 /// </summary>
+/// <param name="config">The configuration for MudBlazor services.</param>
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -44,6 +46,7 @@ builder.Services.AddMudServices(config =>
 /// <summary>
 /// Configures the animation options.
 /// </summary>
+/// <param name="options">The animation options.</param>
 builder.Services.Configure<AnimateOptions>(options =>
 {
     options.Animation = Animations.FadeDown;

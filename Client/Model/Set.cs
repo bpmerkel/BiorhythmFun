@@ -1,6 +1,4 @@
-﻿using Blazored.LocalStorage;
-
-namespace BiorhythmFun.Client.Model;
+﻿namespace BiorhythmFun.Client.Model;
 
 /// <summary>
 /// Handle saving/fecthing objects from local storage

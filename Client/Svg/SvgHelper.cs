@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.AspNetCore.Components.Web;
-
-namespace BiorthymFun.Client.Svg;
+﻿namespace BiorthymFun.Client.Svg;
 
 public class SvgHelper
 {

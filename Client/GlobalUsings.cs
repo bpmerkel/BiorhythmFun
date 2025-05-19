@@ -1,0 +1,15 @@
+﻿global using Microsoft.AspNetCore.Components.Web;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Rendering;
+global using Microsoft.JSInterop;
+global using Blazored.LocalStorage;
+global using MudBlazor.Services;
+global using MudBlazor;
+global using BlazorAnimate;
+global using BiorhythmFun.Client.Pages;
+global using BiorthymFun.Client.Svg;
+global using System.Drawing;
+global using System.Reflection;
+global using BiorhythmFun.Client.Model;
+global using System.Web;

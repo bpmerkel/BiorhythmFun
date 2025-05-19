@@ -4,16 +4,6 @@
 
 namespace BiorhythmFun.Client.Pages;
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using BiorthymFun.Client.Svg;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.JSInterop;
-
 /// <summary>
 /// ChartBuilder component to render an SVG Biorythm chart
 /// </summary>

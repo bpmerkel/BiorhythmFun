@@ -4,11 +4,6 @@
 
 namespace BiorhythmFun.Client.Pages;
 
-using System;
-using BiorthymFun.Client.Svg;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-
 /// <summary>
 /// CompatibilityChartBuilder component
 /// </summary>

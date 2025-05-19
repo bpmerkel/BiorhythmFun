@@ -2,14 +2,6 @@
 // Copyright (c) Brady P. Merkel. All rights reserved.
 // </copyright>
 
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Blazored.LocalStorage;
-using MudBlazor.Services;
-using MudBlazor;
-using BiorhythmFun.Client.Pages;
-using BlazorAnimate;
-
 /// <summary>
 /// Main entry point for the application.
 /// </summary>

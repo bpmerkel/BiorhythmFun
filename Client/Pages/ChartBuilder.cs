@@ -34,27 +34,10 @@ public class ChartBuilder : ComponentBase
     /// </summary>
     [Parameter] public string Name { get; set; }
 
-    private int Height = 200;
-    private static int Daywidth = 25;
-    private int sizeAdjust = 0;
-
     /// <summary>
     /// Gets or sets the Chart size adjustment
     /// </summary>
-    [Parameter]
-    public int SizeAdjust
-    {
-        get
-        {
-            return sizeAdjust;
-        }
-        set
-        {
-            sizeAdjust = value;
-            Daywidth = 37 + sizeAdjust * 4;
-            Height = Daywidth * 8;
-        }
-    }
+    [Parameter] public int SizeAdjust { get; set; } = 0;
 
     public enum ChartType { Standard, GenderPrediction, BirthdatePrediction }
 
@@ -63,11 +46,17 @@ public class ChartBuilder : ComponentBase
     /// </summary>
     [Parameter] public ChartType Type { get; set; } = ChartType.Standard;
 
-    [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
-    private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
-
+    /// <summary>
+    /// Handler for the chart hover event
+    /// </summary>
     [Parameter] public EventCallback<ChartClickEventArgs> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
     private static EventCallback<ChartClickEventArgs> onCycleClick;
+
+    /// <summary>
+    /// Handler for the chart hover event
+    /// </summary>
+    [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
+    private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
 
     private const double twopi = 2d * Math.PI;
     private const string FontFamily = "arial";
@@ -83,16 +72,32 @@ public class ChartBuilder : ComponentBase
     private static readonly string GradientStartColor = FromRgb(102, 217, 255);
     private static readonly string GradientEndColor = FromRgb(179, 236, 255);
 
+    private int Height = 200;
+    private static int Daywidth = 25;
     private int daysinmonth;
     private int daysdiff;
     private int center;
     private int amp;
     private string id;
 
+    /// <summary>
+    /// Builds the render tree for the chart component.
+    /// </summary>
+    /// <param name="builder"></param>
     protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Render(Chart(), 0, builder);
 
+    /// <summary>
+    /// Registry of charts to allow for hover and click events
+    /// </summary>
     private static readonly Dictionary<string, ChartBuilder> ChartRegistry = [];
 
+    /// <summary>
+    /// Generates a unique identifier for the chart based on its type and date range.
+    /// </summary>
+    /// <remarks>The generated identifier is composed of a prefix representing the chart type,  followed by
+    /// formatted date values for the birth date, start date, and end date. The identifier is also registered in the
+    /// chart registry for future reference.</remarks>
+    /// <returns>A string representing the unique identifier for the chart.</returns>
     private string GenID()
     {
         var t = Type switch
@@ -106,8 +111,15 @@ public class ChartBuilder : ComponentBase
         return id;
     }
 
+    /// <summary>
+    /// Draws the chart
+    /// </summary>
+    /// <returns></returns>
     private svg Chart()
     {
+        Daywidth = 37 + SizeAdjust * 4;
+        Height = Daywidth * 8;
+
         var svg = new svg
         {
             id = GenID(),
@@ -154,6 +166,12 @@ public class ChartBuilder : ComponentBase
         return svg;
     }
 
+    /// <summary>
+    /// Draws a month of the chart
+    /// </summary>
+    /// <param name="chartdate"></param>
+    /// <param name="withAnimations"></param>
+    /// <returns></returns>
     private (g, int) DrawMonth(DateTime chartdate, bool withAnimations)
     {
         daysinmonth = DateTime.DaysInMonth(chartdate.Year, chartdate.Month);
@@ -209,6 +227,12 @@ public class ChartBuilder : ComponentBase
         return (group, width);
     }
 
+    /// <summary>
+    /// Draws the background for the chart
+    /// </summary>
+    /// <param name="chartdate"></param>
+    /// <param name="withAnimations"></param>
+    /// <returns></returns>
     private g DrawBackground(DateTime chartdate, bool withAnimations)
     {
         var group = new g();
@@ -341,6 +365,13 @@ public class ChartBuilder : ComponentBase
         return group;
     }
 
+    /// <summary>
+    /// Draws a cycle line for the given color and cycle length
+    /// </summary>
+    /// <param name="color"></param>
+    /// <param name="cycle"></param>
+    /// <param name="withAnimations"></param>
+    /// <returns></returns>
     private (path, IList<Point>) DrawCycle(string color, int cycle, bool withAnimations)
     {
         var diff = daysdiff - .5d; // offsets the sine wave so it looks nicer
@@ -397,6 +428,10 @@ public class ChartBuilder : ComponentBase
         return (p, coords);
     }
 
+    /// <summary>
+    /// Generates the onclick callback for the chart
+    /// </summary>
+    /// <returns></returns>
     private string GenerateOnclickCallback()
     {
         var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
@@ -404,6 +439,12 @@ public class ChartBuilder : ComponentBase
         return $"DotNet.invokeMethod('{assemblyName}', '{method}', '{id}', evt.offsetX, evt.offsetY)";
     }
 
+    /// <summary>
+    /// Identifies the cycle based on the click coordinates and invokes the hover event callback.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
     [JSInvokable]
     public static void IdentifyCycle(string id, int x, int y)
     {
@@ -413,6 +454,13 @@ public class ChartBuilder : ComponentBase
         var day = instance.StartDate.AddDays(days);
         onCycleHover.InvokeAsync((instance, day, x, y));
     }
+
+    /// <summary>
+    /// Identifies the day based on the click coordinates and invokes the click event callback.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
 
     [JSInvokable]
     public static void IdentifyDay(string id, int x, int y)
@@ -441,6 +489,14 @@ public class ChartBuilder : ComponentBase
         onCycleClick.InvokeAsync(args);
     }
 
+    /// <summary>
+    /// Labels the cycles on the chart
+    /// </summary>
+    /// <param name="pp"></param>
+    /// <param name="ep"></param>
+    /// <param name="ip"></param>
+    /// <param name="withAnimations"></param>
+    /// <returns></returns>
     private (g, List<int>) LabelCycles(IList<Point> pp, IList<Point> ep, IList<Point> ip, bool withAnimations)
     {
         // locate the best place to draw the cycle labels
@@ -564,6 +620,15 @@ public class ChartBuilder : ComponentBase
         return (group, criticals.Distinct().ToList());
     }
 
+    /// <summary>
+    /// Draws the shadow text for the chart labels
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="color"></param>
+    /// <param name="withAnimations"></param>
+    /// <returns></returns>
     private static text ShadowText(string text, double x, double y, string color, bool withAnimations) => new()
     {
         x = x,
@@ -587,6 +652,9 @@ public class ChartBuilder : ComponentBase
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
 }
 
+/// <summary>
+/// Defines the event arguments for the chart click event.
+/// </summary>
 public class ChartClickEventArgs
 {
     public enum CycleStatus { Positive, Negative, Critical }

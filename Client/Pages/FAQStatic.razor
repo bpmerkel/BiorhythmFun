@@ -156,20 +156,3 @@
         </ChildContent>
     </MudExpansionPanel>
 </MudExpansionPanels>
-
-@code {
-    string version;
-    string Version
-    {
-        get
-        {
-            if (version == null)
-            {
-                var build = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                var buildDate = new DateTime(2000, 1, 1).AddDays(build.Build).AddSeconds(build.Revision * 2);
-                version = $"{build}, built on {buildDate:ddd MM-dd-yyyy hh\\:mm tt}";
-            }
-            return version;
-        }
-    }
-}

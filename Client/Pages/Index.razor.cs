@@ -1,5 +1,8 @@
 namespace BiorhythmFun.Client.Pages;
 
+/// <summary>
+/// Behavior for the main page of the application.
+/// </summary>
 public partial class Index
 {
     /// <summary>
@@ -77,6 +80,10 @@ public partial class Index
 
     public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
 
+    /// <summary>
+    /// Shows the cycle information.
+    /// </summary>
+    /// <param name="args"></param>
     public void ShowCycleInfo(ChartClickEventArgs args)
     {
         cycledata = args;
@@ -84,6 +91,10 @@ public partial class Index
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Adds a person to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddPerson(MouseEventArgs e)
     {
         AddName = string.Empty;
@@ -91,6 +102,10 @@ public partial class Index
         AddPersonDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Adds a person object to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddPersonObject(MouseEventArgs e)
     {
         AddPersonDialogIsVisible = false;
@@ -104,6 +119,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a person.
+    /// </summary>
+    /// <param name="p"></param>
     private void DoEditPerson(Person p)
     {
         if (p != null)
@@ -115,6 +134,9 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a person object.
+    /// </summary>
     private void DoEditPersonObject()
     {
         if (EditPerson != null)
@@ -127,17 +149,26 @@ public partial class Index
         }
     }
 
+    // Adjust the size of the chart
     private void DoAdjustSize(int amount)
     {
         Size += amount;
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Delete a person.
+    /// </summary>
+    /// <param name="p"></param>
     private void DoDeletePerson(Person p)
     {
         DeletePerson = p;
         DeletePersonDialogIsVisible = true;
     }
+
+    /// <summary>
+    /// Delete a person object.
+    /// </summary>
 
     private void DoDeletePersonObject()
     {
@@ -149,12 +180,20 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Adds a group to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddGroup(MouseEventArgs e)
     {
         AddName = string.Empty;
         AddGroupDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Adds a group object to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddGroupObject(MouseEventArgs e)
     {
         if (!string.IsNullOrWhiteSpace(AddName))
@@ -165,6 +204,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a group.
+    /// </summary>
+    /// <param name="group"></param>
     private void DoEditGroup(Group group)
     {
         if (group != null)
@@ -183,6 +226,9 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a group object.
+    /// </summary>
     private void EditGroupObject()
     {
         if (EditGroup != null)
@@ -199,12 +245,19 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Delete a group.
+    /// </summary>
+    /// <param name="group"></param>
     private void DoDeleteGroup(Group group)
     {
         DeleteGroup = group;
         DeleteGroupDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Delete a group object.
+    /// </summary>
     private void DeleteGroupObject()
     {
         if (DeleteGroup != null)
@@ -216,6 +269,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Adds a compatibility chart to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddCompatibilityChart(MouseEventArgs e)
     {
         AddPerson1 = null;
@@ -223,6 +280,10 @@ public partial class Index
         AddCompatibilityChartDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Adds a compatibility chart object to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void AddCompatibilityObject(MouseEventArgs e)
     {
         AddCompatibilityChartDialogIsVisible = false;
@@ -233,6 +294,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a compatibility chart.
+    /// </summary>
+    /// <param name="compat"></param>
     private void DoEditCompatibility(Compatibility compat)
     {
         if (compat != null)
@@ -244,6 +309,9 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a compatibility chart object.
+    /// </summary>
     private void EditCompatibilityObject()
     {
         if (EditCompatibility != null && EditPerson1 != null && EditPerson2 != null)
@@ -257,12 +325,20 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Delete a compatibility chart.
+    /// </summary>
+    /// <param name="compat"></param>
     private void DoDeleteCompatibility(Compatibility compat)
     {
         DeleteCompatibility = compat;
         DeleteCompatibilityDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Delete a compatibility chart object.
+    /// </summary>
+    /// <param name="e"></param>
     private void DeleteCompatibilityObject(MouseEventArgs e)
     {
         if (DeleteCompatibility != null)
@@ -274,6 +350,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Handle the change of the conception date for a prediction.
+    /// </summary>
+    /// <param name="e"></param>
     private void PredictionConceptionDateChanged(DateTime? e)
     {
         AddConceptionDate = EditConceptionDate = e.Value;
@@ -281,6 +361,10 @@ public partial class Index
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handle the change of the birth date for a prediction.
+    /// </summary>
+    /// <param name="e"></param>
     private void PredictionConceptionBirthDateChanged(DateTime? e)
     {
         AddConceptionBirthDate = EditConceptionBirthDate = e.Value;
@@ -288,6 +372,10 @@ public partial class Index
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Adds a prediction chart to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoAddPredictionChart(MouseEventArgs e)
     {
         AddMother = null;
@@ -296,6 +384,10 @@ public partial class Index
         AddPredictionChartDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Adds a prediction chart object to the chart set.
+    /// </summary>
+    /// <param name="e"></param>
     private void AddPredictionObject(MouseEventArgs e)
     {
         AddPredictionChartDialogIsVisible = false;
@@ -306,6 +398,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a prediction chart.
+    /// </summary>
+    /// <param name="prediction"></param>
     private void DoEditPrediction(Prediction prediction)
     {
         if (prediction != null)
@@ -318,6 +414,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Edit a prediction chart object.
+    /// </summary>
+    /// <param name="e"></param>
     private void EditPredictionObject(MouseEventArgs e)
     {
         if (EditPrediction != null && EditMother != null)
@@ -331,12 +431,20 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Delete a prediction chart.
+    /// </summary>
+    /// <param name="prediction"></param>
     private void DoDeletePrediction(Prediction prediction)
     {
         DeletePrediction = prediction;
         DeletePredictionDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Delete a prediction chart object.
+    /// </summary>
+    /// <param name="e"></param>
     private void DeletePredictionObject(MouseEventArgs e)
     {
         if (DeletePrediction != null)
@@ -348,6 +456,10 @@ public partial class Index
         }
     }
 
+    /// <summary>
+    /// Share the chart link to the clipboard.
+    /// </summary>
+    /// <param name="chart"></param>
     private async void DoShare(ChartableBase chart)
     {
         // copy the link to the chart to the clipboard
@@ -391,21 +503,42 @@ public partial class Index
         Snackbar.Add("Address copied to clipboard", Severity.Normal);
     }
 
+    /// <summary>
+    /// Copies the specified text to the clipboard.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <returns></returns>
     private async Task CopyTextToClipboard(string text)
     {
         await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
     }
 
+    /// <summary>
+    /// Go to the previous month.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoPrevious(MouseEventArgs e) => Startdate = Startdate.AddMonths(-1);
 
+    /// <summary>
+    /// Go to the next month.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoNext(MouseEventArgs e) => Enddate = Enddate.AddMonths(1);
 
+    /// <summary>
+    /// Handle the change of the chart date.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoChangeChartDate(MouseEventArgs e)
     {
         Chartdate = Startdate;
         ChangeChartdateDialogIsVisible = true;
     }
 
+    /// <summary>
+    /// Handle the change of the chart date.
+    /// </summary>
+    /// <param name="e"></param>
     private void DoChange(MouseEventArgs e)
     {
         ChangeChartdateDialogIsVisible = false;
@@ -414,6 +547,10 @@ public partial class Index
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Initializes the component asynchronously.
+    /// </summary>
+    /// <returns></returns>
     protected override async Task OnInitializedAsync()
     {
         Startdate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1, 0, 0, 0, DateTimeKind.Local);

@@ -9,6 +9,26 @@ namespace BiorhythmFun.Client.Pages;
 /// </summary>
 public class CompatibilityChartBuilder : ComponentBase
 {
+    /// <summary>
+    ///  Gets or sets the 1st birthdate.
+    /// </summary>
+    [Parameter] public DateTime Birthdate1 { get; set; }
+
+    /// <summary>
+    ///  Gets or sets the 2nd birthdate.
+    /// </summary>
+    [Parameter] public DateTime Birthdate2 { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Height.
+    /// </summary>
+    [Parameter] public int Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Width.
+    /// </summary>
+    [Parameter] public int Width { get; set; }
+
     private const string FontFamily = "arial";
     private const string ShadowColor = "#707070";
     private const string RedColor = "#FF0000";
@@ -19,34 +39,24 @@ public class CompatibilityChartBuilder : ComponentBase
     private static readonly string DarkGreenColor = FromRgb(0, 96, 0);
 
     /// <summary>
-    ///  Gets or sets the 1st birthdate.
+    /// Builds the render tree for the component.
     /// </summary>
-    [Parameter]
-    public DateTime Birthdate1 { get; set; }
-
-    /// <summary>
-    ///  Gets or sets the 2nd birthdate.
-    /// </summary>
-    [Parameter]
-    public DateTime Birthdate2 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Height.
-    /// </summary>
-    [Parameter]
-    public int Height { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Width.
-    /// </summary>
-    [Parameter]
-    public int Width { get; set; }
-
-    /// <inheritdoc/>
+    /// <param name="builder"></param>
     protected override void BuildRenderTree(RenderTreeBuilder builder) => new SvgHelper().Render(Chart(), 0, builder);
 
+    /// <summary>
+    /// Converts the specified red, green, and blue color components to a hexadecimal color code.
+    /// </summary>
+    /// <param name="r">The red component of the color. Must be in the range 0 to 255.</param>
+    /// <param name="g">The green component of the color. Must be in the range 0 to 255.</param>
+    /// <param name="b">The blue component of the color. Must be in the range 0 to 255.</param>
+    /// <returns>A string representing the color in hexadecimal format, prefixed with "#".</returns>
     private static string FromRgb(int r, int g, int b) => $"#{r:X2}{g:X2}{b:X2}";
 
+    /// <summary>
+    /// Draws the chart.
+    /// </summary>
+    /// <returns></returns>
     private svg Chart()
     {
         var svg = new svg

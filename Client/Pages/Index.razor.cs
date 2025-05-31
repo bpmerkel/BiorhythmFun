@@ -508,10 +508,7 @@ public partial class Index
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    private async Task CopyTextToClipboard(string text)
-    {
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
-    }
+    private async Task CopyTextToClipboard(string text) => await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
 
     /// <summary>
     /// Go to the previous month.

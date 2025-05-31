@@ -256,8 +256,8 @@ public class Set
             await localStorage.ClearAsync();
         }
 
-        return Groups.Any() ? Groups.First()
-            : People.Any() ? People.First()
+        return Groups.Count != 0 ? Groups.First()
+            : People.Count != 0 ? People.First()
             : new Group("Family", []);
     }
 

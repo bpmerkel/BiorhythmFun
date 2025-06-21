@@ -274,7 +274,7 @@
 </MudDialog>
 
 <MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+    <MudAppBar Color="Color.Primary" Fixed="true" Dense="true">
         <MudText>Biorhythm Fun</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" aria-label="previous" OnClick="DoPrevious" />
@@ -284,13 +284,13 @@
         <MudIconButton Icon="@Icons.Material.Filled.GroupAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add group" OnClick="DoAddGroup" />
         <MudIconButton Icon="@Icons.Material.Filled.AddChart" Color="Color.Warning" Edge="Edge.End" aria-label="add compatibility chart" OnClick="DoAddCompatibilityChart" />
         <MudIconButton Icon="@Icons.Material.Filled.AddReaction" Color="Color.Warning" Edge="Edge.End" aria-label="add prediction chart" OnClick="DoAddPredictionChart" />
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
+        <MudIconButton Icon="@Icons.Material.Filled.ZoomIn" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
+        <MudIconButton Icon="@Icons.Material.Filled.ZoomOut" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
         <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" aria-label="show faq" OnClick="DoShowFAQ" />
     </MudAppBar>
     <MudMainContent Class="pt-0">
         <MudStack Justify="@Justify.FlexStart" Row="true">
-            <MudPaper Outlined="true" MinWidth="250">
+            <MudPaper Outlined="true" MinWidth="250" Class="mt-12">
                 <MudNavMenu>
                     @foreach (var person in ChartSet.People.OrderBy(c => c.Name))
                     {

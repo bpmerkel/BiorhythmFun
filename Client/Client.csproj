@@ -6,12 +6,15 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<RootNamespace>BiorhythmFun.Client</RootNamespace>
 		<Deterministic>false</Deterministic>
-		<Version>1.0.$([System.DateTime]::UtcNow.ToString("yy"))$([System.DateTime]::UtcNow.DayOfYear).$([System.DateTime]::UtcNow.ToString("mmss"))</Version>
-		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\.editorconfig" Link=".editorconfig" />
+		<None Include="..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

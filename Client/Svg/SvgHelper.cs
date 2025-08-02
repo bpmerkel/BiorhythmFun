@@ -4,7 +4,7 @@ public class SvgHelper
 {
     public Action<MouseEventArgs, int> ActionClicked;
 
-    public Dictionary<string, ElementReference> Elementreferences = new();
+    public Dictionary<string, ElementReference> Elementreferences = [];
 
     // Recursive
     public void Render<T>(T _Item, int k, RenderTreeBuilder builder, int Par_ID = 0)
@@ -95,7 +95,7 @@ public class SvgHelper
         if (Children is not null)
         {
             var children = Children.GetValue(_Item) as ICollection<IBaseElement>;
-            if (children is not null && children.Any())
+            if (children is not null && children.Count != 0)
             {
                 foreach (IBaseElement item in children)
                 {

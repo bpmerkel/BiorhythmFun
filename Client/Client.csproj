@@ -7,6 +7,7 @@
 		<RootNamespace>BiorhythmFun.Client</RootNamespace>
 		<Deterministic>false</Deterministic>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,8 +21,9 @@
 	<ItemGroup>
 		<PackageReference Include="BlazorAnimate" Version="3.0.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.7" />
-		<PackageReference Include="MudBlazor" Version="8.10.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.*-*" PrivateAssets="all" />
+		<PackageReference Include="MudBlazor" Version="8.11.0" />
 	</ItemGroup>
 
 </Project>

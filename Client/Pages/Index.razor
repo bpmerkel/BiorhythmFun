@@ -274,7 +274,7 @@
 </MudDialog>
 
 <MudLayout>
-    <MudAppBar Color="Color.Primary" Fixed="true" Dense="true">
+    <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
         <MudText>Biorhythm Fun</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" aria-label="previous" OnClick="DoPrevious" />
@@ -310,7 +310,7 @@
                     }
                 </MudNavMenu>
             </MudPaper>
-            <MudPaper Outlined="true">
+            <MudPaper Outlined="true" Style="overflow-x: scroll">
                 @if (Current is Person person)
                 {
                     <MudCard>

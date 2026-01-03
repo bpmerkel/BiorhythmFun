@@ -277,16 +277,36 @@
     <MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
         <MudText>Biorhythm Fun</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" aria-label="previous" OnClick="DoPrevious" />
-        <MudIconButton Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" aria-label="set chart date" OnClick="DoChangeChartDate" />
-        <MudIconButton Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" aria-label="next" OnClick="DoNext" />
-        <MudIconButton Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add person" OnClick="DoAddPerson" />
-        <MudIconButton Icon="@Icons.Material.Filled.GroupAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add group" OnClick="DoAddGroup" />
-        <MudIconButton Icon="@Icons.Material.Filled.AddChart" Color="Color.Warning" Edge="Edge.End" aria-label="add compatibility chart" OnClick="DoAddCompatibilityChart" />
-        <MudIconButton Icon="@Icons.Material.Filled.AddReaction" Color="Color.Warning" Edge="Edge.End" aria-label="add prediction chart" OnClick="DoAddPredictionChart" />
-        <MudIconButton Icon="@Icons.Material.Filled.ZoomIn" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
-        <MudIconButton Icon="@Icons.Material.Filled.ZoomOut" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
-        <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" aria-label="show faq" OnClick="DoShowFAQ" />
+        <MudTooltip Text="Show previous month" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.FastRewind" Color="Color.Warning" Edge="Edge.End" aria-label="previous" OnClick="DoPrevious" />
+        </MudTooltip>
+        <MudTooltip Text="Set chart date" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.EditCalendar" Color="Color.Warning" Edge="Edge.End" aria-label="set chart date" OnClick="DoChangeChartDate" />
+        </MudTooltip>
+        <MudTooltip Text="Show next month" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" aria-label="next" OnClick="DoNext" />
+        </MudTooltip>
+        <MudTooltip Text="Add person" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add person" OnClick="DoAddPerson" />
+        </MudTooltip>
+        <MudTooltip Text="Add group" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.GroupAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add group" OnClick="DoAddGroup" />
+        </MudTooltip>
+        <MudTooltip Text="Add compatibility chart" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.AddChart" Color="Color.Warning" Edge="Edge.End" aria-label="add compatibility chart" OnClick="DoAddCompatibilityChart" />
+        </MudTooltip>
+        <MudTooltip Text="Add prediction chart" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.AddReaction" Color="Color.Warning" Edge="Edge.End" aria-label="add prediction chart" OnClick="DoAddPredictionChart" />
+        </MudTooltip>
+        <MudTooltip Text="Zoom in (larger)" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.ZoomIn" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
+        </MudTooltip>
+        <MudTooltip Text="Zoom out (smaller)" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.ZoomOut" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
+        </MudTooltip>
+        <MudTooltip Text="Show FAQ" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" aria-label="show faq" OnClick="DoShowFAQ" />
+        </MudTooltip>
     </MudAppBar>
     <MudMainContent Class="pt-0">
         <MudStack Justify="@Justify.FlexStart" Row="true">

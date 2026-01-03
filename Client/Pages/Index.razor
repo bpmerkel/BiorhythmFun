@@ -286,6 +286,9 @@
         <MudTooltip Text="Show next month" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.FastForward" Color="Color.Warning" Edge="Edge.End" aria-label="next" OnClick="DoNext" />
         </MudTooltip>
+
+       <span style="width: 2em"></span>
+
         <MudTooltip Text="Add person" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Warning" Edge="Edge.End" aria-label="add person" OnClick="DoAddPerson" />
         </MudTooltip>
@@ -298,12 +301,18 @@
         <MudTooltip Text="Add prediction chart" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.AddReaction" Color="Color.Warning" Edge="Edge.End" aria-label="add prediction chart" OnClick="DoAddPredictionChart" />
         </MudTooltip>
+
+        <span style="width: 2em"></span>
+
         <MudTooltip Text="Zoom in (larger)" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.ZoomIn" Color="Color.Warning" Edge="Edge.End" aria-label="larger" OnClick="@(e => DoAdjustSize(+1))" />
         </MudTooltip>
         <MudTooltip Text="Zoom out (smaller)" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.ZoomOut" Color="Color.Warning" Edge="Edge.End" aria-label="smaller" OnClick="@(e => DoAdjustSize(-1))" />
         </MudTooltip>
+
+        <span style="width: 2em"></span>
+
         <MudTooltip Text="Show FAQ" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Icon="@Icons.Material.Filled.Help" Color="Color.Warning" Edge="Edge.End" aria-label="show faq" OnClick="DoShowFAQ" />
         </MudTooltip>

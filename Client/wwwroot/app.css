@@ -145,7 +145,6 @@ td:nth-child(1) {
     font-weight: bold;
     white-space: nowrap;
     padding-right: 1em;
-    min-width: 17em;
 }
 
 td:nth-child(2) {

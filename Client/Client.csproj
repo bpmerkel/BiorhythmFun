@@ -9,8 +9,11 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
 		<AttachWeakETagToCompressedAssetsDuringDevelopment>true</AttachWeakETagToCompressedAssetsDuringDevelopment>
-		<AssemblyVersion>1.0.*</AssemblyVersion>
 	</PropertyGroup>
+	
+	<PropertyGroup>
+        <Version>1.1.$([MSBuild]::Subtract($([System.Math]::Floor($([MSBuild]::Divide($([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()), 86400)))), 20411)).$([MSBuild]::Divide($([MSBuild]::Modulo($([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()), 86400)), 600))</Version>
+    </PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\.editorconfig" Link=".editorconfig" />

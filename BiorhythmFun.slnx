@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution/">
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/azure-static-web-apps-ambitious-stone-067dc570f.yml" />
+    <File Path="Client/Properties/launchSettings.json" />
+    <File Path="Client/staticwebapp.config.json" />
+    <File Path="package.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Client/Client.csproj" />
+</Solution>

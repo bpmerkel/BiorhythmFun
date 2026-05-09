@@ -199,7 +199,10 @@ public partial class Index
         if (!string.IsNullOrWhiteSpace(AddName))
         {
             AddGroupDialogIsVisible = false;
-            ChartSet.AddGroup(AddName, ChartSet.GroupPeople.Where(kvp => kvp.Value).Select(kvp => kvp.Key).ToList());
+            ChartSet.AddGroup(AddName, ChartSet.GroupPeople
+                .Where(kvp => kvp.Value)
+                .Select(kvp => kvp.Key)
+                .ToList());
             StateHasChanged();
         }
     }

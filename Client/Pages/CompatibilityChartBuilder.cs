@@ -75,6 +75,7 @@ public class CompatibilityChartBuilder : ComponentBase
             ( "greengradient", GreenColor, DarkGreenColor ),
             ( "bluegradient", BlueColor, DarkBlueColor )
         };
+
         foreach (var grad in gradients)
         {
             var linear1 = new linearGradient { id = grad.Item1, x1 = "0%", y1 = "0%", x2 = "100%", y2 = "100%" };

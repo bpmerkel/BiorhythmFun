@@ -49,13 +49,23 @@ public class ChartBuilder : ComponentBase
     /// <summary>
     /// Handler for the chart hover event
     /// </summary>
-    [Parameter] public EventCallback<ChartClickEventArgs> OnCycleClick { get { return onCycleClick; } set { onCycleClick = value; } }
+    [Parameter]
+    public EventCallback<ChartClickEventArgs> OnCycleClick
+    {
+        get { return onCycleClick; }
+        set { onCycleClick = value; }
+    }
     private static EventCallback<ChartClickEventArgs> onCycleClick;
 
     /// <summary>
     /// Handler for the chart hover event
     /// </summary>
-    [Parameter] public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get { return onCycleHover; } set { onCycleHover = value; } }
+    [Parameter]
+    public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover
+    {
+        get { return onCycleHover; }
+        set { onCycleHover = value; }
+    }
     private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
 
     private const double twopi = 2d * Math.PI;

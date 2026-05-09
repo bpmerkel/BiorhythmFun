@@ -8,6 +8,7 @@
 		<Deterministic>false</Deterministic>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
+		<WasmNativeWorkload>false</WasmNativeWorkload>
 		<AttachWeakETagToCompressedAssetsDuringDevelopment>true</AttachWeakETagToCompressedAssetsDuringDevelopment>
 	</PropertyGroup>
 	

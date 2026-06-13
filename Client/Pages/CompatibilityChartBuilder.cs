@@ -67,7 +67,7 @@ public class CompatibilityChartBuilder : ComponentBase
             xmlns = "http://www.w3.org/2000/svg"
         };
 
-        var defs1 = new defs();
+        var defs = new defs();
         var gradients = new[]
         {
             ( "grad1", "#EEEEEE", "#CCCCCC" ),
@@ -81,14 +81,14 @@ public class CompatibilityChartBuilder : ComponentBase
             var linear1 = new linearGradient { id = grad.Item1, x1 = "0%", y1 = "0%", x2 = "100%", y2 = "100%" };
             linear1.Children.Add(new stop { stop_color = grad.Item2, offset = "0%" });
             linear1.Children.Add(new stop { stop_color = grad.Item3, offset = "100%" });
-            defs1.Children.Add(linear1);
+            defs.Children.Add(linear1);
         }
 
         var filter = new filter { id = "dropShadow" };
         filter.Children.Add(new feDropShadow { dx = .5d, dy = .5d, stdDeviation = .7d, flood_color = ShadowColor, flood_opacity = 1d });
-        defs1.Children.Add(filter);
+        defs.Children.Add(filter);
 
-        svg.Children.Add(defs1);
+        svg.Children.Add(defs);
 
         var daysdiff = Math.Abs((Birthdate1.Date - Birthdate2.Date).TotalDays);
         var p = 1d - daysdiff % 23d / 23d;
@@ -96,7 +96,7 @@ public class CompatibilityChartBuilder : ComponentBase
         var i = 1d - daysdiff % 33d / 33d;
 
         // draw frame and background
-        svg.Children.Add(new rect { x = 0, y = 0, width = Width, height = Height, fill = "url('#grad1')", stroke_width = 3, stroke = "#BBBBBB" });
+        svg.Children.Add(new rect { x = 0, y = 0, width = Width, height = Height, fill = "url(#grad1)", stroke_width = 3, stroke = "#BBBBBB" });
 
         // draw grid lines
         var xmin = 100;
@@ -124,9 +124,9 @@ public class CompatibilityChartBuilder : ComponentBase
             });
 
         // draw bars
-        svg.Children.Add(new rect { x = xmin, y = 10, width = p * (xmax - xmin), height = Height / 3 - 20, fill = "url('#redgradient')", stroke_width = 1, stroke = DarkRedColor, filter = "url(#dropShadow)" });
-        svg.Children.Add(new rect { x = xmin, y = Height / 3 + 10, width = e * (xmax - xmin), height = Height / 3 - 20, fill = "url('#greengradient')", stroke_width = 1, stroke = DarkGreenColor, filter = "url(#dropShadow)" });
-        svg.Children.Add(new rect { x = xmin, y = 2 * Height / 3 + 10, width = i * (xmax - xmin), height = Height / 3 - 20, fill = "url('#bluegradient')", stroke_width = 1, stroke = DarkBlueColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = 10, width = p * (xmax - xmin), height = Height / 3 - 20, fill = "url(#redgradient)", stroke_width = 1, stroke = DarkRedColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = Height / 3 + 10, width = e * (xmax - xmin), height = Height / 3 - 20, fill = "url(#greengradient)", stroke_width = 1, stroke = DarkGreenColor, filter = "url(#dropShadow)" });
+        svg.Children.Add(new rect { x = xmin, y = 2 * Height / 3 + 10, width = i * (xmax - xmin), height = Height / 3 - 20, fill = "url(#bluegradient)", stroke_width = 1, stroke = DarkBlueColor, filter = "url(#dropShadow)" });
 
         // draw text labels Physical, Emotional, Intellectual
         svg.Children.Add(new text

@@ -25,7 +25,7 @@ public class ChartBuilder : ComponentBase
     [Parameter] public DateTime EndDate { get; set; }
 
     /// <summary>
-    /// Gets or sets the Highlite date
+    /// Gets or sets the Highlight date
     /// </summary>
     [Parameter] public DateTime HighliteDate { get; set; }
 
@@ -50,23 +50,13 @@ public class ChartBuilder : ComponentBase
     /// Handler for the chart hover event
     /// </summary>
     [Parameter]
-    public EventCallback<ChartClickEventArgs> OnCycleClick
-    {
-        get { return onCycleClick; }
-        set { onCycleClick = value; }
-    }
-    private static EventCallback<ChartClickEventArgs> onCycleClick;
+    public EventCallback<ChartClickEventArgs> OnCycleClick { get; set; }
 
     /// <summary>
     /// Handler for the chart hover event
     /// </summary>
     [Parameter]
-    public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover
-    {
-        get { return onCycleHover; }
-        set { onCycleHover = value; }
-    }
-    private static EventCallback<(ChartBuilder, DateTime, int, int)> onCycleHover;
+    public EventCallback<(ChartBuilder, DateTime, int, int)> OnCycleHover { get; set; }
 
     private const double twopi = 2d * Math.PI;
     private const string FontFamily = "arial";
@@ -77,13 +67,13 @@ public class ChartBuilder : ComponentBase
     private const string BoyColor = "#89cff0";
     private static readonly string GreenColor = FromRgb(0, 128, 0);
     private static readonly string GoldColor = FromRgb(255, 215, 0);
-    private static readonly string LighBlueColor = FromRgb(230, 230, 255);
+    private static readonly string LightBlueColor = FromRgb(230, 230, 255);
     private static readonly string DarkBlueColor = FromRgb(0, 0, 140);
     private static readonly string GradientStartColor = FromRgb(102, 217, 255);
     private static readonly string GradientEndColor = FromRgb(179, 236, 255);
 
     private int Height = 200;
-    private static int Daywidth = 25;
+    private int Daywidth = 25;
     private int daysinmonth;
     private int daysdiff;
     private int center;
@@ -99,7 +89,7 @@ public class ChartBuilder : ComponentBase
     /// <summary>
     /// Registry of charts to allow for hover and click events
     /// </summary>
-    private static readonly Dictionary<string, ChartBuilder> ChartRegistry = [];
+    private static readonly ConcurrentDictionary<string, ChartBuilder> ChartRegistry = new();
 
     /// <summary>
     /// Generates a unique identifier for the chart based on its type and date range.
@@ -275,7 +265,7 @@ public class ChartBuilder : ComponentBase
             {
                 width = Daywidth,
                 height = Height,
-                fill = LighBlueColor,
+                fill = LightBlueColor,
                 x = Daywidth * (DateTime.Today.Day - 1),
                 y = 0,
                 fill_opacity = withAnimations ? 0d : 1d,
@@ -460,9 +450,9 @@ public class ChartBuilder : ComponentBase
     {
         var instance = ChartRegistry[id];
         // compute the day based on the click x,y
-        var days = x / Daywidth;
+        var days = x / instance.Daywidth;
         var day = instance.StartDate.AddDays(days);
-        onCycleHover.InvokeAsync((instance, day, x, y));
+        instance.OnCycleHover.InvokeAsync((instance, day, x, y));
     }
 
     /// <summary>
@@ -477,7 +467,7 @@ public class ChartBuilder : ComponentBase
     {
         var instance = ChartRegistry[id];
         // compute the day based on the click x,y
-        var days = x / Daywidth;
+        var days = x / instance.Daywidth;
         var day = instance.StartDate.AddDays(days);
         var diff = (day - instance.BirthDate).TotalDays;
         var args = new ChartClickEventArgs { Chart = instance, Date = day, X = x, Y = y, DaysDiff = Convert.ToInt32(diff) };
@@ -496,7 +486,7 @@ public class ChartBuilder : ComponentBase
             : intellectual > .10d ? ChartClickEventArgs.CycleStatus.Positive
             : ChartClickEventArgs.CycleStatus.Critical;
 
-        onCycleClick.InvokeAsync(args);
+        instance.OnCycleClick.InvokeAsync(args);
     }
 
     /// <summary>
@@ -639,7 +629,7 @@ public class ChartBuilder : ComponentBase
     /// <param name="color"></param>
     /// <param name="withAnimations"></param>
     /// <returns></returns>
-    private static text ShadowText(string text, double x, double y, string color, bool withAnimations) => new()
+    private text ShadowText(string text, double x, double y, string color, bool withAnimations) => new()
     {
         x = x,
         y = y,

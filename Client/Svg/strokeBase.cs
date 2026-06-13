@@ -1,4 +1,4 @@
-﻿namespace BiorthymFun.Client.Svg;
+﻿namespace BiorhythmFun.Client.Svg;
 
 /// <summary>
 /// Base class for SVG elements that can have a stroke.

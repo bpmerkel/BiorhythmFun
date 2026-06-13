@@ -1,4 +1,4 @@
-﻿namespace BiorthymFun.Client.Svg;
+﻿namespace BiorhythmFun.Client.Svg;
 
 /// <summary>
 /// Represents an ellipse in SVG.

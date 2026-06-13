@@ -1,4 +1,4 @@
-﻿namespace BiorthymFun.Client.Svg;
+﻿namespace BiorhythmFun.Client.Svg;
 
 /// <summary>
 /// Interface for SVG elements that can handle events.

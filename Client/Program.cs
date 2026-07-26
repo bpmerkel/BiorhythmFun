@@ -45,6 +45,9 @@ builder.Services.Configure<AnimateOptions>(options =>
     options.Duration = TimeSpan.FromMilliseconds(100);
 });
 
+// Register application state 'Set' as a singleton so it can be injected into components.
+builder.Services.AddSingleton<Set>();
+
 /// <summary>
 /// Builds and runs the application.
 /// </summary>

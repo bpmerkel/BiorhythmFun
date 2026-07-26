@@ -10,6 +10,10 @@ public partial class Index
     /// </summary>
     [Inject] public ILocalStorageService LocalStorage { get; set; }
     /// <summary>
+    /// Gets the chart set from DI.
+    /// </summary>
+    [Inject] public Set ChartSet { get; set; }
+    /// <summary>
     /// Gets or sets the JavaScript runtime.
     /// </summary>
     [Inject] public IJSRuntime JsRuntime { get; set; }
@@ -22,14 +26,8 @@ public partial class Index
     /// </summary>
     [Inject] public ISnackbar Snackbar { get; set; }
 
-    /// <summary>
-    /// Gets the chart set.
-    /// </summary>
-    public Set ChartSet { get; init; } = new();
-
     private ChartableBase Current = default!;
     private int Size = 0;
-
     private bool FAQIsVisible = false;
     private bool AddPersonDialogIsVisible = false;
     private bool EditPersonDialogIsVisible = false;
@@ -40,13 +38,11 @@ public partial class Index
     private Person EditPerson;
     private string EditName = string.Empty;
     private DateTime? EditBirthdate = DateTime.Today;
-
     private bool AddGroupDialogIsVisible = false;
     private bool DeleteGroupDialogIsVisible = false;
     private bool EditGroupDialogIsVisible = false;
     private Group DeleteGroup;
     private Group EditGroup;
-
     private bool AddCompatibilityChartDialogIsVisible = false;
     private bool EditCompatibilityDialogIsVisible = false;
     private bool DeleteCompatibilityDialogIsVisible = false;
@@ -56,7 +52,6 @@ public partial class Index
     private Compatibility EditCompatibility;
     private Person EditPerson1;
     private Person EditPerson2;
-
     private bool AddPredictionChartDialogIsVisible = false;
     private bool EditPredictionDialogIsVisible = false;
     private bool DeletePredictionDialogIsVisible = false;
@@ -69,33 +64,30 @@ public partial class Index
     private DateTime? AddConceptionBirthDate = DateTime.Today;
     private DateTime? EditConceptionBirthDate = DateTime.Today;
     private DateTime? Chartdate;
-
     private bool ChangeChartdateDialogIsVisible = false;
-
     private DateTime Startdate;
     private DateTime Enddate;
     private bool ShowInfo = false;
     private ChartClickEventArgs cycledata;
     private readonly DialogOptions FAQDialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.Medium };
-
-    public void DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
+    public async Task DoShowFAQ(MouseEventArgs e) => FAQIsVisible = !FAQIsVisible;
 
     /// <summary>
     /// Shows the cycle information.
     /// </summary>
     /// <param name="args"></param>
-    public void ShowCycleInfo(ChartClickEventArgs args)
+    public async Task ShowCycleInfo(ChartClickEventArgs args)
     {
         cycledata = args;
         ShowInfo = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
     /// Adds a person to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddPerson(MouseEventArgs e)
+    private async Task DoAddPerson(MouseEventArgs e)
     {
         AddName = string.Empty;
         AddBirthdate = DateTime.Today;
@@ -106,16 +98,16 @@ public partial class Index
     /// Adds a person object to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddPersonObject(MouseEventArgs e)
+    private async Task DoAddPersonObject(MouseEventArgs e)
     {
         AddPersonDialogIsVisible = false;
         // save Name and Birthdate to localStorage
         if (!string.IsNullOrWhiteSpace(AddName))
         {
             var p = new Person(AddName, AddBirthdate.Value);
-            ChartSet.AddPerson(p);
-            Current = p;
-            StateHasChanged();
+            var np = await ChartSet.AddPersonAsync(p);
+            Current = np;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -123,7 +115,7 @@ public partial class Index
     /// Edit a person.
     /// </summary>
     /// <param name="p"></param>
-    private void DoEditPerson(Person p)
+    private async Task DoEditPerson(Person p)
     {
         if (p != null)
         {
@@ -137,30 +129,30 @@ public partial class Index
     /// <summary>
     /// Edit a person object.
     /// </summary>
-    private void DoEditPersonObject()
+    private async Task DoEditPersonObject()
     {
         if (EditPerson != null)
         {
             EditPersonDialogIsVisible = false;
             if (!string.IsNullOrWhiteSpace(EditName)) EditPerson.Name = EditName;
             EditPerson.Birthdate = EditBirthdate.Value;
-            ChartSet.Save();
-            StateHasChanged();
+            await ChartSet.SaveAsync();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
     // Adjust the size of the chart
-    private void DoAdjustSize(int amount)
+    private async Task DoAdjustSize(int amount)
     {
         Size += amount;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
     /// Delete a person.
     /// </summary>
     /// <param name="p"></param>
-    private void DoDeletePerson(Person p)
+    private async Task DoDeletePerson(Person p)
     {
         DeletePerson = p;
         DeletePersonDialogIsVisible = true;
@@ -170,13 +162,14 @@ public partial class Index
     /// Delete a person object.
     /// </summary>
 
-    private void DoDeletePersonObject()
+    private async Task DoDeletePersonObject()
     {
         if (DeletePerson != null)
         {
             DeletePersonDialogIsVisible = false;
-            ChartSet.RemovePerson(DeletePerson);
+            await ChartSet.RemovePersonAsync(DeletePerson);
             Current = ChartSet.People.First();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -184,7 +177,7 @@ public partial class Index
     /// Adds a group to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddGroup(MouseEventArgs e)
+    private async Task DoAddGroup(MouseEventArgs e)
     {
         AddName = string.Empty;
         AddGroupDialogIsVisible = true;
@@ -194,16 +187,15 @@ public partial class Index
     /// Adds a group object to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddGroupObject(MouseEventArgs e)
+    private async Task DoAddGroupObject(MouseEventArgs e)
     {
         if (!string.IsNullOrWhiteSpace(AddName))
         {
             AddGroupDialogIsVisible = false;
-            ChartSet.AddGroup(AddName, ChartSet.GroupPeople
+            await ChartSet.AddGroupAsync(AddName, [.. ChartSet.GroupPeople
                 .Where(kvp => kvp.Value)
-                .Select(kvp => kvp.Key)
-                .ToList());
-            StateHasChanged();
+                .Select(kvp => kvp.Key)]);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -211,7 +203,7 @@ public partial class Index
     /// Edit a group.
     /// </summary>
     /// <param name="group"></param>
-    private void DoEditGroup(Group group)
+    private async Task DoEditGroup(Group group)
     {
         if (group != null)
         {
@@ -232,7 +224,7 @@ public partial class Index
     /// <summary>
     /// Edit a group object.
     /// </summary>
-    private void EditGroupObject()
+    private async Task EditGroupObject()
     {
         if (EditGroup != null)
         {
@@ -243,8 +235,8 @@ public partial class Index
             {
                 if (kvp.Value) EditGroup.IDs.Add(kvp.Key);
             }
-            ChartSet.Save();
-            StateHasChanged();
+            await ChartSet.SaveAsync();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -252,7 +244,7 @@ public partial class Index
     /// Delete a group.
     /// </summary>
     /// <param name="group"></param>
-    private void DoDeleteGroup(Group group)
+    private async Task DoDeleteGroup(Group group)
     {
         DeleteGroup = group;
         DeleteGroupDialogIsVisible = true;
@@ -261,14 +253,14 @@ public partial class Index
     /// <summary>
     /// Delete a group object.
     /// </summary>
-    private void DeleteGroupObject()
+    private async Task DeleteGroupObject()
     {
         if (DeleteGroup != null)
         {
             DeleteGroupDialogIsVisible = false;
-            ChartSet.RemoveGroup(DeleteGroup);
+            await ChartSet.RemoveGroupAsync(DeleteGroup);
             Current = ChartSet.People.First();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -276,7 +268,7 @@ public partial class Index
     /// Adds a compatibility chart to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddCompatibilityChart(MouseEventArgs e)
+    private async Task DoAddCompatibilityChart(MouseEventArgs e)
     {
         AddPerson1 = null;
         AddPerson2 = null;
@@ -287,13 +279,13 @@ public partial class Index
     /// Adds a compatibility chart object to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void AddCompatibilityObject(MouseEventArgs e)
+    private async Task AddCompatibilityObject(MouseEventArgs e)
     {
         AddCompatibilityChartDialogIsVisible = false;
         if (AddPerson1 != null && AddPerson2 != null)
         {
-            ChartSet.AddCompatibilityChart(AddPerson1.ID, AddPerson2.ID);
-            StateHasChanged();
+            await ChartSet.AddCompatibilityChartAsync(AddPerson1.ID, AddPerson2.ID);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -301,7 +293,7 @@ public partial class Index
     /// Edit a compatibility chart.
     /// </summary>
     /// <param name="compat"></param>
-    private void DoEditCompatibility(Compatibility compat)
+    private async Task DoEditCompatibility(Compatibility compat)
     {
         if (compat != null)
         {
@@ -315,7 +307,7 @@ public partial class Index
     /// <summary>
     /// Edit a compatibility chart object.
     /// </summary>
-    private void EditCompatibilityObject()
+    private async Task EditCompatibilityObject()
     {
         if (EditCompatibility != null && EditPerson1 != null && EditPerson2 != null)
         {
@@ -323,8 +315,8 @@ public partial class Index
             EditCompatibility.ID2 = EditPerson2.ID;
             EditCompatibility.Name = $"{EditPerson1.Name} - {EditPerson2.Name}";
             EditCompatibilityDialogIsVisible = false;
-            ChartSet.Save();
-            StateHasChanged();
+            await ChartSet.SaveAsync();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -332,7 +324,7 @@ public partial class Index
     /// Delete a compatibility chart.
     /// </summary>
     /// <param name="compat"></param>
-    private void DoDeleteCompatibility(Compatibility compat)
+    private async Task DoDeleteCompatibility(Compatibility compat)
     {
         DeleteCompatibility = compat;
         DeleteCompatibilityDialogIsVisible = true;
@@ -342,14 +334,14 @@ public partial class Index
     /// Delete a compatibility chart object.
     /// </summary>
     /// <param name="e"></param>
-    private void DeleteCompatibilityObject(MouseEventArgs e)
+    private async Task DeleteCompatibilityObject(MouseEventArgs e)
     {
         if (DeleteCompatibility != null)
         {
             DeleteCompatibilityDialogIsVisible = false;
-            ChartSet.RemoveCompatibility(DeleteCompatibility);
+            await ChartSet.RemoveCompatibilityAsync(DeleteCompatibility);
             Current = ChartSet.People.First();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -357,29 +349,29 @@ public partial class Index
     /// Handle the change of the conception date for a prediction.
     /// </summary>
     /// <param name="e"></param>
-    private void PredictionConceptionDateChanged(DateTime? e)
+    private async Task PredictionConceptionDateChanged(DateTime? e)
     {
         AddConceptionDate = EditConceptionDate = e.Value;
         AddConceptionBirthDate = EditConceptionBirthDate = e.Value.AddDays(280);    // birth date is 280 days after conception
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
     /// Handle the change of the birth date for a prediction.
     /// </summary>
     /// <param name="e"></param>
-    private void PredictionConceptionBirthDateChanged(DateTime? e)
+    private async Task PredictionConceptionBirthDateChanged(DateTime? e)
     {
         AddConceptionBirthDate = EditConceptionBirthDate = e.Value;
         AddConceptionDate = EditConceptionDate = e.Value.AddDays(-280);    // conception date is 280 days before birth
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
     /// Adds a prediction chart to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void DoAddPredictionChart(MouseEventArgs e)
+    private async Task DoAddPredictionChart(MouseEventArgs e)
     {
         AddMother = null;
         AddConceptionDate = DateTime.Today;
@@ -391,13 +383,13 @@ public partial class Index
     /// Adds a prediction chart object to the chart set.
     /// </summary>
     /// <param name="e"></param>
-    private void AddPredictionObject(MouseEventArgs e)
+    private async Task AddPredictionObject(MouseEventArgs e)
     {
         AddPredictionChartDialogIsVisible = false;
         if (AddMother != null)
         {
-            ChartSet.AddPredictionChart(AddMother.ID, AddConceptionDate.Value);
-            StateHasChanged();
+            await ChartSet.AddPredictionChartAsync(AddMother.ID, AddConceptionDate.Value);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -405,7 +397,7 @@ public partial class Index
     /// Edit a prediction chart.
     /// </summary>
     /// <param name="prediction"></param>
-    private void DoEditPrediction(Prediction prediction)
+    private async Task DoEditPrediction(Prediction prediction)
     {
         if (prediction != null)
         {
@@ -421,7 +413,7 @@ public partial class Index
     /// Edit a prediction chart object.
     /// </summary>
     /// <param name="e"></param>
-    private void EditPredictionObject(MouseEventArgs e)
+    private async Task EditPredictionObject(MouseEventArgs e)
     {
         if (EditPrediction != null && EditMother != null)
         {
@@ -429,8 +421,8 @@ public partial class Index
             EditPrediction.ConceptionDate = EditConceptionDate.Value;
             EditPrediction.Name = $"{EditMother.Name} Prediction";
             EditPredictionDialogIsVisible = false;
-            ChartSet.Save();
-            StateHasChanged();
+            await ChartSet.SaveAsync();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -438,7 +430,7 @@ public partial class Index
     /// Delete a prediction chart.
     /// </summary>
     /// <param name="prediction"></param>
-    private void DoDeletePrediction(Prediction prediction)
+    private async Task DoDeletePrediction(Prediction prediction)
     {
         DeletePrediction = prediction;
         DeletePredictionDialogIsVisible = true;
@@ -448,14 +440,14 @@ public partial class Index
     /// Delete a prediction chart object.
     /// </summary>
     /// <param name="e"></param>
-    private void DeletePredictionObject(MouseEventArgs e)
+    private async Task DeletePredictionObject(MouseEventArgs e)
     {
         if (DeletePrediction != null)
         {
             DeletePredictionDialogIsVisible = false;
-            ChartSet.RemovePrediction(DeletePrediction);
+            await ChartSet.RemovePredictionAsync(DeletePrediction);
             Current = ChartSet.People.First();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -463,7 +455,7 @@ public partial class Index
     /// Share the chart link to the clipboard.
     /// </summary>
     /// <param name="chart"></param>
-    private async void DoShare(ChartableBase chart)
+    private async Task DoShare(ChartableBase chart)
     {
         // copy the link to the chart to the clipboard
         var URL = $"{NavManager.Uri}?";
@@ -517,19 +509,19 @@ public partial class Index
     /// Go to the previous month.
     /// </summary>
     /// <param name="e"></param>
-    private void DoPrevious(MouseEventArgs e) => Startdate = Startdate.AddMonths(-1);
+    private async Task DoPrevious(MouseEventArgs e) => Startdate = Startdate.AddMonths(-1);
 
     /// <summary>
     /// Go to the next month.
     /// </summary>
     /// <param name="e"></param>
-    private void DoNext(MouseEventArgs e) => Enddate = Enddate.AddMonths(1);
+    private async Task DoNext(MouseEventArgs e) => Enddate = Enddate.AddMonths(1);
 
     /// <summary>
     /// Handle the change of the chart date.
     /// </summary>
     /// <param name="e"></param>
-    private void DoChangeChartDate(MouseEventArgs e)
+    private async Task DoChangeChartDate(MouseEventArgs e)
     {
         Chartdate = Startdate;
         ChangeChartdateDialogIsVisible = true;
@@ -539,12 +531,12 @@ public partial class Index
     /// Handle the change of the chart date.
     /// </summary>
     /// <param name="e"></param>
-    private void DoChange(MouseEventArgs e)
+    private async Task DoChange(MouseEventArgs e)
     {
         ChangeChartdateDialogIsVisible = false;
         Startdate = new DateTime(Chartdate.Value.Year, Chartdate.Value.Month, 1);
         Enddate = Startdate.AddMonths(1);
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -557,6 +549,6 @@ public partial class Index
         Enddate = Startdate.AddMonths(1);
         var nvc = HttpUtility.ParseQueryString(new Uri(NavManager.Uri).Query);
         var qd = nvc.AllKeys.ToDictionary(k => k, k => nvc[k]);
-        Current = await ChartSet.Load(LocalStorage, qd);
+        Current = await ChartSet.LoadAsync(LocalStorage, qd);
     }
 }

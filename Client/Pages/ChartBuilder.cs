@@ -446,13 +446,13 @@ public class ChartBuilder : ComponentBase
     /// <param name="x"></param>
     /// <param name="y"></param>
     [JSInvokable]
-    public static void IdentifyCycle(string id, int x, int y)
+    public static async Task IdentifyCycle(string id, int x, int y)
     {
         var instance = ChartRegistry[id];
         // compute the day based on the click x,y
         var days = x / instance.Daywidth;
         var day = instance.StartDate.AddDays(days);
-        instance.OnCycleHover.InvokeAsync((instance, day, x, y));
+        await instance.OnCycleHover.InvokeAsync((instance, day, x, y));
     }
 
     /// <summary>
@@ -463,7 +463,7 @@ public class ChartBuilder : ComponentBase
     /// <param name="y"></param>
 
     [JSInvokable]
-    public static void IdentifyDay(string id, int x, int y)
+    public static async Task IdentifyDay(string id, int x, int y)
     {
         var instance = ChartRegistry[id];
         // compute the day based on the click x,y
@@ -486,7 +486,7 @@ public class ChartBuilder : ComponentBase
             : intellectual > .10d ? ChartClickEventArgs.CycleStatus.Positive
             : ChartClickEventArgs.CycleStatus.Critical;
 
-        instance.OnCycleClick.InvokeAsync(args);
+        await instance.OnCycleClick.InvokeAsync(args);
     }
 
     /// <summary>

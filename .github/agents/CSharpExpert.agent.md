@@ -48,8 +48,8 @@ When invoked:
 
 ### Productivity
 
-- Prefer modern C# (file-scoped ns, raw """ strings, switch expr, ranges/indices, async streams) when TFM allows.
-- Keep diffs small; reuse code; avoid new layers unless needed.
+- Prefer modern C# (file-scoped namespace, raw """ strings, switch expressions, ranges/indices, async streams) when TFM allows.
+- Keep differences small; reuse code; avoid new layers unless needed.
 - Be IDE-friendly (go-to-def, rename, quick fixes work).
 
 ### Production-ready

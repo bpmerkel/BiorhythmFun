@@ -1,6 +1,9 @@
 <Solution>
   <Folder Name="/Solution/">
     <File Path=".editorconfig" />
+    <File Path=".github/agents/CSharpExpert.agent.md" />
+    <File Path=".github/instructions/blazor.instructions.md" />
+    <File Path=".github/instructions/csharp.instructions.md" />
     <File Path=".github/workflows/azure-static-web-apps-ambitious-stone-067dc570f.yml" />
     <File Path="Client/Properties/launchSettings.json" />
     <File Path="Client/staticwebapp.config.json" />

@@ -1,9 +1,7 @@
 # Biorhythm Fun
-
 A Biorhythm application built on Blazor WebAssembly and hosted in Azure Static web sites.
 
 ## Technologies used in the solution
-
 * .NET 10 / C# 14
 * ASP.NET Core 10 / Blazor WebAssembly
 * MudBlazor Material UI Components
@@ -27,7 +25,6 @@ run concurrently from birth. The first half of each cycle is full of strength wh
 period of weakness and recharging.
 
 ### What is fun to do with Biorhythms?
-
 | Fun | Description |
 |:--|:--|
 | Know your day                   | Use Biorhythms to understand your Physical, Emotional, and Intellectual disposition. Know which cycles are in the positive period and which are negative. Be careful on critical days. Be extra cautious when multiple cycles are critical on the same day.                                                                                                                                                                                                                                                                                                                                                                                  |

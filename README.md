@@ -2,8 +2,8 @@
 A Biorhythm application built on Blazor WebAssembly and hosted in Azure Static web sites.
 
 ## Technologies used in the solution
-* .NET 10 / C# 14
-* ASP.NET Core 10 / Blazor WebAssembly
+* .NET 11 / C# 14
+* ASP.NET Core 11 / Blazor WebAssembly
 * MudBlazor Material UI Components
 * SVG Charting
 * Azure Static Web Hosting
